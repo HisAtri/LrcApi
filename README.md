@@ -34,3 +34,13 @@ A Flask API For StreamMusic
 ```bash
 wget https://mirror.eh.cx/APP/lrcapi.sh -O lrcapi.sh && chmod +x lrcapi.sh && sudo bash lrcapi.sh
 ```
+
+### Docker部署方式
+
+```bash
+docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lyricapi
+```
+
+如果你正在使用Navidrome Docker，请将 `/home/user/music:/music` 中的 `/home/user/music` 修改为你在Navidrome中映射的主机路径。
+
+如果你正在使用Navidrome（真的有人会本地部署Navidrome了，然后用Docker部署这东西？），请将你的音乐文件目录映射到Docker内目录；例如如果你音乐存储的目录是`/www/path/music`，请将启动命令中的映射修改为 `/www/path/music:/www/path/music`
