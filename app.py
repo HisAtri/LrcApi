@@ -1,4 +1,6 @@
 import base64
+import json
+import random
 from flask import Flask, request
 import os
 import glob
@@ -7,6 +9,9 @@ import requests
 from urllib.parse import unquote_plus, urlencode
 from flask_caching import Cache
 import argparse
+import threading
+from waitress import serve
+
 
 # 创建一个解析器
 parser = argparse.ArgumentParser(description="启动LRCAPI服务器")
@@ -64,6 +69,16 @@ def get_lyrics_from_net(title, artist):
 @app.route('/lyrics', methods=['GET'])
 def lyrics():
     path = unquote_plus(request.args.get('path'))
+    try:
+        tag = TinyTag.get(path)
+        title = tag.title
+        artist = tag.artist
+    except:
+        try:
+            title = unquote_plus(request.args.get('title'))
+            artist = unquote_plus(request.args.get('artist'))
+        except:
+            return "Lyrics not found.", 404
 
     # 根据文件路径查找同名的 .lrc 文件
     if path:
@@ -72,19 +87,16 @@ def lyrics():
             file_content = read_file_with_encoding(lrc_path, ['utf-8', 'gbk'])
             if file_content is not None:
                 return file_content
-
-        # 如果找不到 .lrc 文件，读取音频文件的元数据，查询外部API
-        tag = TinyTag.get(path)
-        title = tag.title
-        artist = tag.artist
+                
         try:
+            # 如果找不到 .lrc 文件，读取音频文件的元数据，查询外部API
             lyrics = get_lyrics_from_net(title, artist)
         except:
-            pass
+            lyrics = None
         if lyrics is not None:
             return lyrics
 
     return "Lyrics not found.", 404
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=args.port)
+    serve(app, host='0.0.0.0', port=args.port)
