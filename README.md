@@ -38,7 +38,13 @@ wget https://mirror.eh.cx/APP/lrcapi.sh -O lrcapi.sh && chmod +x lrcapi.sh && su
 ### Docker部署方式
 
 ```bash
-docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lyricapi:v1.0
+docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lyricapi:latest
+```
+
+或者，请指定一个Tag（推荐）
+
+```bash
+docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lyricapi:cpy1.0
 ```
 
 非常**不建议**使用Docker部署Navidrome以及LRCAPI，但是如果你非要这么做，我也提供了以下的教程：
