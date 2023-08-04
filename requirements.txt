@@ -2,3 +2,4 @@ Flask==2.3.2
 Flask_Caching==2.0.2
 Requests==2.31.0
 tinytag==1.9.0
+waitress==2.1.2
