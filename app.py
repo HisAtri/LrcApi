@@ -1,7 +1,7 @@
 import base64
 import json
 import random
-from flask import Flask, request
+from flask import Flask, request, abort
 import os
 import glob
 from tinytag import TinyTag
@@ -9,7 +9,6 @@ import requests
 from urllib.parse import unquote_plus, urlencode
 from flask_caching import Cache
 import argparse
-import threading
 from waitress import serve
 
 
@@ -17,13 +16,26 @@ from waitress import serve
 parser = argparse.ArgumentParser(description="启动LRCAPI服务器")
 # 添加一个 `--port` 参数，默认值28883
 parser.add_argument('--port', type=int, default=28883, help='应用的运行端口，默认28883')
+parser.add_argument('--auth', type=str, help='用于验证Header.Authentication字段，建议纯ASCII字符')
 args = parser.parse_args()
+# 赋值到token，启动参数优先性最高，其次环境变量，如果都未定义则赋值为false
+token = args.auth if args.auth is not None else os.environ.get('API_AUTH', False)
 
 app = Flask(__name__)
 
 app.config['CACHE_TYPE'] = 'filesystem'  # 使用文件系统缓存
 app.config['CACHE_DIR'] = './flask_cache'  # 缓存的目录
 cache = Cache(app)
+
+# 鉴权函数，在token存在的情况下，对请求进行鉴权
+@app.before_request
+def require_auth():
+    if token is not False:
+        auth_header = request.headers.get('Authorization', False) or request.headers.get('Authentication', False)
+        if auth_header and auth_header == token:
+            return
+        else:
+            abort(403)
 
 def read_file_with_encoding(file_path, encodings):
     for encoding in encodings:
@@ -99,4 +111,5 @@ def lyrics():
     return "Lyrics not found.", 404
 
 if __name__ == '__main__':
+    print("Server start at 0.0.0.0:" + str(args.port))
     serve(app, host='0.0.0.0', port=args.port)
