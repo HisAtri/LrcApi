@@ -23,7 +23,7 @@ A Flask API For StreamMusic
 	
 ### Python源文件：
 		
-上传至运行目录，解压tar.gz
+拉取本项目；或者下载后上传至运行目录，解压tar.gz
 		
 安装依赖：`pip install -r requirements.txt`
 		
