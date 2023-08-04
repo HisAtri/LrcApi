@@ -11,15 +11,22 @@ A Flask API For StreamMusic
 
 默认监听28883端口，API地址`0.0.0.0:28883/lyrics`
 
-启动参数 `--port` 指定端口
+### 启动参数
 
-可以Nginx反向代理，可以SSL
+|   参数   |   类型  | 默认值 |
+| -------- | -------- | -------- |
+| `--port`   | int   | 28883   |
+| `--auth`  | str   |     |
+
+`--auth`参数用于header鉴权，留空则跳过鉴权。验证header中的`Authorization`或`Authentication`字段。如果鉴权不符合，则返回403响应。
+
+也可以使用环境变量`API_AUTH`定义，其优先性低于`--auth`参数，但是更容易在Docker中部署。
 
 ## 食用方法：
 
 ### 二进制文件：
 
-上传至运行目录，`./PyLrcAPI --port 8080`
+上传至运行目录，`./lrcapi --port 8080 --auth DbG91ZEZbBgNVBAs`
 	
 ### Python源文件：
 		
@@ -27,7 +34,7 @@ A Flask API For StreamMusic
 		
 安装依赖：`pip install -r requirements.txt`
 		
-启动服务：`python3 app.py --port 8080`
+启动服务：`python3 app.py --port 8080 --auth DbG91ZEZbBgNVBAs`
 
 ### Linux_x86一键部署运行：
 
@@ -38,13 +45,13 @@ wget https://mirror.eh.cx/APP/lrcapi.sh -O lrcapi.sh && chmod +x lrcapi.sh && su
 ### Docker部署方式
 
 ```bash
-docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lyricapi:latest
+docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lyricapi:latest -e API_AUTH=DbG91ZEZbBgNVBAs
 ```
 
 或者，请指定一个Tag（推荐）
 
 ```bash
-docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lyricapi:wp1.0
+docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lyricapi:alpine-py1.1 -e API_AUTH=DbG91ZEZbBgNVBAs
 ```
 
 非常**不建议**使用Docker部署Navidrome以及LRCAPI，但是如果你非要这么做，我也提供了以下的教程：
