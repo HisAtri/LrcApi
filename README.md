@@ -1,5 +1,5 @@
 # LrcApi
-A Flask API For StreamMusic
+A Flask API For [StreamMusic](https://github.com/gitbobobo/StreamMusic)
 
 ## 功能
 
