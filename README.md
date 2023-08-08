@@ -38,6 +38,8 @@ A Flask API For [StreamMusic](https://github.com/gitbobobo/StreamMusic)
 
 ### Linux_x86一键部署运行：
 
+**服务器暂时不可用，今天修复**
+
 ```bash
 wget https://mirror.eh.cx/APP/lrcapi.sh -O lrcapi.sh && chmod +x lrcapi.sh && sudo bash lrcapi.sh
 ```
