@@ -1,0 +1,12 @@
+version: "3"
+services:
+
+  lyrics:
+    build: .
+    container_name: lyrics
+    restart: always
+    ports:
+      - "28883:28883"
+    volumes:
+      - "/mnt/music_data:/music:ro"
+      - "./navidrome_data/:/app/db/:ro"

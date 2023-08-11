@@ -10,6 +10,7 @@ from urllib.parse import unquote_plus, urlencode
 from flask_caching import Cache
 import argparse
 from waitress import serve
+import sqlite3
 
 
 # 创建一个解析器
@@ -17,6 +18,7 @@ parser = argparse.ArgumentParser(description="启动LRCAPI服务器")
 # 添加一个 `--port` 参数，默认值28883
 parser.add_argument('--port', type=int, default=28883, help='应用的运行端口，默认28883')
 parser.add_argument('--auth', type=str, help='用于验证Header.Authentication字段，建议纯ASCII字符')
+parser.add_argument('--navidrome-db', type=str, default='./db/', help='navidrome服务的数据库位置')
 args = parser.parse_args()
 # 赋值到token，启动参数优先性最高，其次环境变量，如果都未定义则赋值为false
 token = args.auth if args.auth is not None else os.environ.get('API_AUTH', False)
@@ -85,12 +87,23 @@ def lyrics():
         tag = TinyTag.get(path)
         title = tag.title
         artist = tag.artist
+        album = tag.album
     except:
         try:
             title = unquote_plus(request.args.get('title'))
             artist = unquote_plus(request.args.get('artist'))
+            album = unquote_plus(request.args.get('album'))
         except:
             return "Lyrics not found.", 404
+
+    db_path = os.path.join(args.navidrome_db, 'navidrome.db')
+    if os.path.exists(db_path):
+        with sqlite3.connect(db_path) as conn:
+            cursor = conn.cursor()
+            for row in cursor.execute("SELECT path from media_file where title=? and artist=? and album=?", [title, artist, album]):
+                if os.path.exists(row[0]):
+                    path = row[0]
+                    break
 
     # 根据文件路径查找同名的 .lrc 文件
     if path:
@@ -100,13 +113,13 @@ def lyrics():
             if file_content is not None:
                 return file_content
                 
-        try:
-            # 如果找不到 .lrc 文件，读取音频文件的元数据，查询外部API
-            lyrics = get_lyrics_from_net(title, artist)
-        except:
-            lyrics = None
-        if lyrics is not None:
-            return lyrics
+    try:
+        # 如果找不到 .lrc 文件，读取音频文件的元数据，查询外部API
+        lyrics = get_lyrics_from_net(title, artist)
+    except:
+        lyrics = None
+    if lyrics is not None:
+        return lyrics
 
     return "Lyrics not found.", 404
 
