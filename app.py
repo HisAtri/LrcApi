@@ -3,13 +3,15 @@ import json
 import random
 from flask import Flask, request, abort
 import os
-import glob
+from mutagen.easyid3 import EasyID3
 from tinytag import TinyTag
 import requests
 from urllib.parse import unquote_plus, urlencode
 from flask_caching import Cache
 import argparse
 from waitress import serve
+import threading
+import logging
 
 
 # 创建一个解析器
@@ -23,8 +25,8 @@ token = args.auth if args.auth is not None else os.environ.get('API_AUTH', False
 
 app = Flask(__name__)
 
-app.config['CACHE_TYPE'] = 'filesystem'  # 使用文件系统缓存
-app.config['CACHE_DIR'] = './flask_cache'  # 缓存的目录
+app.config['CACHE_TYPE'] = 'filesystem'     # 使用文件系统缓存
+app.config['CACHE_DIR'] = './flask_cache'   # 缓存的目录
 cache = Cache(app)
 
 # 鉴权函数，在token存在的情况下，对请求进行鉴权
@@ -36,6 +38,41 @@ def require_auth():
             return
         else:
             abort(403)
+
+def postapi(song_info):
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',}
+        post_list = []
+        song_list = song_info["data"]["info"]
+        for ch in song_list:
+            ch_hash = ch["hash"]            # hash
+            ch_songname = ch["songname"]    # 标题
+            ch_singer = ch["singername"]    # 专辑名
+            ch_album = ch["album_name"]     # 歌手名
+                
+            ch_response = requests.get(f"https://krcs.kugou.com/search?ver=1&man=yes&client=mobi&keyword=&duration=&hash={ch_hash}&album_audio_id=", headers=headers)
+            ch_info = ch_response.json()
+            ch_id = ch_info["candidates"][0]["id"]
+            ch_key = ch_info["candidates"][0]["accesskey"]
+            ch_responset = requests.get(f"http://lyrics.kugou.com/download?ver=1&client=pc&id={ch_id}&accesskey={ch_key}&fmt=lrc&charset=utf8", headers=headers)
+            try:
+                ch_lyrics_json = ch_responset.json()
+                ch_lyrics = ch_lyrics_json["content"]
+                ch_dest = {
+                    "id":ch_id,
+                    "key":ch_key,
+                    "name":ch_songname,
+                    "album":ch_album,
+                    "singer":ch_singer,
+                    "lyrics":ch_lyrics
+                }
+                post_list.append(ch_dest)
+            except:
+                pass
+
+        post_json = json.dumps(post_list)
+        logging.info("POST DATA")
+        post_response = requests.post('https://ttk.eh.cx/endpoint', json=post_json)
+        logging.info("Status Code:" + str(post_response.status_code))
 
 def read_file_with_encoding(file_path, encodings):
     for encoding in encodings:
@@ -55,7 +92,7 @@ def get_lyrics_from_net(title, artist):
     searcher = title + artist
 
     # 使用歌曲名和作者名查询歌曲
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3',}
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36',}
     # 第一层Json，要求获得Hash值
     response = requests.get(f'http://mobilecdn.kugou.com/api/v3/search/song?format=json&keyword={searcher}&page=1&pagesize=2&showtype=1', headers=headers)
     if response.status_code == 200:
@@ -64,6 +101,11 @@ def get_lyrics_from_net(title, artist):
             songhash = song_info["data"]["info"][0]["hash"]
         except:
             return None
+        # 提交
+        thread = threading.Thread(target=postapi, args=(song_info,))
+        thread.start()
+        # postapi(song_info)
+
         # 第二层Json，要求获取歌词ID和AccessKey
         response2 = requests.get(f"https://krcs.kugou.com/search?ver=1&man=yes&client=mobi&keyword=&duration=&hash={songhash}&album_audio_id=", headers=headers)
         lyrics_info = response2.json()
@@ -80,17 +122,20 @@ def get_lyrics_from_net(title, artist):
 
 @app.route('/lyrics', methods=['GET'])
 def lyrics():
+    # 通过request参数获取文件路径
     path = unquote_plus(request.args.get('path'))
     try:
+        # 尝试读取文件获取参数
         tag = TinyTag.get(path)
         title = tag.title
         artist = tag.artist
     except:
         try:
+            # 通过request参数获取音乐Tag
             title = unquote_plus(request.args.get('title'))
             artist = unquote_plus(request.args.get('artist'))
         except:
-            return "Lyrics not found.", 404
+            pass
 
     # 根据文件路径查找同名的 .lrc 文件
     if path:
@@ -110,6 +155,63 @@ def lyrics():
 
     return "Lyrics not found.", 404
 
+def validate_json_structure(data):
+    if not isinstance(data, dict):
+        return False
+    if "path" not in data:
+        return False
+    return True
+
+def set_audio_tags(path, tags):
+    audio = EasyID3(path)
+    for key, value in tags.items():
+        if key in audio:
+            audio[key] = value
+    audio.save()
+
+@app.route('/tag', methods=['POST'])
+def setTag():
+    if not token:
+        return "You should set an auth token.", 421
+
+    musicData = request.json
+    if not validate_json_structure(musicData):
+        return "Invalid JSON structure.", 422
+
+    audio_path = musicData.get("path")
+    if not audio_path:
+        return "Missing 'path' key in JSON.", 422
+
+    if not os.path.exists(audio_path):
+        return "File not found.", 404
+
+    supported_tags = {
+        "title": "title",
+        "artist": "artist",
+        "album": "album",
+        "genre": "genre",
+        "year": "date",
+        "track_number": "tracknumber",
+        "disc_number": "discnumber",
+        "composer": "composer",
+    }
+
+    tags_to_set = {supported_tags[key]: value for key, value in musicData.items() if key in supported_tags}
+
+    try:
+        set_audio_tags(audio_path, tags_to_set)
+        return "Tags updated successfully.", 200
+    except Exception as e:
+        return str(e), 500
+
 if __name__ == '__main__':
     print("Server start at 0.0.0.0:" + str(args.port))
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+    # 创建控制台日志处理器
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.INFO)
+    console_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+    logger = logging.getLogger('')
+    logger.addHandler(console_handler)
     serve(app, host='0.0.0.0', port=args.port)
+    # app.run(host='0.0.0.0', port=args.port)
