@@ -42,7 +42,7 @@ Preview:支持修改MusicTag
 ### Linux_x86一键部署运行
 
 ```bash
-wget https://mirror.eh.cx/APP/lrcapi.sh -O lrcapi.sh && chmod +x lrcapi.sh && sudo bash lrcapi.sh
+wget https://mirror.eh.cx/lrcapi/lrcapi.sh -O lrcapi.sh && chmod +x lrcapi.sh && sudo bash lrcapi.sh
 ```
 
 ### Docker部署方式
