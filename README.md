@@ -21,7 +21,18 @@ Preview:支持修改MusicTag
 | `--port`   | int   | 28883   |
 | `--auth`  | str   |     |
 
-`--auth`参数用于header鉴权，留空则跳过鉴权。验证header中的`Authorization`或`Authentication`字段。如果鉴权不符合，则返回403响应。
+`--auth`参数格式为JSON字典，其形式为`'{\"DbG91ZEZbBgNVBAs\":1,\"0SMv5NAlSUc3D\":2}'`，其中的Key对应header中的`Authorization`或`Authentication`字段，对应的value为权限等级，向下兼容。
+
+如果请求的权限不足，则服务器返回403响应。
+
+允许`--auth`参数留空，此时不对header进行验证，所有请求默认权限等级为1。
+
+目前API功能所需要的权限等级参照下表
+
+| API          | 权限  |
+|--------------|-----|
+| 歌词API/lyrics | 1   |
+| 歌词Tag修改/tag  | 3   |
 
 也可以使用环境变量`API_AUTH`定义，其优先性低于`--auth`参数，但是更容易在Docker中部署。
 
@@ -29,7 +40,7 @@ Preview:支持修改MusicTag
 
 ### 二进制文件
 
-上传至运行目录，`./lrcapi --port 8080 --auth DbG91ZEZbBgNVBAs`
+上传至运行目录，`./lrcapi --port 8080 --auth '{\"DbG91ZEZbBgNVBAs\":1}'`
 
 ### Python源文件
 
@@ -37,7 +48,7 @@ Preview:支持修改MusicTag
 
 安装依赖：`pip install -r requirements.txt`
 
-启动服务：`python3 app.py --port 8080 --auth DbG91ZEZbBgNVBAs`
+启动服务：`python3 app.py --port 8080 --auth '{\"DbG91ZEZbBgNVBAs\":1}'`
 
 ### Linux_x86一键部署运行
 
@@ -48,13 +59,13 @@ wget https://mirror.eh.cx/lrcapi/lrcapi.sh -O lrcapi.sh && chmod +x lrcapi.sh &&
 ### Docker部署方式
 
 ```bash
-docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lyricapi:latest -e API_AUTH=DbG91ZEZbBgNVBAs
+docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lyricapi:latest -e API_AUTH='{\"DbG91ZEZbBgNVBAs\":1}'
 ```
 
 或者，请指定一个Tag（推荐）
 
 ```bash
-docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lyricapi:alpine-py1.1 -e API_AUTH=DbG91ZEZbBgNVBAs
+docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lyricapi:alpine-py1.1 -e API_AUTH='{\"DbG91ZEZbBgNVBAs\":1}'
 ```
 
 非常**不建议**使用Docker部署Navidrome以及LRCAPI，但是如果你非要这么做，我也提供了以下的教程：
