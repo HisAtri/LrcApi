@@ -1,6 +1,6 @@
 import base64
 import json
-from flask import Flask, request, abort
+from flask import Flask, request, abort, send_from_directory, redirect
 import os
 from mutagen.easyid3 import EasyID3
 from tinytag import TinyTag
@@ -11,6 +11,8 @@ import argparse
 from waitress import serve
 import threading
 import logging
+
+from pyutils import html
 
 # 创建一个解析器
 parser = argparse.ArgumentParser(description="启动LRC API服务器")
@@ -61,17 +63,6 @@ def authenticate(permission_level):
             app.logger.info("No Permission")
             abort(403)
 
-
-# 全局鉴权函数，在token存在的情况下，对所有请求进行鉴权
-@app.before_request
-def require_auth():
-    if token_dict is not {}:
-        auth_header = request.headers.get('Authorization', False) or request.headers.get('Authentication', False)
-        if auth_header and auth_header in token_all:
-            return
-        else:
-            app.logger.info("Invalid token")
-            abort(403)
 
 def post_api(song_info):
     headers = {
@@ -259,6 +250,25 @@ def setTag():
         return "Tags updated successfully.", 200
     except Exception as e:
         return str(e), 500
+
+
+# 路由/src目录下的文件
+@app.route('/src/<path:filename>')
+def serve_file(filename):
+    try:
+        return send_from_directory('src', filename)
+    except FileNotFoundError:
+        abort(404)
+
+
+@app.route('/')
+def redirect_to_welcome():
+    return redirect('/welcome')
+
+
+@app.route('/welcome')
+def welcome():
+    return 'API is running!'
 
 
 if __name__ == '__main__':
