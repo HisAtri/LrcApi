@@ -19,7 +19,18 @@ parser.add_argument('--port', type=int, default=28883, help='应用的运行端�
 parser.add_argument('--auth', type=str, help='用于验证Header.Authentication字段，建议纯ASCII字符')
 args = parser.parse_args()
 # 赋值到token，启动参数优先性最高，其次环境变量，如果都未定义则赋值为false
-token = args.auth if args.auth is not None else os.environ.get('API_AUTH', False)
+token_json = args.auth if args.auth is not None else os.environ.get('API_AUTH', False)
+# 全局变量token_dict，应当为字典，auth_token为key，permission为value，permission向下兼容
+# 结构示例：
+######
+{
+    "Admin_token": 3,
+    "User_token": 2,
+    "Guest_token": 1
+}
+######
+token_dict = json.loads(token_json) if token_json else {}
+token_all = list(token_dict.keys())
 
 app = Flask(__name__)
 
@@ -28,16 +39,39 @@ app.config['CACHE_DIR'] = './flask_cache'  # 缓存的目录
 cache = Cache(app)
 
 
-# 鉴权函数，在token存在的情况下，对请求进行鉴权
-@app.before_request
-def require_auth():
-    if token is not False:
-        auth_header = request.headers.get('Authorization', False) or request.headers.get('Authentication', False)
-        if auth_header and auth_header == token:
+# 鉴权函数
+def authenticate(permission_level):
+    if token_dict is not {}:
+        auth_header = request.headers.get('Authorization', False) or request.headers.get('Authentication',
+                                                                                         False)
+        if auth_header and auth_header in token_all:
+            permission = token_dict[auth_header]
+            print("Permission=" + str(permission) + ";Level=" + str(permission_level))
+            if permission >= permission_level:
+                return
+            else:
+                app.logger.info("No Permission")
+                abort(403)
+    # 权限没有定义的情况下，默认只允许guest
+    else:
+        permission = 1
+        if permission >= permission_level:
             return
         else:
+            app.logger.info("No Permission")
             abort(403)
 
+
+# 全局鉴权函数，在token存在的情况下，对所有请求进行鉴权
+@app.before_request
+def require_auth():
+    if token_dict is not {}:
+        auth_header = request.headers.get('Authorization', False) or request.headers.get('Authentication', False)
+        if auth_header and auth_header in token_all:
+            return
+        else:
+            app.logger.info("Invalid token")
+            abort(403)
 
 def post_api(song_info):
     headers = {
@@ -137,6 +171,7 @@ def get_lyrics_from_net(title, artist):
 
 @app.route('/lyrics', methods=['GET'])
 def lyrics():
+    authenticate(1)
     # 通过request参数获取文件路径
     path = unquote_plus(request.args.get('path'))
     try:
@@ -144,13 +179,17 @@ def lyrics():
         tag = TinyTag.get(path)
         title = tag.title
         artist = tag.artist
-    except:
+    except Exception as e:
+        app.logger.info("Unable to find song tags, query from the network." + str(e))
         try:
             # 通过request参数获取音乐Tag
             title = unquote_plus(request.args.get('title'))
             artist = unquote_plus(request.args.get('artist'))
-        except:
-            pass
+            lyrics_text = get_lyrics_from_net(title, artist)
+            return lyrics_text
+        except Exception as e:
+            app.logger.error("Unable to get song tags." + str(e))
+            title, artist = None, None
 
     # 根据文件路径查找同名的 .lrc 文件
     if path:
@@ -189,8 +228,7 @@ def set_audio_tags(path, tags):
 
 @app.route('/tag', methods=['POST'])
 def setTag():
-    if not token:
-        return "You should set an auth token.", 421
+    authenticate(3)
 
     musicData = request.json
     if not validate_json_structure(musicData):
@@ -208,9 +246,9 @@ def setTag():
         "artist": "artist",
         "album": "album",
         "genre": "genre",
-        "year": "date",
-        "track_number": "tracknumber",
-        "disc_number": "discnumber",
+        "year": "2023",
+        "track_number": "01",
+        "disc_number": "08",
         "composer": "composer",
     }
 
@@ -224,13 +262,7 @@ def setTag():
 
 
 if __name__ == '__main__':
-    print("Server start at 0.0.0.0:" + str(args.port))
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-    # 创建控制台日志处理器
-    console_handler = logging.StreamHandler()
-    console_handler.setLevel(logging.INFO)
-    console_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
     logger = logging.getLogger('')
-    logger.addHandler(console_handler)
     serve(app, host='0.0.0.0', port=args.port)
     # app.run(host='0.0.0.0', port=args.port)
