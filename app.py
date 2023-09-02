@@ -1,7 +1,7 @@
 import base64
 import json
 import random
-from flask import Flask, request, abort, redirect
+from flask import Flask, request, abort, redirect, send_from_directory
 import os
 from mutagen.easyid3 import EasyID3
 from tinytag import TinyTag
@@ -145,13 +145,17 @@ def lyrics():
         tag = TinyTag.get(path)
         title = tag.title
         artist = tag.artist
-    except:
+    except Exception as e:
+        app.logger.info("Unable to find song tags, query from the network." + str(e))
         try:
             # 通过request参数获取音乐Tag
             title = unquote_plus(request.args.get('title'))
             artist = unquote_plus(request.args.get('artist'))
-        except:
-            pass
+            lyrics_text = get_lyrics_from_net(title, artist)
+            return lyrics_text
+        except Exception as e:
+            app.logger.error("Unable to get song tags." + str(e))
+            title, artist = None, None
 
     # 根据文件路径查找同名的 .lrc 文件
     if path:
@@ -224,13 +228,24 @@ def setTag():
     except Exception as e:
         return str(e), 500
 
+
 @app.route('/')
 def redirect_to_welcome():
-    return redirect('/welcome')
+    return redirect('/statu')
 
-@app.route('/welcome')
+
+@app.route('/statu')
 def welcome():
-    return 'Welcome to the welcome page!'
+    return 'The server is running'
+
+
+@app.route('/src/<path:filename>')
+def serve_file(filename):
+    try:
+        return send_from_directory('src', filename)
+    except FileNotFoundError:
+        abort(404)
+
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
