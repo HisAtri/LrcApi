@@ -1,3 +1,5 @@
+<!-- 如果你在歌词界面看到此信息，说明你设置了错误的API地址，默认地址为/lyrics -->
+
 <!DOCTYPE html>
 <html>
 
@@ -10,25 +12,26 @@
             text-align: center;
         }
 
+        code {
+            display: inline-block;
+            padding: 4px;
+            font-family: Consolas, monospace;
+            font-size: 14px;
+            background-color: #f2f2f2;
+            color: #333333;
+            border-radius: 4px;
+        }
+
         .blurry-box {
             width: 600px;
-            /* 设置 `<div>` 的宽度 */
-            height: 300px;
-            /* 设置 `<div>` 的高度 */
+            height: 371px;
             background-color: rgba(255, 255, 255, 0.5);
-            /* 设置背景颜色和透明度 */
             border-radius: 10px;
-            /* 设置圆角半径 */
             position: fixed;
-            /* 设置定位为固定定位 */
             top: 50%;
-            /* 设置 `<div>` 的顶部距离为屏幕顶部的 50% */
             left: 50%;
-            /* 设置 `<div>` 的左侧距离为屏幕左侧的 50% */
             transform: translate(-50%, -50%);
-            /* 使用 transform 属性将 `<div>` 水平和垂直居中 */
             overflow: hidden;
-            /* 隐藏超出 `<div>` 边界的内容 */
             text-align: center;
         }
 
@@ -36,31 +39,32 @@
             content: "";
             background: inherit;
             filter: blur(10px);
-            /* 设置高斯模糊效果的模糊半径 */
             position: absolute;
             top: -10px;
-            /* 设置偏移量以确保模糊效果超出边界 */
             right: -10px;
             bottom: -10px;
             left: -10px;
             z-index: -1;
-            /* 将模糊层级设置为 `-1`，使其位于内容下方 */
         }
 
         .green {
-            color: lightgreen;
+            color: rgb(0, 255, 0);
+            text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5);
         }
 
         .yellow {
-            color: yellow;
+            color: rgb(255, 255, 0);
+            text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5);
         }
 
         .orange {
-            color: orange;
+            color: rgb(255, 140, 0);
+            text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5);
         }
 
         .red {
             color: red;
+            text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5);
         }
     </style>
 </head>
@@ -71,59 +75,39 @@
         <h4>歌词API地址：</h4>
         <code>http://localhost/lyrics</code>
         <h4>更多内容</h4>
-        <p>请参考<a href="https://github.com/HisAtri/LrcApi/blob/main/README.md">Github</a></p>
-        <div id="status">服务器状态：</div>
+        <p>请参考<a href="https://github.com/HisAtri/LrcApi/blob/main/README.md">Github Readme Page</a></p>
+        <h4>服务器状态</h4>
+        <div id="status">- -ms</div>
     </div>
     <script>
         function testServerStatus() {
-            // 获取status元素
             var statusElement = document.getElementById('status');
+            var url = '/';
 
-            // 创建XMLHttpRequest对象
-            var xhr = new XMLHttpRequest();
+            var startTime = performance.now();
 
-            // 设置请求的URL
-            var url = window.location.href;
-
-            // 发送GET请求
-            xhr.open('GET', url, true);
-
-            // 设置超时时间（2000ms）
-            xhr.timeout = 2000;
-
-            // 当请求完成时的处理函数
-            xhr.onload = function () {
-                if (xhr.status >= 200 && xhr.status < 400) {
-                    // 请求成功，计算延迟时间
-                    var latency = xhr.responseEnd - xhr.responseStart;
-
-                    // 根据延迟时间修改状态元素的内容和样式
+            fetch(url, { method: 'GET', cache: 'no-cache' })
+                .then(function (response) {
+                    var endTime = performance.now();
+                    var latency = endTime - startTime;
+                    var formattedLatency = latency.toFixed(1)
                     if (latency < 100) {
-                        statusElement.innerHTML = '服务器状态： <span class="green">○ ' + latency + 'ms</span>';
+                        statusElement.innerHTML = '<span class="green"><b>●</b></span> ' + formattedLatency + 'ms';
                     } else if (latency >= 100 && latency <= 1000) {
-                        statusElement.innerHTML = '服务器状态： <span class="yellow">○ ' + latency + 'ms</span>';
+                        statusElement.innerHTML = '<span class="yellow"><b>●</b></span> ' + formattedLatency + 'ms';
                     } else if (latency > 1000 && latency <= 2000) {
-                        statusElement.innerHTML = '服务器状态： <span class="orange">○ ' + latency + 'ms</span>';
+                        statusElement.innerHTML = '<span class="orange"><b>●</b></span> ' + formattedLatency + 'ms';
                     } else {
-                        statusElement.innerHTML = '服务器状态： <span class="red">○ ' + latency + 'ms</span>';
+                        statusElement.innerHTML = '<span class="red"><b>●</b></span> ' + formattedLatency + 'ms';
                     }
-                } else {
-                    // 请求失败或超时
-                    statusElement.innerHTML = '服务器状态： <span class="red">○ 超时或无响应</span>';
-                }
-            };
-
-            // 当请求超时时的处理函数
-            xhr.ontimeout = function () {
-                statusElement.innerHTML = '服务器状态： <span class="red">○ 超时或无响应</span>';
-            };
-
-            // 发送请求
-            xhr.send();
+                })
+                .catch(function (error) {
+                    statusElement.innerHTML = '<span class="red"><b>●</b></span> 超时或无响应';
+                });
         }
-        testServerStatus()
-        // 每30秒执行一次
-        setInterval(testServerStatus, 10000);
+
+        testServerStatus();
+        setInterval(testServerStatus, 30000);
     </script>
 </body>
 
