@@ -1,6 +1,5 @@
 import base64
 import json
-import random
 from flask import Flask, request, abort, redirect, send_from_directory
 import os
 from mutagen.easyid3 import EasyID3
@@ -167,11 +166,11 @@ def lyrics():
 
         try:
             # 如果找不到 .lrc 文件，读取音频文件的元数据，查询外部API
-            lyrics = get_lyrics_from_net(title, artist)
+            lyrics_os = get_lyrics_from_net(title, artist)
         except:
-            lyrics = None
-        if lyrics is not None:
-            return lyrics
+            lyrics_os = None
+        if lyrics_os is not None:
+            return lyrics_os
 
     return "Lyrics not found.", 404
 
@@ -182,6 +181,7 @@ def validate_json_structure(data):
     if "path" not in data:
         return False
     return True
+
 
 
 def set_audio_tags(path, tags):
@@ -231,12 +231,12 @@ def setTag():
 
 @app.route('/')
 def redirect_to_welcome():
-    return redirect('/statu')
+    return redirect('/src')
 
 
-@app.route('/statu')
-def welcome():
-    return 'The server is running'
+@app.route('/src')
+def return_index():
+    return send_from_directory('src', 'index.html')
 
 
 @app.route('/src/<path:filename>')

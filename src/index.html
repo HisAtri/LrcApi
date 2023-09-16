@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            background-image: url("src/img/bg.jpg");
+            background-size: cover;
+            background-repeat: no-repeat;
+            text-align: center;
+        }
+
+        .blurry-box {
+            width: 600px;
+            /* 设置 `<div>` 的宽度 */
+            height: 300px;
+            /* 设置 `<div>` 的高度 */
+            background-color: rgba(255, 255, 255, 0.5);
+            /* 设置背景颜色和透明度 */
+            border-radius: 10px;
+            /* 设置圆角半径 */
+            position: fixed;
+            /* 设置定位为固定定位 */
+            top: 50%;
+            /* 设置 `<div>` 的顶部距离为屏幕顶部的 50% */
+            left: 50%;
+            /* 设置 `<div>` 的左侧距离为屏幕左侧的 50% */
+            transform: translate(-50%, -50%);
+            /* 使用 transform 属性将 `<div>` 水平和垂直居中 */
+            overflow: hidden;
+            /* 隐藏超出 `<div>` 边界的内容 */
+            text-align: center;
+        }
+
+        .blurry-box::before {
+            content: "";
+            background: inherit;
+            filter: blur(10px);
+            /* 设置高斯模糊效果的模糊半径 */
+            position: absolute;
+            top: -10px;
+            /* 设置偏移量以确保模糊效果超出边界 */
+            right: -10px;
+            bottom: -10px;
+            left: -10px;
+            z-index: -1;
+            /* 将模糊层级设置为 `-1`，使其位于内容下方 */
+        }
+
+        .green {
+            color: lightgreen;
+        }
+
+        .yellow {
+            color: yellow;
+        }
+
+        .orange {
+            color: orange;
+        }
+
+        .red {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>LrcApi已启动</h1>
+    <div class="blurry-box">
+        <h4>歌词API地址：</h4>
+        <code>http://localhost/lyrics</code>
+        <h4>更多内容</h4>
+        <p>请参考<a href="https://github.com/HisAtri/LrcApi/blob/main/README.md">Github</a></p>
+        <div id="status">服务器状态：</div>
+    </div>
+    <script>
+        function testServerStatus() {
+            // 获取status元素
+            var statusElement = document.getElementById('status');
+
+            // 创建XMLHttpRequest对象
+            var xhr = new XMLHttpRequest();
+
+            // 设置请求的URL
+            var url = window.location.href;
+
+            // 发送GET请求
+            xhr.open('GET', url, true);
+
+            // 设置超时时间（2000ms）
+            xhr.timeout = 2000;
+
+            // 当请求完成时的处理函数
+            xhr.onload = function () {
+                if (xhr.status >= 200 && xhr.status < 400) {
+                    // 请求成功，计算延迟时间
+                    var latency = xhr.responseEnd - xhr.responseStart;
+
+                    // 根据延迟时间修改状态元素的内容和样式
+                    if (latency < 100) {
+                        statusElement.innerHTML = '服务器状态： <span class="green">○ ' + latency + 'ms</span>';
+                    } else if (latency >= 100 && latency <= 1000) {
+                        statusElement.innerHTML = '服务器状态： <span class="yellow">○ ' + latency + 'ms</span>';
+                    } else if (latency > 1000 && latency <= 2000) {
+                        statusElement.innerHTML = '服务器状态： <span class="orange">○ ' + latency + 'ms</span>';
+                    } else {
+                        statusElement.innerHTML = '服务器状态： <span class="red">○ ' + latency + 'ms</span>';
+                    }
+                } else {
+                    // 请求失败或超时
+                    statusElement.innerHTML = '服务器状态： <span class="red">○ 超时或无响应</span>';
+                }
+            };
+
+            // 当请求超时时的处理函数
+            xhr.ontimeout = function () {
+                statusElement.innerHTML = '服务器状态： <span class="red">○ 超时或无响应</span>';
+            };
+
+            // 发送请求
+            xhr.send();
+        }
+        testServerStatus()
+        // 每30秒执行一次
+        setInterval(testServerStatus, 10000);
+    </script>
+</body>
+
+</html>
