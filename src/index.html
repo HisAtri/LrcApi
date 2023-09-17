@@ -76,7 +76,6 @@
             width: 100%;
             backdrop-filter: blur(10px);
             background-image: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5));
-
             color: #333;
             text-align: center;
             padding: 20px;
@@ -91,6 +90,17 @@
 
         .footer a:hover {
             font-weight: bold;
+        }
+
+        .tooltip {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            backdrop-filter: blur(10px);
+            background-image: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5));
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 14px;
         }
     </style>
 </head>
@@ -122,8 +132,8 @@
         var cDomain = window.location.protocol + '//' + window.location.hostname + '/lyrics';
         var api_location = document.getElementById("api_url");
         api_location.innerHTML = cDomain;
+        var statusElement = document.getElementById('status');
         function testServerStatus() {
-            var statusElement = document.getElementById('status');
             var url = '/';
 
             var startTime = performance.now();
@@ -150,6 +160,37 @@
 
         testServerStatus();
         setInterval(testServerStatus, 30000);
+
+        statusElement.addEventListener("click", function () {
+            testServerStatus()
+        });
+
+        var codeElement = document.getElementById("api_url");
+        codeElement.addEventListener("click", function () {
+            copyToClipboard(codeElement.textContent);
+            showTooltip("已复制到剪贴板");
+        });
+
+        function copyToClipboard(text) {
+            var textarea = document.createElement("textarea");
+            textarea.value = text;
+            textarea.style.position = "fixed";
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textarea);
+        }
+
+        function showTooltip(message) {
+            var tooltip = document.createElement("div");
+            tooltip.className = "tooltip";
+            tooltip.textContent = message;
+            document.body.appendChild(tooltip);
+
+            setTimeout(function () {
+                document.body.removeChild(tooltip);
+            }, 2000);
+        }
     </script>
 </body>
 
