@@ -99,7 +99,7 @@
     <h1>LrcApi已启动</h1>
     <div class="blurry-box">
         <h4>歌词API地址：</h4>
-        <code>http://localhost/lyrics</code>
+        <code id="api_url">http://localhost/lyrics</code>
         <h4>更多内容</h4>
         <p>请参考<a href="https://github.com/HisAtri/LrcApi/blob/main/README.md">Github Readme Page</a></p>
         <h4>服务器状态</h4>
@@ -119,6 +119,9 @@
         </a>
     </div>
     <script>
+        var cDomain = window.location.protocol + '//' + window.location.hostname + '/lyrics';
+        var api_location = document.getElementById("api_url");
+        api_location.innerHTML = cDomain;
         function testServerStatus() {
             var statusElement = document.getElementById('status');
             var url = '/';
