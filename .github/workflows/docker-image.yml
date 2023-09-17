@@ -1,20 +1,13 @@
 # 工作流名称
 name: Build Docker Image
 
-# push tag 时触发执行
 on:
-  push:
-    tags:
-      - v*
   workflow_dispatch:
     inputs:
       logLevel:
         description: 'Log level'
         required: true
         default: 'warning'
-      tags:
-        description: 'Test scenario tags'
-
 # 定义环境变量, 后面会使用
 # 定义 APP_NAME 用于 docker build-args
 # 定义 DOCKERHUB_REPO 标记 docker hub repo 名称
