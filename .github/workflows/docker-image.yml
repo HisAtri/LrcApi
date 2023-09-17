@@ -13,7 +13,7 @@ on:
 # 定义 DOCKERHUB_REPO 标记 docker hub repo 名称
 env:
   APP_NAME: lyricapi
-  DOCKERHUB_REPO: /hisatri/lyricapi
+  DOCKERHUB_REPO: hisatri/lyricapi
 
 jobs:
   main:
