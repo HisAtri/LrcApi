@@ -27,6 +27,12 @@ Preview:支持修改MusicTag
 
 ## 食用方法
 
+### 公开API
+
+如果无法私有部署，可以先尝试使用公开API。注意：公开API通过酷狗接口获取歌词，可能并不完全准确。
+
+API地址：`https://lrc.xms.mx/lyrics`
+
 ### 二进制文件
 
 上传至运行目录，`./lrcapi --port 8080 --auth DbG91ZEZbBgNVBAs`
