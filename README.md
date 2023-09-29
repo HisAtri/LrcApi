@@ -60,7 +60,7 @@ docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lyricapi:latest
 或者，请指定一个Tag（推荐）
 
 ```bash
-docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lyricapi:alpine-py1.1
+docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lyricapi:alpine-py1.3.4
 ```
 
 如果你正在使用Navidrome Docker，请将 `/home/user/music:/music` 中的 `/home/user/music` 修改为你在Navidrome中映射的主机路径。
