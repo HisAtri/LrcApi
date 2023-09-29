@@ -23,7 +23,7 @@ Preview:支持修改MusicTag
 
 `--auth`参数用于header鉴权，留空则跳过鉴权。验证header中的`Authorization`或`Authentication`字段。如果鉴权不符合，则返回403响应。
 
-也可以使用环境变量`API_AUTH`定义，其优先性低于`--auth`参数，但是更容易在Docker中部署。
+也可以使用环境变量`API_AUTH`定义，其优先性低于`--auth`参数，但是更容易在Docker中部署。`-e API_AUTH=DbG91ZEZbBgNVBAs`
 
 ## 食用方法
 
@@ -54,16 +54,14 @@ wget https://mirror.eh.cx/lrcapi/lrcapi.sh -O lrcapi.sh && chmod +x lrcapi.sh &&
 ### Docker部署方式
 
 ```bash
-docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lyricapi:latest -e API_AUTH=DbG91ZEZbBgNVBAs
+docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lyricapi:latest
 ```
 
 或者，请指定一个Tag（推荐）
 
 ```bash
-docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lyricapi:alpine-py1.1 -e API_AUTH=DbG91ZEZbBgNVBAs
+docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lyricapi:alpine-py1.1
 ```
-
-非常**不建议**使用Docker部署Navidrome以及LRCAPI，但是如果你非要这么做，我也提供了以下的教程：
 
 如果你正在使用Navidrome Docker，请将 `/home/user/music:/music` 中的 `/home/user/music` 修改为你在Navidrome中映射的主机路径。
 
