@@ -1,4 +1,5 @@
 import base64
+from mod import api
 import json
 from flask import Flask, request, abort, redirect, send_from_directory
 import os
@@ -33,50 +34,11 @@ def require_auth():
     if token is not False:
         auth_header = request.headers.get('Authorization', False) or request.headers.get('Authentication', False)
         if auth_header and auth_header == token:
-            return
+            return True
         else:
             abort(403)
-
-
-def postapi(song_info):
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3', }
-    post_list = []
-    song_list = song_info["data"]["info"]
-    for ch in song_list:
-        ch_hash = ch["hash"]  # hash
-        ch_songname = ch["songname"]  # 标题
-        ch_singer = ch["singername"]  # 专辑名
-        ch_album = ch["album_name"]  # 歌手名
-
-        ch_response = requests.get(
-            f"https://krcs.kugou.com/search?ver=1&man=yes&client=mobi&keyword=&duration=&hash={ch_hash}&album_audio_id=",
-            headers=headers)
-        ch_info = ch_response.json()
-        ch_id = ch_info["candidates"][0]["id"]
-        ch_key = ch_info["candidates"][0]["accesskey"]
-        ch_responset = requests.get(
-            f"http://lyrics.kugou.com/download?ver=1&client=pc&id={ch_id}&accesskey={ch_key}&fmt=lrc&charset=utf8",
-            headers=headers)
-        try:
-            ch_lyrics_json = ch_responset.json()
-            ch_lyrics = ch_lyrics_json["content"]
-            ch_dest = {
-                "id": ch_id,
-                "key": ch_key,
-                "name": ch_songname,
-                "album": ch_album,
-                "singer": ch_singer,
-                "lyrics": ch_lyrics
-            }
-            post_list.append(ch_dest)
-        except:
-            pass
-
-    post_json = json.dumps(post_list)
-    logging.info("POST DATA")
-    post_response = requests.post('https://ttk.eh.cx/endpoint', json=post_json)
-    logging.info("Status Code:" + str(post_response.status_code))
+    else:
+        return False
 
 
 def read_file_with_encoding(file_path, encodings):
@@ -86,51 +48,6 @@ def read_file_with_encoding(file_path, encodings):
                 return f.read()
         except UnicodeDecodeError:
             continue
-    return None
-
-
-@cache.memoize(timeout=86400)
-def get_lyrics_from_net(title, artist):
-    if title is None and artist is None:
-        return None
-    title = "" if title is None else title
-    artist = "" if artist is None else artist
-    searcher = title + artist
-
-    # 使用歌曲名和作者名查询歌曲
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36', }
-    # 第一层Json，要求获得Hash值
-    response = requests.get(
-        f'http://mobilecdn.kugou.com/api/v3/search/song?format=json&keyword={searcher}&page=1&pagesize=2&showtype=1',
-        headers=headers)
-    if response.status_code == 200:
-        song_info = response.json()
-        try:
-            songhash = song_info["data"]["info"][0]["hash"]
-        except:
-            return None
-        # 提交
-        thread = threading.Thread(target=postapi, args=(song_info,))
-        thread.start()
-        # postapi(song_info)
-
-        # 第二层Json，要求获取歌词ID和AccessKey
-        response2 = requests.get(
-            f"https://krcs.kugou.com/search?ver=1&man=yes&client=mobi&keyword=&duration=&hash={songhash}&album_audio_id=",
-            headers=headers)
-        lyrics_info = response2.json()
-        lyrics_id = lyrics_info["candidates"][0]["id"]
-        lyrics_key = lyrics_info["candidates"][0]["accesskey"]
-        # 第三层Json，要求获得并解码Base64
-        response3 = requests.get(
-            f"http://lyrics.kugou.com/download?ver=1&client=pc&id={lyrics_id}&accesskey={lyrics_key}&fmt=lrc&charset=utf8",
-            headers=headers)
-        lyrics_data = response3.json()
-        lyrics_encode = lyrics_data["content"]
-        lrc_text = base64.b64decode(lyrics_encode).decode('utf-8')
-        return lrc_text
-
     return None
 
 
@@ -146,15 +63,12 @@ def lyrics():
         artist = tag.artist
     except Exception as e:
         app.logger.info("Unable to find song tags, query from the network." + str(e))
-        try:
-            # 通过request参数获取音乐Tag
-            title = unquote_plus(request.args.get('title'))
-            artist = unquote_plus(request.args.get('artist'))
-            lyrics_text = get_lyrics_from_net(title, artist)
-            return lyrics_text
-        except Exception as e:
-            app.logger.error("Unable to get song tags." + str(e))
-            title, artist = None, None
+        # 通过request参数获取音乐Tag
+        title = unquote_plus(request.args.get('title'))
+        artist = unquote_plus(request.args.get('artist'))
+        album = unquote_plus(request.args.get('album'))
+        lyrics_text = api.main(title, artist, album)
+        return lyrics_text
 
     # 根据文件路径查找同名的 .lrc 文件
     if path:
@@ -166,7 +80,7 @@ def lyrics():
 
         try:
             # 如果找不到 .lrc 文件，读取音频文件的元数据，查询外部API
-            lyrics_os = get_lyrics_from_net(title, artist)
+            lyrics_os = api.main(title, artist, "None")
         except:
             lyrics_os = None
         if lyrics_os is not None:
