@@ -47,7 +47,7 @@ def api_2(title, artist, album):
     headers = {
         'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 LrcAPI/1.1',
     }
-    url = f"https://lrc.xms.mx/lyrics?title={title}&artist={artist}&album={album}&path=None&limit=1"
+    url = f"https://lrc.xms.mx/lyrics?title={title}&artist={artist}&album={album}&path=None&limit=1&api=lrcapi"
     try:
         res = requests.get(url, headers=headers)
         return res.text
