@@ -151,3 +151,7 @@ if response.status_code == 200:
 else:
     print("Error:", response.text)
 ```
+
+# 赞赏一下
+
+爱发电地址 <https://afdian.net/a/hisatri>
