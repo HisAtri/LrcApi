@@ -1,17 +1,14 @@
-import base64
-from mod import api
-import json
 from flask import Flask, request, abort, redirect, send_from_directory
 import os
+import hashlib
 from mutagen.easyid3 import EasyID3
 from tinytag import TinyTag
-import requests
 from urllib.parse import unquote_plus
-from flask_caching import Cache
 import argparse
 from waitress import serve
-import threading
 import logging
+
+from mod import api
 
 # 创建一个解析器
 parser = argparse.ArgumentParser(description="启动LRCAPI服务器")
@@ -26,7 +23,6 @@ app = Flask(__name__)
 
 app.config['CACHE_TYPE'] = 'filesystem'  # 使用文件系统缓存
 app.config['CACHE_DIR'] = './flask_cache'  # 缓存的目录
-cache = Cache(app)
 
 
 # 鉴权函数，在token存在的情况下，对请求进行鉴权
@@ -39,6 +35,21 @@ def require_auth():
             abort(403)
     else:
         return False
+
+
+# hash计算器
+def calculate_md5(string):
+    # 创建一个 md5 对象
+    md5_hash = hashlib.md5()
+
+    # 将字符串转换为字节流并进行 MD5 计算
+    md5_hash.update(string.encode('utf-8'))
+
+    # 获取计算结果的十六进制表示，并去掉开头的 "0x"
+    md5_hex = md5_hash.hexdigest()
+    md5_hex = md5_hex.lstrip("0x")
+
+    return md5_hex
 
 
 def read_file_with_encoding(file_path, encodings):
@@ -89,13 +100,44 @@ def lyrics():
     return "Lyrics not found.", 404
 
 
+@app.route('/jsonapi', methods=['GET'])
+def lrc_json():
+    require_auth()
+    path = unquote_plus(request.args.get('path'))
+    title = unquote_plus(request.args.get('title'))
+    artist = unquote_plus(request.args.get('artist'))
+    album = unquote_plus(request.args.get('album'))
+    response = []
+    if path:
+        lrc_path = os.path.splitext(path)[0] + '.lrc'
+        if os.path.isfile(lrc_path):
+            file_content = read_file_with_encoding(lrc_path, ['utf-8', 'gbk'])
+            if file_content is not None:
+                response.append({
+                    "id": calculate_md5(file_content),
+                    "title": title,
+                    "artist": artist,
+                    "lyrics": file_content
+                })
+
+    lyrics_list = api.allin(title, artist, album)
+    for i in lyrics_list:
+        response.append({
+            "id": calculate_md5(i),
+            "title": title,
+            "artist": artist,
+            "lyrics": i
+        })
+
+    return response
+
+
 def validate_json_structure(data):
     if not isinstance(data, dict):
         return False
     if "path" not in data:
         return False
     return True
-
 
 
 def set_audio_tags(path, tags):

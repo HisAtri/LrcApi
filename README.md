@@ -1,4 +1,4 @@
-# LrcApi
+# LrcApi-Docker
 
 A Flask API For [StreamMusic](https://github.com/gitbobobo/StreamMusic)
 
@@ -32,6 +32,10 @@ Preview:支持修改MusicTag
 如果无法私有部署，可以先尝试使用公开API。注意：公开API通过酷狗接口获取歌词，可能并不完全准确。
 
 API地址：`https://lrc.xms.mx/lyrics`
+
+### 新版本API支持
+
+API地址：`https://lrc.xms.mx/jsonapi`
 
 ### 二进制文件
 

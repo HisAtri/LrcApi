@@ -1,6 +1,7 @@
 import time
 import base64
 import requests
+import threading
 import concurrent.futures
 
 
@@ -61,12 +62,13 @@ def migu(title, artist, album):
     headers = {
         "Referer": "http://music.migu.cn/"
     }
-    search_str = title+artist+album
-    search_response = requests.get(f"https://pd.musicapp.migu.cn/MIGUM2.0/v1.0/content/search_all.do?&ua=Android_migu&version=5.0.1&text={search_str}&pageNo=1&pageSize=10&searchSwitch={{\"song\":1,\"album\":0,\"singer\":0,\"tagSong\":0,\"mvSong\":0,\"songlist\":0,\"bestShow\":1}}")
+    search_str = title + artist + album
+    search_response = requests.get(
+        f"https://pd.musicapp.migu.cn/MIGUM2.0/v1.0/content/search_all.do?&ua=Android_migu&version=5.0.1&text={search_str}&pageNo=1&pageSize=10&searchSwitch={{\"song\":1,\"album\":0,\"singer\":0,\"tagSong\":0,\"mvSong\":0,\"songlist\":0,\"bestShow\":1}}")
     res_json = search_response.json()
     result = res_json["songResultData"]["result"]
     for music_detail in result:
-        if music_detail["resourceType"] == "2" & music_detail["name"] == title:
+        if (music_detail["resourceType"] == "2") & (music_detail["name"] == title):
             lyrics_url = music_detail["lyricUrl"]
             lyrics_response = requests.get(lyrics_url, headers=headers)
             return lyrics_response.text
@@ -74,18 +76,44 @@ def migu(title, artist, album):
     return None
 
 
+api_list = [get_lyrics_from_net, api_2, migu]
+
+
 def main(title, artist, album):
     with concurrent.futures.ThreadPoolExecutor() as executor:
         # 提交各API函数到线程池中执行
-        future_a = executor.submit(get_lyrics_from_net, title, artist, album)
-        future_b = executor.submit(api_2, title, artist, album)
-        future_c = executor.submit(migu, title, artist, album)
+        task_list = []
+        for task in api_list:
+            task_list.append(executor.submit(task, title, artist, album))
         # 等待任意一个API完成
-        done, not_done = concurrent.futures.wait([future_a, future_b], return_when=concurrent.futures.FIRST_COMPLETED)
+        done, not_done = concurrent.futures.wait(task_list, return_when=concurrent.futures.FIRST_COMPLETED)
         # 获取已完成线程的返回结果
         lyrics_text = done.pop().result()
     return lyrics_text
 
 
+def allin(title, artist, album):
+    lrc_list = []
+    threads = []  # 存储线程对象的列表
+
+    def request_lrc(request_task):
+        lrc = request_task(title, artist, album)
+        if lrc:
+            lrc_list.append(lrc)
+            return None
+        else:
+            return None
+
+    for task in api_list:
+        thread = threading.Thread(target=request_lrc, args=(task,))
+        threads.append(thread)
+        thread.start()
+    # 等待所有线程完成
+    for thread in threads:
+        thread.join()
+
+    return lrc_list
+
+
 if __name__ == "__main__":
-    print(main("钟无艳", "谢安琪", "N"))
+    print(allin("钟无艳", "谢安琪", "N"))
