@@ -33,10 +33,6 @@ Preview:支持修改MusicTag
 
 API地址：`https://lrc.xms.mx/lyrics`
 
-### 新版本API支持
-
-API地址：`https://lrc.xms.mx/jsonapi`
-
 ### 二进制文件
 
 上传至运行目录，`./lrcapi --port 8080 --auth DbG91ZEZbBgNVBAs`
@@ -71,7 +67,9 @@ docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lyricapi:alpine-
 
 如果你正在使用Navidrome（真的有人会本地部署Navidrome了，然后用Docker部署这东西？），请将你的音乐文件目录映射到Docker内目录；例如如果你音乐存储的目录是`/www/path/music`，请将启动命令中的映射修改为 `/www/path/music:/www/path/music`
 
-然后访问`http://0.0.0.0:28883/lyrics`，或者使用Nginx或Apache进行反向代理及部署SSL证书。
+然后访问 `http://0.0.0.0:28883/lyrics` ，或者使用Nginx或Apache进行反向代理及部署SSL证书。
+
+目前已支持新版本JSON API，地址：`http://0.0.0.0:28883/jsonapi` 
 
 ## 常见状态码及可能含义
 
