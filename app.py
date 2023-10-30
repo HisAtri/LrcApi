@@ -1,4 +1,5 @@
 from flask import Flask, request, abort, redirect, send_from_directory
+from flask_caching import Cache
 import os
 import hashlib
 from mutagen.easyid3 import EasyID3
@@ -23,6 +24,8 @@ app = Flask(__name__)
 
 app.config['CACHE_TYPE'] = 'filesystem'  # 使用文件系统缓存
 app.config['CACHE_DIR'] = './flask_cache'  # 缓存的目录
+
+cache = Cache(app)
 
 
 # 鉴权函数，在token存在的情况下，对请求进行鉴权
@@ -63,6 +66,7 @@ def read_file_with_encoding(file_path, encodings):
 
 
 @app.route('/lyrics', methods=['GET'])
+@cache.cached(timeout=86400)
 def lyrics():
     require_auth()
     # 通过request参数获取文件路径
@@ -101,6 +105,7 @@ def lyrics():
 
 
 @app.route('/jsonapi', methods=['GET'])
+@cache.cached(timeout=86400)
 def lrc_json():
     require_auth()
     path = unquote_plus(request.args.get('path'))
