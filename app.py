@@ -22,10 +22,10 @@ token = args.auth if args.auth is not None else os.environ.get('API_AUTH', False
 
 app = Flask(__name__)
 
-app.config['CACHE_TYPE'] = 'filesystem'  # 使用文件系统缓存
-app.config['CACHE_DIR'] = './flask_cache'  # 缓存的目录
-
-cache = Cache(app)
+cache = Cache(app, config={
+    'CACHE_TYPE': 'filesystem',
+    'CACHE_DIR': './flask_cache'
+})
 
 
 # 鉴权函数，在token存在的情况下，对请求进行鉴权
@@ -38,6 +38,13 @@ def require_auth():
             abort(403)
     else:
         return False
+
+
+# 缓存键，解决缓存未忽略参数的情况
+def make_cache_key(*args, **kwargs):
+    path = request.path
+    args = str(hash(frozenset(request.args.items())))
+    return path + args
 
 
 # hash计算器
@@ -66,7 +73,7 @@ def read_file_with_encoding(file_path, encodings):
 
 
 @app.route('/lyrics', methods=['GET'])
-@cache.cached(timeout=86400)
+@cache.cached(timeout=86400, key_prefix=make_cache_key)
 def lyrics():
     require_auth()
     # 通过request参数获取文件路径
@@ -105,7 +112,7 @@ def lyrics():
 
 
 @app.route('/jsonapi', methods=['GET'])
-@cache.cached(timeout=86400)
+@cache.cached(timeout=86400, key_prefix=make_cache_key)
 def lrc_json():
     require_auth()
     path = unquote_plus(request.args.get('path'))
