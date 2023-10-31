@@ -6,103 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <title>LyricsAPI</title>
-    <style>
-        body {
-            background-image: url("src/img/bg.jpg");
-            background-size: cover;
-            background-repeat: no-repeat;
-            text-align: center;
-        }
-
-        code {
-            display: inline-block;
-            padding: 4px;
-            font-family: Consolas, monospace;
-            font-size: 14px;
-            background-color: #f2f2f2;
-            color: #333333;
-            border-radius: 4px;
-        }
-
-        .blurry-box {
-            width: 600px;
-            height: 371px;
-            background-color: rgba(255, 255, 255, 0.5);
-            border-radius: 10px;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            overflow: hidden;
-            text-align: center;
-        }
-
-        .blurry-box::before {
-            content: "";
-            background: inherit;
-            filter: blur(10px);
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            bottom: -10px;
-            left: -10px;
-            z-index: -1;
-        }
-
-        .green {
-            color: rgb(0, 255, 0);
-            text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        .yellow {
-            color: rgb(255, 255, 0);
-            text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        .orange {
-            color: rgb(255, 140, 0);
-            text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        .red {
-            color: red;
-            text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        .footer {
-            position: fixed;
-            left: 0;
-            bottom: 0;
-            width: 100%;
-            backdrop-filter: blur(10px);
-            background-image: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5));
-            color: #333;
-            text-align: center;
-            padding: 20px;
-            background-size: cover;
-            background-repeat: no-repeat;
-        }
-
-        .footer a {
-            text-decoration: none;
-            color: inherit;
-        }
-
-        .footer a:hover {
-            font-weight: bold;
-        }
-
-        .tooltip {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            backdrop-filter: blur(10px);
-            background-image: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5));
-            padding: 10px;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-    </style>
+    <link rel="stylesheet" href="/src/css/main.css">
 </head>
 
 <body>
@@ -131,7 +35,7 @@
         <a href="https://afdian.net/a/hisatri">赞助一下作者</a>
     </div>
     <script>
-        var cDomain = window.location.protocol + '//' + window.location.hostname + '/lyrics';
+        var cDomain = window.location.protocol + '//' + window.location.hostname + '/jsonapi';
         var api_location = document.getElementById("api_url");
         api_location.innerHTML = cDomain;
         var statusElement = document.getElementById('status');
