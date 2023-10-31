@@ -76,6 +76,8 @@ def read_file_with_encoding(file_path, encodings):
 @cache.cached(timeout=86400, key_prefix=make_cache_key)
 def lyrics():
     require_auth()
+    if not bool(request.args):
+        abort(404, "请携带参数访问")
     # 通过request参数获取文件路径
     path = unquote_plus(request.args.get('path'))
     try:
@@ -115,6 +117,8 @@ def lyrics():
 @cache.cached(timeout=86400, key_prefix=make_cache_key)
 def lrc_json():
     require_auth()
+    if not bool(request.args):
+        abort(404, "请携带参数访问")
     path = unquote_plus(request.args.get('path'))
     title = unquote_plus(request.args.get('title'))
     artist = unquote_plus(request.args.get('artist'))
