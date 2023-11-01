@@ -5,7 +5,7 @@ import threading
 import concurrent.futures
 
 
-def get_lyrics_from_net(title, artist, album):
+def kugou(title, artist, album):
     if title is None and artist is None:
         return None
     title = "" if title is None else title
@@ -76,7 +76,7 @@ def migu(title, artist, album):
     return None
 
 
-api_list = [get_lyrics_from_net, api_2, migu]
+api_list = [kugou, api_2, migu]
 
 
 def main(title, artist, album):
