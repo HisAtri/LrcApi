@@ -10,9 +10,9 @@ A Flask API For [StreamMusic](https://github.com/gitbobobo/StreamMusic)
 
 其它环境也可以安装依赖之后启动app.py
 
-默认监听28883端口，API地址`0.0.0.0:28883/lyrics`
+默认监听28883端口，API地址 `http://0.0.0.0:28883/lyrics` ；新版API地址 `http://0.0.0.0:28883/jsonapi`
 
-Preview:支持修改MusicTag
+支持修改MusicTag(实验性功能)
 
 ### 启动参数
 
@@ -32,10 +32,6 @@ Preview:支持修改MusicTag
 如果无法私有部署，可以先尝试使用公开API。注意：公开API通过酷狗接口获取歌词，可能并不完全准确。
 
 API地址：`https://lrc.xms.mx/lyrics`
-
-### 新版本API支持
-
-API地址：`https://lrc.xms.mx/jsonapi`
 
 ### 二进制文件
 
@@ -71,7 +67,9 @@ docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lyricapi:alpine-
 
 如果你正在使用Navidrome（真的有人会本地部署Navidrome了，然后用Docker部署这东西？），请将你的音乐文件目录映射到Docker内目录；例如如果你音乐存储的目录是`/www/path/music`，请将启动命令中的映射修改为 `/www/path/music:/www/path/music`
 
-然后访问`http://0.0.0.0:28883/lyrics`，或者使用Nginx或Apache进行反向代理及部署SSL证书。
+然后访问 `http://0.0.0.0:28883/lyrics` 或新版API `http://0.0.0.0:28883/jsonapi` 
+
+支持使用Nginx或Apache进行反向代理与SSL。
 
 ## 常见状态码及可能含义
 
@@ -151,6 +149,16 @@ if response.status_code == 200:
 else:
     print("Error:", response.text)
 ```
+
+## 二次开发说明
+
+本程序基于GPL-3.0开源许可证，您可以自由使用、修改和分发本程序。在二次开发时，请遵守以下要求：
+1. 在您的衍生作品中保留原始版权和许可声明。
+2. 如果您对本程序进行了修改，请清楚地说明您的修改。
+3. 在进行分发时，您需要提供完整的源代码，并以GPL-3.0许可证分发您的衍生作品。
+4. 任何以本程序为基础的商业用途都需要遵守GPL-3.0许可证，并保持免费开放访问。
+
+请确保您详细了解GPL-3.0许可证的要求并遵守相关规定。
 
 # 赞赏一下
 
