@@ -89,8 +89,8 @@ def lyrics():
         app.logger.info("Unable to find song tags, query from the network." + str(e))
         # 通过request参数获取音乐Tag
         title = unquote_plus(request.args.get('title'))
-        artist = unquote_plus(request.args.get('artist'))
-        album = unquote_plus(request.args.get('album'))
+        artist = unquote_plus(request.args.get('artist', ''))
+        album = unquote_plus(request.args.get('album', ''))
         lyrics_text = api.main(title, artist, album)
         return lyrics_text
 
@@ -121,8 +121,8 @@ def lrc_json():
         abort(404, "请携带参数访问")
     path = unquote_plus(request.args.get('path'))
     title = unquote_plus(request.args.get('title'))
-    artist = unquote_plus(request.args.get('artist'))
-    album = unquote_plus(request.args.get('album'))
+    artist = unquote_plus(request.args.get('artist', ''))
+    album = unquote_plus(request.args.get('album', ''))
     response = []
     if path:
         lrc_path = os.path.splitext(path)[0] + '.lrc'
