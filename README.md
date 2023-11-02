@@ -4,7 +4,7 @@ A Flask API For [StreamMusic](https://github.com/gitbobobo/StreamMusic)
 
 ## 功能
 
-支持酷狗API获取LRC歌词、支持缓存、支持指定端口
+支持酷狗/咪咕/聚合API获取LRC歌词、支持缓存、支持指定端口
 
 已经打包了Linux_x86的程序，直接启动即可
 
@@ -32,6 +32,10 @@ Preview:支持修改MusicTag
 如果无法私有部署，可以先尝试使用公开API。注意：公开API通过酷狗接口获取歌词，可能并不完全准确。
 
 API地址：`https://lrc.xms.mx/lyrics`
+
+### 新版本API支持
+
+API地址：`https://lrc.xms.mx/jsonapi`
 
 ### 二进制文件
 
@@ -67,9 +71,7 @@ docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lyricapi:alpine-
 
 如果你正在使用Navidrome（真的有人会本地部署Navidrome了，然后用Docker部署这东西？），请将你的音乐文件目录映射到Docker内目录；例如如果你音乐存储的目录是`/www/path/music`，请将启动命令中的映射修改为 `/www/path/music:/www/path/music`
 
-然后访问 `http://0.0.0.0:28883/lyrics` ，或者使用Nginx或Apache进行反向代理及部署SSL证书。
-
-目前已支持新版本JSON API，地址：`http://0.0.0.0:28883/jsonapi` 
+然后访问`http://0.0.0.0:28883/lyrics`，或者使用Nginx或Apache进行反向代理及部署SSL证书。
 
 ## 常见状态码及可能含义
 
