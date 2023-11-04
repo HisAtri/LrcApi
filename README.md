@@ -1,4 +1,4 @@
-# LrcApi-Docker
+# LrcApi
 
 A Flask API For [StreamMusic](https://github.com/gitbobobo/StreamMusic)
 
