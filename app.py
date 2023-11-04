@@ -3,11 +3,11 @@ from flask_caching import Cache
 import os
 import hashlib
 from mutagen.easyid3 import EasyID3
-from tinytag import TinyTag
 from urllib.parse import unquote_plus
 import argparse
 from waitress import serve
 import logging
+import concurrent.futures
 
 from mod import api
 
@@ -80,20 +80,6 @@ def lyrics():
         abort(404, "请携带参数访问")
     # 通过request参数获取文件路径
     path = unquote_plus(request.args.get('path'))
-    try:
-        # 尝试读取文件获取参数
-        tag = TinyTag.get(path)
-        title = tag.title
-        artist = tag.artist
-    except Exception as e:
-        app.logger.info("Unable to find song tags, query from the network." + str(e))
-        # 通过request参数获取音乐Tag
-        title = unquote_plus(request.args.get('title'))
-        artist = unquote_plus(request.args.get('artist', ''))
-        album = unquote_plus(request.args.get('album', ''))
-        lyrics_text = api.main(title, artist, album)
-        return lyrics_text
-
     # 根据文件路径查找同名的 .lrc 文件
     if path:
         lrc_path = os.path.splitext(path)[0] + '.lrc'
@@ -101,16 +87,18 @@ def lyrics():
             file_content = read_file_with_encoding(lrc_path, ['utf-8', 'gbk'])
             if file_content is not None:
                 return file_content
-
-        try:
-            # 如果找不到 .lrc 文件，读取音频文件的元数据，查询外部API
-            lyrics_os = api.main(title, artist, "None")
-        except:
-            lyrics_os = None
-        if lyrics_os is not None:
-            return lyrics_os
-
-    return "Lyrics not found.", 404
+    try:
+        # 通过request参数获取音乐Tag
+        title = unquote_plus(request.args.get('title'))
+        artist = unquote_plus(request.args.get('artist', ''))
+        album = unquote_plus(request.args.get('album', ''))
+        executor = concurrent.futures.ThreadPoolExecutor()
+        # 提交任务到线程池，并设置超时时间
+        future = executor.submit(api.main, title, artist, album)
+        lyrics_text = future.result(timeout=30)
+        return lyrics_text
+    except:
+        return "Lyrics not found.", 404
 
 
 @app.route('/jsonapi', methods=['GET'])
@@ -137,13 +125,14 @@ def lrc_json():
                 })
 
     lyrics_list = api.allin(title, artist, album)
-    for i in lyrics_list:
-        response.append({
-            "id": calculate_md5(i),
-            "title": title,
-            "artist": artist,
-            "lyrics": i
-        })
+    if lyrics_list:
+        for i in lyrics_list:
+            response.append({
+                "id": calculate_md5(i),
+                "title": title,
+                "artist": artist,
+                "lyrics": i
+            })
 
     return response
 
@@ -222,5 +211,5 @@ def serve_file(filename):
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     logger = logging.getLogger('')
-    serve(app, host='0.0.0.0', port=args.port)
+    serve(app, host='0.0.0.0', port=args.port, threads=32, channel_timeout=50)
     # app.run(host='0.0.0.0', port=args.port)

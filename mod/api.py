@@ -1,7 +1,6 @@
 import time
 import base64
 import requests
-import threading
 import concurrent.futures
 
 
@@ -94,23 +93,27 @@ def main(title, artist, album):
 
 def allin(title, artist, album):
     lrc_list = []
-    threads = []  # 存储线程对象的列表
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        futures = []
 
-    def request_lrc(request_task):
-        lrc = request_task(title, artist, album)
-        if lrc:
-            lrc_list.append(lrc)
-            return None
-        else:
-            return None
+        def request_lrc(task):
+            lrc = task(title, artist, album)
+            if lrc:
+                lrc_list.append(lrc)
 
-    for task in api_list:
-        thread = threading.Thread(target=request_lrc, args=(task,))
-        threads.append(thread)
-        thread.start()
-    # 等待所有线程完成
-    for thread in threads:
-        thread.join()
+        for task in api_list:
+            future = executor.submit(request_lrc, task)
+            futures.append(future)
+
+        # 等待所有线程完成或超时
+        try:
+            concurrent.futures.wait(futures, timeout=30)
+        except concurrent.futures.TimeoutError:
+            pass
+
+        # 取消未完成的任务
+        for future in futures:
+            future.cancel()
 
     return lrc_list
 
