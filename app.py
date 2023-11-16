@@ -79,7 +79,7 @@ def lyrics():
     if not bool(request.args):
         abort(404, "请携带参数访问")
     # 通过request参数获取文件路径
-    path = unquote_plus(request.args.get('path'))
+    path = unquote_plus(request.args.get('path', ''))
     # 根据文件路径查找同名的 .lrc 文件
     if path:
         lrc_path = os.path.splitext(path)[0] + '.lrc'

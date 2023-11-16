@@ -23,19 +23,19 @@ A Flask API For [StreamMusic](https://github.com/gitbobobo/StreamMusic)
 
 `--auth`参数用于header鉴权，留空则跳过鉴权。验证header中的`Authorization`或`Authentication`字段。如果鉴权不符合，则返回403响应。
 
-也可以使用环境变量`API_AUTH`定义，其优先性低于`--auth`参数，但是更容易在Docker中部署。`-e API_AUTH=DbG91ZEZbBgNVBAs`
+也可以使用环境变量`API_AUTH`定义，其优先性低于`--auth`参数，但是更容易在Docker中部署。`-e API_AUTH=自定义一个鉴权key`
 
 ## 食用方法
 
 ### 公开API
 
-如果无法私有部署，可以先尝试使用公开API。注意：公开API通过酷狗接口获取歌词，可能并不完全准确。
+如果无法私有部署，可以先尝试使用公开API。注意：公开API通过酷狗等接口获取歌词，可能响应较慢且并不完全准确。
 
 API地址：`https://lrc.xms.mx/lyrics`
 
 ### 二进制文件
 
-上传至运行目录，`./lrcapi --port 8080 --auth DbG91ZEZbBgNVBAs`
+上传至运行目录，`./lrcapi --port 8080 --auth 自定义一个鉴权key`
 
 ### Python源文件
 
@@ -43,7 +43,7 @@ API地址：`https://lrc.xms.mx/lyrics`
 
 安装依赖：`pip install -r requirements.txt`
 
-启动服务：`python3 app.py --port 8080 --auth DbG91ZEZbBgNVBAs`
+启动服务：`python3 app.py --port 8080 --auth 自定义一个鉴权key`
 
 ### Linux_x86一键部署运行
 
