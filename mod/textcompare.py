@@ -1,4 +1,4 @@
-import Levenshtein
+from difflib import SequenceMatcher
 import math
 
 
@@ -39,6 +39,12 @@ def association(text_1: str, text_2: str) -> float:
     if text_2 == '':
         return 0
     common_ratio = longest_common_substring(text_1, text_2) / len(text_1)
-    ed_ratio = Levenshtein.ratio(text_1, text_2)
+    ed_ratio = SequenceMatcher(None, text_1, text_2).ratio()
     similar_ratio = common_ratio * (math.e ** (ed_ratio-1))
     return similar_ratio
+
+
+if __name__ == "__main__":
+    text_s = "第二天堂(林俊杰)"
+    text_r = "第二天堂"
+    print(association(text_s, text_r))
