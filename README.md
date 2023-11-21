@@ -2,7 +2,9 @@
 
 A Flask API For [StreamMusic](https://github.com/gitbobobo/StreamMusic)
 
-![Logo](/src/img/Logo_Text_inbox.png)
+<div style="text-align: center;">
+<img alt="LOGO" src="https://cdn.jsdelivr.net/gh/HisAtri/LrcAPI@main/src/img/Logo_Text_inbox.png" width="256" height="256" />
+</div>
 
 ## 功能
 
