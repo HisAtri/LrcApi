@@ -164,4 +164,5 @@ flask_cache/
 
 # others
 test.py
+log.txt
 .idea/

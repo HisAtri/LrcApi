@@ -9,7 +9,7 @@ from waitress import serve
 import logging
 import concurrent.futures
 
-from mod import api
+from mod import api, log
 
 # 创建一个解析器
 parser = argparse.ArgumentParser(description="启动LRCAPI服务器")
@@ -133,7 +133,6 @@ def lrc_json():
                 "artist": artist,
                 "lyrics": i
             })
-
     return response
 
 
