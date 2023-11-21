@@ -1,10 +1,17 @@
+<div align="center">
+    <img alt="LOGO" src="https://cdn.jsdelivr.net/gh/HisAtri/LrcAPI@main/src/img/Logo_Text_inbox.png" width="317" height="420" />
+</div>
+
 # LrcApi
 
 A Flask API For [StreamMusic](https://github.com/gitbobobo/StreamMusic)
 
-<div align="center">
-    <img alt="LOGO" src="https://cdn.jsdelivr.net/gh/HisAtri/LrcAPI@main/src/img/Logo_Text_inbox.png" width="317" height="420" />
-</div>
+<p align="center">
+    <img src="https://img.shields.io/badge/Python-3.10|3.11|3.12-blue.svg" alt="">
+    <img src="https://img.shields.io/github/license/HisAtri/LrcApi?color=%23f280bf" alt="">
+    <img src="https://img.shields.io/github/commit-activity/m/HisAtri/LrcApi" alt="">
+    <img src="https://img.shields.io/github/stars/HisAtri/LrcApi?style=social" alt="">
+</p>
 
 ## 功能
 
@@ -91,6 +98,7 @@ docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lyricapi:alpine-
 2. 如果您对本程序进行了修改，请清楚地说明您的修改。
 3. 在进行分发时，您需要提供完整的源代码，并以GPL-3.0许可证分发您的衍生作品。
 4. 任何以本程序为基础的商业用途都需要遵守GPL-3.0许可证，并保持免费开放访问。
+5. 除源代码外，本项目的其他部分（包括Logo、服务或标语等）并非由 GPL 3.0 协议开源。
 
 请确保您详细了解GPL-3.0许可证的要求并遵守相关规定。
 
