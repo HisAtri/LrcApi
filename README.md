@@ -9,7 +9,7 @@ A Flask API For [StreamMusic](https://github.com/gitbobobo/StreamMusic)
 <p align="center">
     <img src="https://img.shields.io/badge/Python-3.10|3.11|3.12-blue.svg" alt="">
     <img src="https://img.shields.io/github/license/HisAtri/LrcApi?color=%23f280bf" alt="">
-    <img src="https://img.shields.io/github/commit-activity/m/HisAtri/LrcApi" alt="">
+    <img src="https://img.shields.io/github/commit-activity/m/HisAtri/LrcApi?color=%23bf4215" alt="">
     <img src="https://img.shields.io/github/stars/HisAtri/LrcApi?style=social" alt="">
 </p>
 
