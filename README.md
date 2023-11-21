@@ -3,7 +3,7 @@
 A Flask API For [StreamMusic](https://github.com/gitbobobo/StreamMusic)
 
 <div style="text-align: center;">
-<img alt="LOGO" src="https://cdn.jsdelivr.net/gh/HisAtri/LrcAPI@main/src/img/Logo_Text_inbox.png" width="256" height="256" />
+<img alt="LOGO" src="https://cdn.jsdelivr.net/gh/HisAtri/LrcAPI@main/src/img/Logo_Text_inbox.png" width="317" height="420" />
 </div>
 
 ## 功能
