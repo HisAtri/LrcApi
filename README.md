@@ -2,6 +2,8 @@
 
 A Flask API For [StreamMusic](https://github.com/gitbobobo/StreamMusic)
 
+![Logo](/src/img/Logo_Text_inbox.png)
+
 ## 功能
 
 支持酷狗/聚合API获取LRC歌词

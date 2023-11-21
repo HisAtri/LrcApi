@@ -194,6 +194,11 @@ def redirect_to_welcome():
     return redirect('/src')
 
 
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory('src', 'img/Logo_Design.svg')
+
+
 @app.route('/src')
 def return_index():
     return send_from_directory('src', 'index.html')
