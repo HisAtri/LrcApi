@@ -1,5 +1,5 @@
 <div align="center">
-    <img alt="LOGO" src="https://cdn.jsdelivr.net/gh/HisAtri/LrcAPI@main/src/img/Logo_Text_inbox.png" width="317" height="420" />
+    <img alt="LOGO" src="https://cdn.jsdelivr.net/gh/HisAtri/LrcAPI@main/src/img/LrcAPI-Text-Extra.png" width="313" height="400" />
 </div>
 
 # LrcApi
