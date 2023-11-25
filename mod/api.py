@@ -27,7 +27,7 @@ def kugou(title, artist, album):
                 song_hash = song_item["hash"]
                 album_name = song_item.get("album_name", "")
                 title_conform_ratio = textcompare.association(title, song_name)
-                artist_conform_ratio = textcompare.association(artist, singer_name)
+                artist_conform_ratio = textcompare.assoc_artists(artist, singer_name)
                 # 计算两个指标的几何平均值；区间范围(0,1]
                 ratio = (title_conform_ratio * artist_conform_ratio) ** 0.5
                 ratio_max = max(ratio, ratio_max)
