@@ -1,4 +1,5 @@
-from flask import Flask, request, abort, redirect, send_from_directory
+import requests
+from flask import Flask, request, abort, redirect, send_from_directory, Response
 from flask_caching import Cache
 import os
 import hashlib
@@ -62,6 +63,19 @@ def calculate_md5(string):
     return md5_hex
 
 
+# 跟踪重定向
+def follow_redirects(url, max_redirects=10):
+    for _ in range(max_redirects):
+        response = requests.head(url, allow_redirects=False)
+        if response.status_code == 200:
+            return url
+        elif 300 <= response.status_code < 400:
+            url = response.headers['Location']
+        else:
+            abort(404)  # 或者根据需求选择其他状态码
+    abort(404)  # 达到最大重定向次数仍未获得 200 状态码，放弃
+
+
 def read_file_with_encoding(file_path, encodings):
     for encoding in encodings:
         try:
@@ -87,6 +101,16 @@ def lyrics():
             file_content = read_file_with_encoding(lrc_path, ['utf-8', 'gbk'])
             if file_content is not None:
                 return file_content
+    try:
+        audio = EasyID3(path)
+        lyrics_key = 'lyrics'
+        if lyrics_key in audio:
+            # 获取歌词内容
+            lyrics_content = audio[lyrics_key][0]
+            # 返回歌词文本
+            return lyrics_content
+    except:
+        pass
     try:
         # 通过request参数获取音乐Tag
         title = unquote_plus(request.args.get('title'))
@@ -134,6 +158,23 @@ def lrc_json():
                 "lyrics": i
             })
     return response
+
+
+@app.route('/cover', methods=['GET'])
+@cache.cached(timeout=86400, key_prefix=make_cache_key)
+def cover_api():
+    req_args = {key: request.args.get(key) for key in request.args}
+    # 构建目标URL
+    target_url = 'https://lrc.xms.mx/cover?' + '&'.join([f"{key}={req_args[key]}" for key in req_args])
+    # 跟踪重定向并获取最终URL
+    final_url = follow_redirects(target_url)
+    # 获取最终URL的内容或响应
+    response = requests.get(final_url)
+    if response.status_code == 200:
+        content_type = response.headers.get('Content-Type', 'application/octet-stream')
+        return Response(response.content, content_type=content_type)
+    else:
+        abort(404)
 
 
 def validate_json_structure(data):
