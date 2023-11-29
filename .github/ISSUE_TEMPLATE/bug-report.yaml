@@ -1,0 +1,45 @@
+name: Bug 反馈
+description: 异常响应/异常状态码/无法启动/意外退出
+labels: ['bug']
+body:
+- type: checkboxes
+    id: checks
+    attributes:
+      label: 提交Issue之前，你应当知道：
+      options:
+      - label: Issue是用于快速定位和解决问题的，而不是这个项目的评论区。
+        required: true
+      - label: 一个简明扼要的标题可以快速定位关键信息，标题不需要长篇大论，也不应过于宽泛。
+        required: true
+  - type: textarea
+    id: describe
+    attributes:
+      label: 问题描述
+      description: 尽可能详细地描述你遇到的问题
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: 日志文件
+      description: |
+        **Docker/Supervisor/Nginx等软件记录的日志，可以上传文件**
+    validations:
+      required: false
+  - type: textarea
+    id: system
+    attributes:
+      label: 系统信息
+      description: |
+        你所使用的操作系统、架构，以及软件的部署方式
+    validations:
+      required: true
+  - type: textarea
+    id: others
+    attributes:
+      label: 补充信息
+      description: |
+        任何你可能觉得与此问题相关的内容，
+        或者你认为可能的解决方案？
+    validations:
+      required: false
