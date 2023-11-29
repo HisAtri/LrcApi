@@ -7,7 +7,9 @@
 A Flask API For [StreamMusic](https://github.com/gitbobobo/StreamMusic)
 
 <p align="center">
-    <img src="https://img.shields.io/badge/Python-3.10|3.11|3.12-blue.svg" alt="">
+    <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/Python-3.10|3.11|3.12-blue.svg" alt=""></a>
+    <a href="https://hub.docker.com/r/hisatri/lyricapi"><img src="https://img.shields.io/badge/Docker-Quick%20Start-0077ED.svg" alt=""></a>
+    <br>
     <img src="https://img.shields.io/github/license/HisAtri/LrcApi?color=%23f280bf" alt="">
     <img src="https://img.shields.io/github/commit-activity/m/HisAtri/LrcApi?color=%23bf4215" alt="">
     <img src="https://img.shields.io/github/stars/HisAtri/LrcApi?style=social" alt="">
@@ -18,6 +20,8 @@ A Flask API For [StreamMusic](https://github.com/gitbobobo/StreamMusic)
 支持酷狗/聚合API获取LRC歌词
 
 支持text/json API
+
+支持获取音乐/专辑/艺术家封面
 
 默认监听28883端口，API地址 `http://0.0.0.0:28883/lyrics` ；新版API地址 `http://0.0.0.0:28883/jsonapi`
 
@@ -38,7 +42,9 @@ A Flask API For [StreamMusic](https://github.com/gitbobobo/StreamMusic)
 
 如果无法私有部署，可以先尝试使用公开API。注意：公开API通过酷狗等接口获取歌词，可能响应较慢且并不完全准确。
 
-API地址：`https://lrc.xms.mx/lyrics`
+歌词API地址：`https://lrc.xms.mx/lyrics`
+
+封面API地址: `https://lrc.xms.mx/cover`
 
 ### 二进制文件
 
@@ -77,6 +83,10 @@ docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lyricapi:alpine-
 如果你正在使用Navidrome，请将你的音乐文件目录映射到Docker内目录；例如如果你音乐存储的目录是`/www/path/music`，请将启动命令中的映射修改为 `/www/path/music:/www/path/music`
 
 然后访问 `http://0.0.0.0:28883/lyrics` 或新版API `http://0.0.0.0:28883/jsonapi` 
+
+图片API地址为 `http://0.0.0.0:28883/cover`
+
+注意：图片返回目前采用反向代理策略，可能存在一定的上下行流量消耗和延迟。
 
 支持使用Nginx或Apache进行反向代理与SSL。
 
