@@ -166,3 +166,5 @@ flask_cache/
 test.py
 log.txt
 .idea/
+app.build/
+app.dist/
