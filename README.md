@@ -86,7 +86,7 @@ docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lyricapi:alpine-
 
 ## 二次开发说明
 
-本程序基于GPL-3.0开源许可证，您可以自由使用、修改和分发本程序。在二次开发时，请遵守以下要求：
+本程序基于GPL-3.0开源许可证，您可以自由免费地使用、修改和分发本程序。在二次开发时，请遵守以下要求：
 1. 在您的衍生作品中保留原始版权和许可声明。
 2. 如果您对本程序进行了修改，请清楚地说明您的修改。
 3. 在进行分发时，您需要提供完整的源代码，并以GPL-3.0许可证分发您的衍生作品。
@@ -98,4 +98,5 @@ docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lyricapi:alpine-
 # 赞赏一下
 
 微信
-<img alt="reward" class="rounded" src="/src/img/qrcode.png" width="512" height="512" />
+
+<img alt="reward" class="rounded" src="https://cdn.jsdelivr.net/gh/HisAtri/LrcAPI@main/src/img/qrcode.png" width="512" height="512" />
