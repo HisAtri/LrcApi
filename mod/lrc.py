@@ -29,5 +29,5 @@ def is_valid(lrc_text: str):
 
 if __name__ == "__main__":
     lrc = "[00:00.00]歌词1\n[03:23.22]歌词2\n[05:45.55]歌词3"
-    result = standard(lrc)
+    result = is_valid(lrc)
     print(result)

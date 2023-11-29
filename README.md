@@ -23,7 +23,7 @@ A Flask API For [StreamMusic](https://github.com/gitbobobo/StreamMusic)
 
 支持获取音乐/专辑/艺术家封面
 
-默认监听28883端口，API地址 `http://0.0.0.0:28883/lyrics` ；新版API地址 `http://0.0.0.0:28883/jsonapi`
+默认监听28883端口，API地址 `http://0.0.0.0:28883/lyrics` ；新版API地址 `http://0.0.0.0:28883/jsonapi` ；封面API地址 `http://0.0.0.0:28883/jsonapi` 。
 
 ### 启动参数
 
@@ -58,12 +58,6 @@ A Flask API For [StreamMusic](https://github.com/gitbobobo/StreamMusic)
 
 启动服务：`python3 app.py --port 8080 --auth 自定义一个鉴权key`
 
-### Linux_x86一键部署运行
-
-```bash
-wget https://mirror.eh.cx/lrcapi/lrcapi.sh -O lrcapi.sh && chmod +x lrcapi.sh && sudo bash lrcapi.sh
-```
-
 ### Docker部署方式
 
 ```bash
@@ -89,17 +83,6 @@ docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lyricapi:alpine-
 注意：图片返回目前采用反向代理策略，可能存在一定的上下行流量消耗和延迟。
 
 支持使用Nginx或Apache进行反向代理与SSL。
-
-## 常见状态码及可能含义
-
-| 状态码 | 含义                       |
-|-----|--------------------------|
-| 200 | 成功处理并返回结果                |
-| 403 | Auth token不正确，拒绝响应       |
-| 404 | 未找到结果                    |
-| 421 | 你需要设置Auth token，才能访问这个服务 |
-| 422 | 传入的数据格式不正确               |
-| 503 | 服务器处理过程出现错误，具体查看日志       |
 
 ## 二次开发说明
 
