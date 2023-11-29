@@ -57,10 +57,16 @@ def api_2(title, artist, album):
     url = f"https://lrc.xms.mx/lyrics?title={title}&artist={artist}&album={album}&path=None&limit=1&api=lrcapi"
     try:
         res = requests.get(url, headers=headers)
-        return res.text
+        if res.status_code < 300:
+            return res.text
+        else:
+            res = requests.get(url, headers=headers)
+            if res.status_code < 300:
+                return res.text
     except:
         time.sleep(10)
         return None
+    return None
 
 
 api_list = [kugou, api_2]
