@@ -1,0 +1,51 @@
+body {
+    background-image: url("/src/img/bg.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    text-align: center;
+}
+
+code {
+    display: inline-block;
+    padding: 4px;
+    font-family: Consolas, monospace;
+    font-size: 14px;
+    background-color: #f2f2f2;
+    color: #333333;
+    border-radius: 4px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    line-height: 2;
+}
+
+hr {
+    margin-left: 0;
+    width: 10%;
+    color: rgba(255, 160, 0, 1);
+    box-shadow: 0 0 10px rgba(255, 160, 0, 0.8);
+}
+
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    backdrop-filter: blur(10px);
+    background-image: linear-gradient(rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.5));
+    color: #333;
+    text-align: center;
+    padding: 20px;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.footer a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.footer a:hover {
+    font-weight: bold;
+}

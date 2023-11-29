@@ -97,4 +97,5 @@ docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lyricapi:alpine-
 
 # 赞赏一下
 
-爱发电地址 <https://afdian.net/a/hisatri>
+微信
+<img alt="reward" class="rounded" src="/src/img/qrcode.png" width="512" height="512" />
