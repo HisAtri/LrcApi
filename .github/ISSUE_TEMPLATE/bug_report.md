@@ -21,8 +21,11 @@ assignees: HisAtri
 
 **系统信息**
  - 操作系统：e.g. Ubuntu 22.04
- - 架构：e.g. ARM64
+ - CPU架构：e.g. ARM64
  - 软件版本：e.g. v1.4.3
+ - 部署方式：e.g. Docker/源代码/二进制文件
 
 **补充信息**
-Add any other context about the problem here.
+还有什么要补充的？
+
+这里可上传附件...........↓
