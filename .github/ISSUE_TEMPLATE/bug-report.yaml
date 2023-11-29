@@ -19,11 +19,18 @@ body:
     validations:
       required: true
   - type: textarea
+    id: request
+    attributes:
+      label: 请求与响应
+      description: 请求路径和参数、响应状态码、响应体/响应内容
+    validations:
+      required: false
+  - type: textarea
     id: logs
     attributes:
       label: 日志文件
       description: |
-        **Docker/Supervisor/Nginx等软件记录的日志，可以上传文件**
+        Docker/Supervisor/Nginx等软件记录的日志，可以上传文件
     validations:
       required: false
   - type: textarea
