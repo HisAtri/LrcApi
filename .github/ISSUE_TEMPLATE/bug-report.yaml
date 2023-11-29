@@ -3,7 +3,7 @@ description: 异常响应/异常状态码/无法启动/意外退出
 labels: ['bug']
 body:
   - type: checkboxes
-      id: checks
+      id: illust
       attributes:
         label: 提交Issue之前，你应当知道：
         options:
