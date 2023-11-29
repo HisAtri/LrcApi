@@ -1,0 +1,38 @@
+name: 新的需求
+description: 新的需求、建议、改进方式
+labels: ['enhancement']
+body:
+  - type: checkboxes
+    id: illust
+    attributes:
+      label: 提交Feature之前，你应当知道：
+      options:
+      - label: Issue是用于快速定位和解决问题的，而不是这个项目的评论区。
+        required: true
+      - label: 一个简明扼要的标题可以快速定位关键信息，标题不需要长篇大论，也不应过于宽泛。
+        required: true
+      - label: 不是所有的Feature都会被接受，合理且详细的Feature有更高的概率被接受。
+        required: true
+  - type: textarea
+    id: describe
+    attributes:
+      label: 问题描述
+      description: 尽可能详细地描述你遇到的问题
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: 解决方案
+      description: |
+        你认为可行的解决方案
+    validations:
+      required: false
+  - type: textarea
+    id: others
+    attributes:
+      label: 补充信息
+      description: |
+        更多你想补充的内容
+    validations:
+      required: false
