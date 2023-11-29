@@ -161,6 +161,40 @@
             heading.insertAdjacentElement('afterend', hr);
         });
     </script>
+    <script>
+        var currentUrl = window.location.protocol + '//' + window.location.host;
+        document.body.innerHTML = document.body.innerHTML.replace(/http:\/\/0\.0\.0\.0:28883/g, currentUrl);
+
+        var codeElements = document.querySelectorAll('code');
+
+        codeElements.forEach(function(codeElement) {
+            codeElement.addEventListener("click", function () {
+                copyToClipboard(codeElement.textContent);
+                showTooltip("已复制到剪贴板");
+            });
+        });
+
+        function copyToClipboard(text) {
+            var textarea = document.createElement("textarea");
+            textarea.value = text;
+            textarea.style.position = "fixed";
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textarea);
+        }
+
+        function showTooltip(message) {
+            var tooltips = document.createElement("div");
+            tooltips.className = "tooltip-x";
+            tooltips.textContent = message;
+            document.body.appendChild(tooltips);
+
+            setTimeout(function () {
+                document.body.removeChild(tooltips);
+            }, 2000);
+        }
+    </script>
 </body>
 
 </html>
