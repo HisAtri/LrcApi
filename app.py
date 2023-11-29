@@ -9,7 +9,7 @@ from waitress import serve
 import logging
 import concurrent.futures
 
-from mod import api, log
+from mod import api, lrc
 
 # 创建一个解析器
 parser = argparse.ArgumentParser(description="启动LRCAPI服务器")
@@ -86,7 +86,7 @@ def lyrics():
         if os.path.isfile(lrc_path):
             file_content = read_file_with_encoding(lrc_path, ['utf-8', 'gbk'])
             if file_content is not None:
-                return file_content
+                return lrc.standard(file_content)
     try:
         # 通过request参数获取音乐Tag
         title = unquote_plus(request.args.get('title'))
@@ -96,7 +96,7 @@ def lyrics():
         # 提交任务到线程池，并设置超时时间
         future = executor.submit(api.main, title, artist, album)
         lyrics_text = future.result(timeout=30)
-        return lyrics_text
+        return lrc.standard(lyrics_text)
     except:
         return "Lyrics not found.", 404
 
@@ -117,6 +117,7 @@ def lrc_json():
         if os.path.isfile(lrc_path):
             file_content = read_file_with_encoding(lrc_path, ['utf-8', 'gbk'])
             if file_content is not None:
+                file_content = lrc.standard(file_content)
                 response.append({
                     "id": calculate_md5(file_content),
                     "title": title,
@@ -127,6 +128,7 @@ def lrc_json():
     lyrics_list = api.allin(title, artist, album)
     if lyrics_list:
         for i in lyrics_list:
+            i = lrc.standard(i)
             response.append({
                 "id": calculate_md5(i),
                 "title": title,
