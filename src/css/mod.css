@@ -8,7 +8,7 @@ body {
 
 code {
     display: inline-block;
-    padding: 4px;
+    padding: 2px;
     font-family: Consolas, monospace;
     font-size: 14px;
     background-color: #f2f2f2;
@@ -59,4 +59,19 @@ hr {
     padding: 10px;
     border-radius: 4px;
     font-size: 14px;
+    opacity: 1;
+    animation: fadeIn 3s;
+}
+
+/* 定义动画，从透明度0到透明度1，持续时间2秒 */
+@keyframes fadeIn {
+  0% {
+    opacity: 1;
+  }
+  33% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }

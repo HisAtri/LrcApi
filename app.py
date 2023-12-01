@@ -1,5 +1,6 @@
+import shutil
 import requests
-from flask import Flask, request, abort, redirect, send_from_directory, Response
+from flask import Flask, request, abort, redirect, send_from_directory, Response, jsonify
 from flask_caching import Cache
 import os
 import hashlib
@@ -22,10 +23,15 @@ args = parser.parse_args()
 token = args.auth if args.auth is not None else os.environ.get('API_AUTH', False)
 
 app = Flask(__name__)
-
+cache_dir = './flask_cache'
+try:
+    # 尝试删除缓存文件夹
+    shutil.rmtree(cache_dir)
+except FileNotFoundError:
+    print("N")
 cache = Cache(app, config={
     'CACHE_TYPE': 'filesystem',
-    'CACHE_DIR': './flask_cache'
+    'CACHE_DIR': cache_dir
 })
 
 
@@ -159,7 +165,7 @@ def lrc_json():
                 "artist": artist,
                 "lyrics": i
             })
-    return response
+    return jsonify(response)
 
 
 @app.route('/cover', methods=['GET'])
