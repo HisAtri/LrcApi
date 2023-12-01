@@ -73,38 +73,43 @@ api_list = [kugou, api_2]
 
 
 def main(title, artist, album):
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        # 提交各API函数到线程池中执行
-        task_list = []
-        for task in api_list:
-            task_list.append(executor.submit(task, title, artist, album))
-        # 等待任意一个API完成
-        done, not_done = concurrent.futures.wait(task_list, return_when=concurrent.futures.FIRST_COMPLETED)
-        # 获取已完成线程的返回结果
-        lyrics_text = done.pop().result()
-    return lyrics_text
+    api_list = {
+        "kugou": kugou,
+        "netease": api_2
+    }
+    api_search_result = []
+    for name, func in api_list.items():
+        try:
+            api_search_result = func(title, artist, album)
+        except Exception as e:
+            pass
+        if api_search_result:
+            return api_search_result
+        else:
+            try:
+                api_search_result = func(textcompare.text_convert(title), artist, album)
+            except Exception as e:
+                break
+
+    return api_search_result
 
 
 def allin(title, artist, album):
     lrc_list = []
     with concurrent.futures.ThreadPoolExecutor() as executor:
         futures = []
-
         def request_lrc(task):
             lrc = task(title, artist, album)
             if lrc:
                 lrc_list.append(lrc)
-
         for task in api_list:
             future = executor.submit(request_lrc, task)
             futures.append(future)
-
         # 等待所有线程完成或超时
         try:
-            concurrent.futures.wait(futures, timeout=30)
+            concurrent.futures.wait(futures, timeout=15)
         except concurrent.futures.TimeoutError:
             pass
-
         # 取消未完成的任务
         for future in futures:
             future.cancel()
@@ -113,4 +118,4 @@ def allin(title, artist, album):
 
 
 if __name__ == "__main__":
-    print(main("第二天堂", "林俊杰", "第二天堂"))
+    print(main("醉花阴", "洛天依", ""))

@@ -28,7 +28,7 @@ try:
     # 尝试删除缓存文件夹
     shutil.rmtree(cache_dir)
 except FileNotFoundError:
-    print("N")
+    pass
 cache = Cache(app, config={
     'CACHE_TYPE': 'filesystem',
     'CACHE_DIR': cache_dir
@@ -264,5 +264,6 @@ def serve_file(filename):
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     logger = logging.getLogger('')
+    logger.info("正在启动服务器")
     serve(app, host='0.0.0.0', port=args.port, threads=32, channel_timeout=50)
     # app.run(host='0.0.0.0', port=args.port)
