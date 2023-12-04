@@ -1,11 +1,10 @@
 import base64
 import requests
 import asyncio
-from fake_useragent import UserAgent
 from mod import textcompare
 
 
-ua = UserAgent().chrome
+ua = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36"
 
 
 async def kugou(title, artist, album):
