@@ -4,7 +4,6 @@ from flask import Flask, request, abort, redirect, send_from_directory, Response
 from flask_caching import Cache
 import os
 import hashlib
-from mutagen.easyid3 import EasyID3
 from urllib.parse import unquote_plus
 import argparse
 from waitress import serve
@@ -18,7 +17,7 @@ parser = argparse.ArgumentParser(description="启动LRCAPI服务器")
 # 添加一个 `--port` 参数，默认值28883
 parser.add_argument('--port', type=int, default=28883, help='应用的运行端口，默认28883')
 parser.add_argument('--auth', type=str, help='用于验证Header.Authentication字段，建议纯ASCII字符')
-args = parser.parse_args()
+args, unknown_args = parser.parse_known_args()
 # 赋值到token，启动参数优先性最高，其次环境变量，如果都未定义则赋值为false
 token = args.auth if args.auth is not None else os.environ.get('API_AUTH', False)
 
