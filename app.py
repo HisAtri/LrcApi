@@ -11,7 +11,7 @@ from waitress import serve
 import logging
 import concurrent.futures
 
-from mod import api, lrc
+from mod import api, lrc, tags
 
 # 创建一个解析器
 parser = argparse.ArgumentParser(description="启动LRCAPI服务器")
@@ -108,13 +108,8 @@ def lyrics():
             if file_content is not None:
                 return lrc.standard(file_content)
     try:
-        audio = EasyID3(path)
-        lyrics_key = 'lyrics'
-        if lyrics_key in audio:
-            # 获取歌词内容
-            lyrics_content = audio[lyrics_key][0]
-            # 返回歌词文本
-            return lyrics_content
+        lrc_in = tags.r_lrc(path)
+        return lrc_in
     except:
         pass
     try:
@@ -193,14 +188,6 @@ def validate_json_structure(data):
     return True
 
 
-def set_audio_tags(path, tags):
-    audio = EasyID3(path)
-    for key, value in tags.items():
-        if key in audio:
-            audio[key] = value
-    audio.save()
-
-
 @app.route('/tag', methods=['POST'])
 def setTag():
     require_auth()
@@ -222,20 +209,19 @@ def setTag():
         "title": "title",
         "artist": "artist",
         "album": "album",
-        "genre": "genre",
-        "year": "date",
-        "track_number": "tracknumber",
-        "disc_number": "discnumber",
-        "composer": "composer",
+        "lyrics": "lyrics"
     }
 
     tags_to_set = {supported_tags[key]: value for key, value in musicData.items() if key in supported_tags}
-
-    try:
-        set_audio_tags(audio_path, tags_to_set)
-        return "Tags updated successfully.", 200
-    except Exception as e:
-        return str(e), 500
+    result = tags.w_file(audio_path, tags_to_set)
+    if result == 0:
+        return "OK", 200
+    elif result == -1:
+        return "Failed to write lyrics", 523
+    elif result == -2:
+        return "Failed to write tags", 524
+    else:
+        return "Unknown error", 525
 
 
 @app.route('/')
