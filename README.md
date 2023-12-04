@@ -84,6 +84,54 @@ docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lyricapi:alpine-
 
 支持使用Nginx或Apache进行反向代理与SSL。
 
+## Tag修改接口
+
+### 接口详情
+
+- 请求方法：POST
+- 请求路径：/tag
+- 数据类型：application/json
+
+### 支持格式
+
+已测试：
+
+- FLAC(flac)
+- ID3v2(mp3)
+- VorbisComment(ogg)
+
+### 支持标签
+
+- 标题：title
+- 艺术家：artist
+- 专辑：album
+- 歌词：lyrics
+
+### 状态码
+
+- 200 成功
+- 404 未找到文件
+- 421 无权限
+- 422 解析错误
+- 5xx 执行出错
+
+### 简易测试环境
+
+```python
+import requests
+json_data = {
+    "path": "/path/to/music/file",
+    "title": "title",
+    "artist": "artist",
+    "album": "album",
+    "lyrics": "lyrics"
+}
+url = 'http://127.0.0.1:28883/tag'
+response = requests.post(url, json=json_data)
+print(response.status_code)
+print(response.text)
+```
+
 ## 二次开发说明
 
 本程序基于GPL-3.0开源许可证，您可以自由免费地使用、修改和分发本程序。在二次开发时，请遵守以下要求：
