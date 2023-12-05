@@ -19,6 +19,8 @@ def standard(lrc_text: str):
 
 
 def is_valid(lrc_text: str):
+    if type(lrc_text) is not str:
+        return False
     pattern = re.compile(r'\[(\d+:\d+\.\d{2})\]')
     matches = pattern.findall(lrc_text)
     if matches:
@@ -28,6 +30,6 @@ def is_valid(lrc_text: str):
 
 
 if __name__ == "__main__":
-    lrc = "[00:00.00]歌词1\n[03:23.22]歌词2\n[05:45.55]歌词3"
+    lrc = ""
     result = is_valid(lrc)
     print(result)
