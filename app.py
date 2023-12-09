@@ -1,18 +1,20 @@
+import argparse
+import hashlib
+import logging
+import os
+from urllib.parse import unquote_plus
+
 import shutil
 import requests
 from flask import Flask, request, abort, redirect, send_from_directory, Response, jsonify, render_template_string, \
     make_response
 from flask_caching import Cache
-import os
-import hashlib
-from urllib.parse import unquote_plus
-import argparse
 from waitress import serve
-import logging
 import concurrent.futures
 
 from mod import api, lrc, tags
 from mod.auth import webui, cookie
+
 
 # 创建一个解析器
 parser = argparse.ArgumentParser(description="启动LRCAPI服务器")
