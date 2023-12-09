@@ -1,6 +1,7 @@
 import shutil
 import requests
-from flask import Flask, request, abort, redirect, send_from_directory, Response, jsonify
+from flask import Flask, request, abort, redirect, send_from_directory, Response, jsonify, render_template_string, \
+    make_response
 from flask_caching import Cache
 import os
 import hashlib
@@ -11,6 +12,7 @@ import logging
 import concurrent.futures
 
 from mod import api, lrc, tags
+from mod.auth import webui, cookie
 
 # 创建一个解析器
 parser = argparse.ArgumentParser(description="启动LRCAPI服务器")
@@ -22,6 +24,8 @@ args, unknown_args = parser.parse_known_args()
 token = args.auth if args.auth is not None else os.environ.get('API_AUTH', False)
 
 app = Flask(__name__)
+
+# 缓存逻辑
 cache_dir = './flask_cache'
 try:
     # 尝试删除缓存文件夹
@@ -35,15 +39,23 @@ cache = Cache(app, config={
 
 
 # 鉴权函数，在token存在的情况下，对请求进行鉴权
-def require_auth():
+# permission=0 代表最小权限
+def require_auth(permission=0):
+    # 如果已经定义了鉴权请求头
     if token is not False:
+        user_cookie = request.cookies.get("api_auth_token", "")
+        # logger.info(user_cookie)
         auth_header = request.headers.get('Authorization', False) or request.headers.get('Authentication', False)
-        if auth_header and auth_header == token:
-            return True
+        if (auth_header and auth_header == token) or cookie.check_cookie(user_cookie):
+            return 1
         else:
-            abort(403)
+            return -1
+    # 没有定义请求头的情况，判断是不是强制要求鉴权，permission>0就是需要鉴权
     else:
-        return False
+        if permission:
+            return -2
+        else:
+            return 1
 
 
 # 缓存键，解决缓存未忽略参数的情况
@@ -94,7 +106,11 @@ def read_file_with_encoding(file_path, encodings):
 @app.route('/lyrics', methods=['GET'])
 @cache.cached(timeout=86400, key_prefix=make_cache_key)
 def lyrics():
-    require_auth()
+    match require_auth():
+        case -1:
+            return render_template_string(webui.error()), 403
+        case -2:
+            return render_template_string(webui.error()), 421
     if not bool(request.args):
         abort(404, "请携带参数访问")
     # 通过request参数获取文件路径
@@ -128,7 +144,11 @@ def lyrics():
 @app.route('/jsonapi', methods=['GET'])
 @cache.cached(timeout=86400, key_prefix=make_cache_key)
 def lrc_json():
-    require_auth()
+    match require_auth():
+        case -1:
+            return render_template_string(webui.error()), 403
+        case -2:
+            return render_template_string(webui.error()), 421
     if not bool(request.args):
         abort(404, "请携带参数访问")
     path = unquote_plus(request.args.get('path'))
@@ -189,9 +209,11 @@ def validate_json_structure(data):
 
 @app.route('/tag', methods=['POST'])
 def setTag():
-    require_auth()
-    if not token:
-        return "You should set an auth token.", 421
+    match require_auth():
+        case -1:
+            return render_template_string(webui.error()), 403
+        case -2:
+            return render_template_string(webui.error()), 421
 
     musicData = request.json
     if not validate_json_structure(musicData):
@@ -244,6 +266,27 @@ def serve_file(filename):
         return send_from_directory('src', filename)
     except FileNotFoundError:
         abort(404)
+
+
+@app.route('/login')
+def login_check():
+    if require_auth() < 0 and len(token) > 0:
+        return render_template_string(webui.html_login())
+
+    return redirect('/src')
+
+
+@app.route('/login-api', methods=['POST'])
+def login_api():
+    data = request.get_json()
+    if 'password' in data:
+        pwd = data['password']
+        if pwd == token:
+            response = make_response(jsonify(success=True))
+            response.set_cookie('api_auth_token', cookie.set_cookie())
+            return response
+
+    return jsonify(success=False)
 
 
 if __name__ == '__main__':
