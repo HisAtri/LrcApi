@@ -1,4 +1,3 @@
-import argparse
 import hashlib
 import logging
 import os
@@ -12,19 +11,13 @@ from flask_caching import Cache
 from waitress import serve
 import concurrent.futures
 
-from mod import api, lrc, tags
+from mod import search, lrc, tags
 from mod.auth import webui, cookie
+from mod.auth.authentication import require_auth
+from mod.args import GlobalArgs
 
 
-# 创建一个解析器
-parser = argparse.ArgumentParser(description="启动LRCAPI服务器")
-# 添加一个 `--port` 参数，默认值28883
-parser.add_argument('--port', type=int, default=28883, help='应用的运行端口，默认28883')
-parser.add_argument('--auth', type=str, help='用于验证Header.Authentication字段，建议纯ASCII字符')
-args, unknown_args = parser.parse_known_args()
-# 赋值到token，启动参数优先性最高，其次环境变量，如果都未定义则赋值为false
-token = args.auth if args.auth is not None else os.environ.get('API_AUTH', False)
-
+args = GlobalArgs()
 app = Flask(__name__)
 
 # 缓存逻辑
@@ -38,26 +31,6 @@ cache = Cache(app, config={
     'CACHE_TYPE': 'filesystem',
     'CACHE_DIR': cache_dir
 })
-
-
-# 鉴权函数，在token存在的情况下，对请求进行鉴权
-# permission=0 代表最小权限
-def require_auth(permission=0):
-    # 如果已经定义了鉴权请求头
-    if token is not False:
-        user_cookie = request.cookies.get("api_auth_token", "")
-        # logger.info(user_cookie)
-        auth_header = request.headers.get('Authorization', False) or request.headers.get('Authentication', False)
-        if (auth_header and auth_header == token) or cookie.check_cookie(user_cookie):
-            return 1
-        else:
-            return -1
-    # 没有定义请求头的情况，判断是不是强制要求鉴权，permission>0就是需要鉴权
-    else:
-        if permission:
-            return -2
-        else:
-            return 1
 
 
 # 缓存键，解决缓存未忽略参数的情况
@@ -108,14 +81,14 @@ def read_file_with_encoding(file_path, encodings):
 @app.route('/lyrics', methods=['GET'])
 @cache.cached(timeout=86400, key_prefix=make_cache_key)
 def lyrics():
-    match require_auth():
+    match require_auth(request=request):
         case -1:
             return render_template_string(webui.error()), 403
         case -2:
             return render_template_string(webui.error()), 421
+    # 通过request参数获取文件路径
     if not bool(request.args):
         abort(404, "请携带参数访问")
-    # 通过request参数获取文件路径
     path = unquote_plus(request.args.get('path', ''))
     # 根据文件路径查找同名的 .lrc 文件
     if path:
@@ -136,7 +109,7 @@ def lyrics():
         album = unquote_plus(request.args.get('album', ''))
         executor = concurrent.futures.ThreadPoolExecutor()
         # 提交任务到线程池，并设置超时时间
-        future = executor.submit(api.main, title, artist, album)
+        future = executor.submit(search.main, title, artist, album)
         lyrics_text = future.result(timeout=30)
         return lrc.standard(lyrics_text)
     except:
@@ -146,7 +119,7 @@ def lyrics():
 @app.route('/jsonapi', methods=['GET'])
 @cache.cached(timeout=86400, key_prefix=make_cache_key)
 def lrc_json():
-    match require_auth():
+    match require_auth(request=request):
         case -1:
             return render_template_string(webui.error()), 403
         case -2:
@@ -171,7 +144,7 @@ def lrc_json():
                     "lyrics": file_content
                 })
 
-    lyrics_list = api.allin(title, artist, album)
+    lyrics_list = search.allin(title, artist, album)
     if lyrics_list:
         for i in lyrics_list:
             i = lrc.standard(i)
@@ -211,7 +184,7 @@ def validate_json_structure(data):
 
 @app.route('/tag', methods=['POST'])
 def setTag():
-    match require_auth():
+    match require_auth(request=request):
         case -1:
             return render_template_string(webui.error()), 403
         case -2:
@@ -272,7 +245,7 @@ def serve_file(filename):
 
 @app.route('/login')
 def login_check():
-    if require_auth() < 0 and len(token) > 0:
+    if require_auth(request=request) < 0 and args.auth:
         return render_template_string(webui.html_login())
 
     return redirect('/src')
@@ -283,17 +256,22 @@ def login_api():
     data = request.get_json()
     if 'password' in data:
         pwd = data['password']
-        if pwd == token:
+        if args.valid(pwd):
+            logger.info("user login")
             response = make_response(jsonify(success=True))
-            response.set_cookie('api_auth_token', cookie.set_cookie())
+            response.set_cookie('api_auth_token', cookie.set_cookie(pwd))
             return response
 
     return jsonify(success=False)
+
+
+def main():
+    serve(app, host=args.ip, port=args.port, threads=32, channel_timeout=30)
+    # app.run(host='0.0.0.0', port=args.port)
 
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     logger = logging.getLogger('')
     logger.info("正在启动服务器")
-    serve(app, host='0.0.0.0', port=args.port, threads=32, channel_timeout=50)
-    # app.run(host='0.0.0.0', port=args.port)
+    main()

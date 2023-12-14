@@ -168,4 +168,5 @@ log.txt
 .idea/
 app.build/
 app.dist/
+config/
 ann.md

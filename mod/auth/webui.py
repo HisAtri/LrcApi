@@ -19,10 +19,10 @@ def html_login():
         </style>
     </head>
     <body>
-        <form id="loginForm" class="form-inline">
+        <form id="loginForm" class="form-inline" onsubmit="return false;">
             <div class="form-group mx-sm-3 mb-2">
                 <label for="inputPassword" class="sr-only">Auth Key</label>
-                <input type="password" class="form-control" id="inputPassword" placeholder="Password">
+                <input type="password" class="form-control" id="inputPassword" placeholder="Password" onkeyup="handleKeyPress(event)">
             </div>
             <button type="button" class="btn btn-primary mb-2" onclick="submitLoginForm()">登录</button>
         </form>
@@ -53,6 +53,11 @@ def html_login():
             .catch(error => {
                 console.error('Error:', error);
             });
+        }
+        function handleKeyPress(event) {
+            if (event.keyCode === 13) {
+                submitLoginForm();
+            }
         }
     </script>
     """
