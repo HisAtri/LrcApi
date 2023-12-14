@@ -46,6 +46,9 @@ class ConfigFile:
                 json_config = json.load(json_file)
         except FileNotFoundError:
             # 如果文件不存在，则创建文件并写入初始配置
+            directory = os.path.dirname(file_path)
+            if not os.path.exists(directory):
+                os.makedirs(directory)
             with open(file_path, "w+") as json_file:
                 json.dump(json_config, json_file, indent=4)
         self.auth = json_config.get("auth", {})
