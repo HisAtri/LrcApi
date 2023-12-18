@@ -99,7 +99,8 @@ def lyrics():
                 return lrc.standard(file_content)
     try:
         lrc_in = tags.r_lrc(path)
-        return lrc_in
+        if type(lrc_in) == str and len(lrc_in) > 0:
+            return lrc_in
     except:
         pass
     try:

@@ -34,6 +34,13 @@ def ogg_lrc(path, lrc, read=False):
 
 
 def lrcs(path, lrc, read=False):
+    """
+    通过读取ID3和Vorbis标签查找信息
+    :param path:
+    :param lrc:
+    :param read:
+    :return:
+    """
     tag_objs = [id3_lrc, ogg_lrc]
     for tag_obj in tag_objs:
         try:
@@ -77,9 +84,13 @@ def r_lrc(path: str) -> str:
     lyrics = audio.get("lyrics", None)
     if lyrics is None:
         lyrics = lrcs(path, None, read=True)
-    if type(lyrics) == list:
-        return lyrics[0]
-    return lyrics
+    if isinstance(lyrics, list):
+        result = lyrics[0]
+    else:
+        result = lyrics
+    if not isinstance(result, str):
+        raise TypeError("The result should be a string.")
+    return result
 
 
 if __name__ == "__main__":
