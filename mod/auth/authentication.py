@@ -15,6 +15,9 @@ def require_auth(request, permission='r'):
     cookie_permission = has_permission(get_permission(cookie_key), permission)
     header_permission = has_permission(get_permission(auth_header), permission)
 
+    if permission == 'r' and not args.auth:
+        return 1
+
     if cookie_permission or header_permission:
         return 1
     else:
