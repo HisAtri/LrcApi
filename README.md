@@ -15,6 +15,10 @@ A Flask API For [StreamMusic](https://github.com/gitbobobo/StreamMusic)
     <img src="https://img.shields.io/github/stars/HisAtri/LrcApi?style=social" alt="">
 </p>
 
+<div align="center">
+    <a href="README.md">中文</a> | <a href="README_EN.md">English</a>
+</div>
+
 ## 功能
 
 支持酷狗/聚合API获取LRC歌词
@@ -36,7 +40,7 @@ A Flask API For [StreamMusic](https://github.com/gitbobobo/StreamMusic)
 
 也可以使用环境变量`API_AUTH`定义，其优先性低于`--auth`参数，但是更容易在Docker中部署。`-e API_AUTH=自定义一个鉴权key`
 
-## 食用方法
+## 使用方法
 
 ### 公开API
 
@@ -148,3 +152,5 @@ print(response.text)
 微信
 
 <img alt="reward" class="rounded" src="https://cdn.jsdelivr.net/gh/HisAtri/LrcAPI@main/src/img/qrcode.png" width="512" height="512" />
+
+[![Star History Chart](https://api.star-history.com/svg?repos=HisAtri/LrcApi&type=Date)](https://star-history.com/#HisAtri/LrcApi&Date)
