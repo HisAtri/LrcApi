@@ -162,7 +162,7 @@ def lrc_json():
 def cover_api():
     req_args = {key: request.args.get(key) for key in request.args}
     # 构建目标URL
-    target_url = 'https://it.tho.wiki/cover?' + '&'.join([f"{key}={req_args[key]}" for key in req_args])
+    target_url = 'http://8.138.108.84:28884/cover?' + '&'.join([f"{key}={req_args[key]}" for key in req_args])
     """# 跟踪重定向并获取最终URL
     final_url = follow_redirects(target_url)
     # 获取最终URL的内容或响应
