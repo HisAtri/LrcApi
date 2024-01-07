@@ -16,7 +16,6 @@ from mod.auth import webui, cookie
 from mod.auth.authentication import require_auth
 from mod.args import GlobalArgs
 
-
 args = GlobalArgs()
 app = Flask(__name__)
 
@@ -163,8 +162,8 @@ def lrc_json():
 def cover_api():
     req_args = {key: request.args.get(key) for key in request.args}
     # 构建目标URL
-    target_url = 'https://lrc.xms.mx/cover?' + '&'.join([f"{key}={req_args[key]}" for key in req_args])
-    # 跟踪重定向并获取最终URL
+    target_url = 'https://it.tho.wiki/cover?' + '&'.join([f"{key}={req_args[key]}" for key in req_args])
+    """# 跟踪重定向并获取最终URL
     final_url = follow_redirects(target_url)
     # 获取最终URL的内容或响应
     response = requests.get(final_url)
@@ -173,6 +172,8 @@ def cover_api():
         return Response(response.content, content_type=content_type)
     else:
         abort(404)
+    """
+    return redirect(target_url, 302)
 
 
 def validate_json_structure(data):
