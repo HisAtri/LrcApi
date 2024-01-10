@@ -51,4 +51,3 @@ def has_permission(supply: str, require: str) -> bool:
     else:
         supply_set, require_set = set(supply), set(require)
         return require_set.issubset(supply_set)
-

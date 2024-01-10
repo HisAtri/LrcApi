@@ -16,7 +16,7 @@ def generate_cookie_string(length=64):
     生成指定长度的随机字符串作为Cookie
     """
     characters = string.ascii_letters + string.digits
-    return ''.join(random.choice(characters) for i in range(length))
+    return ''.join(random.choice(characters) for _ in range(length))
 
 
 def set_cookie(key):
