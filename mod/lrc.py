@@ -21,7 +21,7 @@ def standard(lrc_text: str):
 def is_valid(lrc_text: str):
     if type(lrc_text) is not str:
         return False
-    pattern = re.compile(r'\[(\d+:\d+\.\d{2})\]')
+    pattern = re.compile(r'\[(\d+:\d+\.\d{2})]')
     matches = pattern.findall(lrc_text)
     if matches:
         return True
