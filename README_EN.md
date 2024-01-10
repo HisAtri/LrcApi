@@ -46,9 +46,9 @@ Alternatively, you can define the authentication key using the environment varia
 
 If private deployment is not possible, you can try using the public API first. Note: The public API obtains lyrics through interfaces such as Kugou, and the response may be slow and not completely accurate.
 
-Lyrics API: `https://lrc.xms.mx/lyrics`
+Lyrics API: `https://api.lrc.cx/lyrics`
 
-CoverAPI: `https://lrc.xms.mx/cover`
+CoverAPI: `https://api.lrc.cx/cover`
 
 ### Executable File
 

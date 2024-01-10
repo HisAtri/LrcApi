@@ -46,9 +46,9 @@ A Flask API For [StreamMusic](https://github.com/gitbobobo/StreamMusic)
 
 如果无法私有部署，可以先尝试使用公开API。注意：公开API通过酷狗等接口获取歌词，可能响应较慢且并不完全准确。
 
-歌词API地址：`https://lrc.xms.mx/lyrics`
+歌词API地址：`https://api.lrc.cx/lyrics`
 
-封面API地址: `https://lrc.xms.mx/cover`
+封面API地址: `https://api.lrc.cx/cover`
 
 ### 二进制文件
 
