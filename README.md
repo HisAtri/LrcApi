@@ -17,6 +17,8 @@ A Flask API For [StreamMusic](https://github.com/gitbobobo/StreamMusic)
 
 <div align="center">
     <a href="README.md">中文</a> | <a href="README_EN.md">English</a>
+    <br>
+    <a href="https://docs.lrc.cx/" target="_blank">查阅文档</a>
 </div>
 
 ## 功能
@@ -31,10 +33,10 @@ A Flask API For [StreamMusic](https://github.com/gitbobobo/StreamMusic)
 
 ### 启动参数
 
-|   参数   |   类型  | 默认值 |
-| -------- | -------- | -------- |
-| `--port`   | int   | 28883   |
-| `--auth`  | str   |     |
+| 参数       | 类型  | 默认值   |
+|----------|-----|-------|
+| `--port` | int | 28883 |
+| `--auth` | str |       |
 
 `--auth`参数用于header鉴权，留空则跳过鉴权。验证header中的`Authorization`或`Authentication`字段。如果鉴权不符合，则返回403响应。
 

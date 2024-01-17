@@ -4,3 +4,4 @@ Requests==2.31.0
 tinytag==1.9.0
 waitress==2.1.2
 mutagen==1.46.0
+aiohttp>=3.9.1
