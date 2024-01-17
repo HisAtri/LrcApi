@@ -2,6 +2,12 @@ import re
 from mod.ttscn import t2s
 
 
+"""
+本模块算法针对常见音乐标题匹配场景应用，着重分离度和效率。
+Levenshtein Distance算法实际表现不佳
+目前没有好的轻量nn实现，不考虑上模型
+当前数据集R~=0.8
+"""
 def text_convert(text: str):
     patterns = [
         r"(?<!^)\([^)]+?\)",
