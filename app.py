@@ -32,6 +32,7 @@ try:
     shutil.rmtree(cache_dir)
 except FileNotFoundError:
     pass
+# 定义缓存逻辑为本地文件缓存，目录为cache_dir = './flask_cache'
 cache = Cache(app, config={
     'CACHE_TYPE': 'filesystem',
     'CACHE_DIR': cache_dir
@@ -319,14 +320,18 @@ def login_api():
 
 
 def main():
+    # Waitress WSGI 服务器
     serve(app, host=args.ip, port=args.port, threads=32, channel_timeout=30)
+    # Debug服务器
     # app.run(host='0.0.0.0', port=args.port)
 
 
 if __name__ == '__main__':
+    # 日志配置
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     logger = logging.getLogger('')
     logger.info("正在启动服务器")
     # 注册 Blueprint 到 Flask 应用
     app.register_blueprint(v1_bp)
+    # 启动
     main()
