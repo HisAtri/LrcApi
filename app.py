@@ -1,23 +1,29 @@
+import os
+import shutil
 import hashlib
 import logging
-import os
-from urllib.parse import unquote_plus
-
-import shutil
 import requests
-from flask import Flask, request, abort, redirect, send_from_directory, Response, jsonify, render_template_string, \
+import concurrent.futures
+
+from flask import Flask, Blueprint, request, abort, redirect, send_from_directory, jsonify, render_template_string, \
     make_response
 from flask_caching import Cache
 from waitress import serve
-import concurrent.futures
+from urllib.parse import unquote_plus
 
-from mod import search, lrc, tags
+from mod import search, lrc
+from mod import tag
 from mod.auth import webui, cookie
 from mod.auth.authentication import require_auth
 from mod.args import GlobalArgs
 
 args = GlobalArgs()
 app = Flask(__name__)
+
+v1_bp = Blueprint('v1', __name__, url_prefix='/api/v1')
+
+# Blueprint直接复制app配置项
+v1_bp.config = app.config.copy()
 
 # 缓存逻辑
 cache_dir = './flask_cache'
@@ -78,6 +84,7 @@ def read_file_with_encoding(file_path, encodings):
 
 
 @app.route('/lyrics', methods=['GET'])
+@v1_bp.route('/lyrics/single', methods=['GET'])
 @cache.cached(timeout=86400, key_prefix=make_cache_key)
 def lyrics():
     match require_auth(request=request):
@@ -97,7 +104,7 @@ def lyrics():
             if file_content is not None:
                 return lrc.standard(file_content)
     try:
-        lrc_in = tags.r_lrc(path)
+        lrc_in = tag.tout(path).get("lyrics", "")
         if type(lrc_in) is str and len(lrc_in) > 0:
             return lrc_in
     except:
@@ -117,6 +124,7 @@ def lyrics():
 
 
 @app.route('/jsonapi', methods=['GET'])
+@v1_bp.route('/lyrics/advance', methods=['GET'])
 @cache.cached(timeout=86400, key_prefix=make_cache_key)
 def lrc_json():
     match require_auth(request=request):
@@ -126,8 +134,8 @@ def lrc_json():
             return render_template_string(webui.error()), 421
     if not bool(request.args):
         abort(404, "请携带参数访问")
-    path = unquote_plus(request.args.get('path'))
-    title = unquote_plus(request.args.get('title'))
+    path = unquote_plus(request.args.get('path', ''))
+    title = unquote_plus(request.args.get('title', ''))
     artist = unquote_plus(request.args.get('artist', ''))
     album = unquote_plus(request.args.get('album', ''))
     response = []
@@ -154,10 +162,13 @@ def lrc_json():
                 "artist": artist,
                 "lyrics": i
             })
+    _response = jsonify(response)
+    _response.headers['Content-Type'] = 'application/json; charset=utf-8'
     return jsonify(response)
 
 
 @app.route('/cover', methods=['GET'])
+@v1_bp.route('/cover', methods=['GET'])
 @cache.cached(timeout=86400, key_prefix=make_cache_key)
 def cover_api():
     req_args = {key: request.args.get(key) for key in request.args}
@@ -185,9 +196,10 @@ def validate_json_structure(data):
     return True
 
 
-@app.route('/tag', methods=['POST'])
+@app.route('/tag', methods=['GET', 'POST', 'PUT'])
+@v1_bp.route('/tag', methods=['GET', 'POST', 'PUT'])
 def setTag():
-    match require_auth(request=request):
+    match require_auth(request=request, permission='rw'):
         case -1:
             return render_template_string(webui.error()), 403
         case -2:
@@ -205,41 +217,68 @@ def setTag():
         return "File not found.", 404
 
     supported_tags = {
-        "title": "title",
-        "artist": "artist",
-        "album": "album",
-        "lyrics": "lyrics"
+        "tracktitle": {"allow": (str, bool, type(None)), "caption": "Track Title"},
+        "artist": {"allow": (str, bool, type(None)), "caption": "Artists"},
+        "album": {"allow": (str, bool, type(None)), "caption": "Albums"},
+        "year": {"allow": (int, bool, type(None)), "caption": "Album year"},
+        "lyrics": {"allow": (str, bool, type(None)), "caption": "Lyrics text"}
     }
-
-    tags_to_set = {supported_tags[key]: value for key, value in musicData.items() if key in supported_tags}
-    result = tags.w_file(audio_path, tags_to_set)
-    if result == 0:
-        return "OK", 200
-    elif result == -1:
-        return "Failed to write lyrics", 523
-    elif result == -2:
-        return "Failed to write tags", 524
-    else:
-        return "Unknown error", 525
+    if "title" in musicData and "tracktitle" not in musicData:
+        musicData["tracktitle"] = musicData["title"]
+    tags_to_set = {}
+    for key, value in musicData.items():
+        if key in supported_tags and isinstance(value, supported_tags[key]["allow"]):
+            tags_to_set[key] = value
+    try:
+        tag.tin(tags=tags_to_set, file=audio_path)
+    except TypeError as e:
+        return str(e), 524
+    except FileNotFoundError as e:
+        return str(e), 404
+    except Exception as e:
+        return str(e), 500
+    return "Succeed", 200
 
 
 @app.route('/')
 def redirect_to_welcome():
+    """
+    重定向至/src，显示主页
+    :return:
+    """
     return redirect('/src')
 
 
 @app.route('/favicon.ico')
 def favicon():
+    """
+    favicon位置，返回图片
+    :return:
+    """
     return send_from_directory('src', 'img/Logo_Design.svg')
 
 
 @app.route('/src')
 def return_index():
+    """
+    显示主页
+    :return: index page
+    """
     return send_from_directory('src', 'index.html')
 
 
 @app.route('/src/<path:filename>')
 def serve_file(filename):
+    """
+    路由/src/
+    路径下的静态资源
+    :param filename:
+    :return:
+    """
+    FORBIDDEN_EXTENSIONS = ('.exe', '.bat', '.dll', '.sh', '.so', '.php', '.sql', '.db', '.mdb', '.gz', '.tar', '.bak',
+                            '.tmp', '.key', '.pem', '.crt', '.csr', '.log')
+    if filename.lower().endswith(FORBIDDEN_EXTENSIONS):
+        abort(404)
     try:
         return send_from_directory('src', filename)
     except FileNotFoundError:
@@ -248,6 +287,11 @@ def serve_file(filename):
 
 @app.route('/login')
 def login_check():
+    """
+    登录页面
+    未登录时返回页面，已登录时重定向至主页
+    :return:
+    """
     if require_auth(request=request) < 0 and args.auth:
         return render_template_string(webui.html_login())
 
@@ -256,6 +300,12 @@ def login_check():
 
 @app.route('/login-api', methods=['POST'])
 def login_api():
+    """
+    登录对接的API
+    包括验证和下发Cookie
+    success提示成功与否
+    :return:
+    """
     data = request.get_json()
     if 'password' in data:
         pwd = data['password']
@@ -277,4 +327,6 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     logger = logging.getLogger('')
     logger.info("正在启动服务器")
+    # 注册 Blueprint 到 Flask 应用
+    app.register_blueprint(v1_bp)
     main()
