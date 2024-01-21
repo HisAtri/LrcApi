@@ -1,14 +1,32 @@
-# 基于Python3.9 alpine镜像
-FROM python:3.9.17-alpine3.18
+# 第一阶段：安装GCC
+FROM python:3.12.1-alpine as gcc_installer
+
+# 安装GCC
+RUN apk add --no-cache gcc musl-dev
+
+# 第二阶段：安装Python依赖
+FROM gcc_installer as requirements_installer
 
 # 设置工作目录
 WORKDIR /app
 
-# 将源代码复制到Docker镜像中
-COPY ./LrcApi /app
+# 只复制 requirements.txt，充分利用 Docker 缓存层
+COPY ./LrcApi/requirements.txt /app/
 
-# 安装Python项目依赖
-RUN pip install -r /app/requirements.txt
+# 安装Python依赖
+RUN pip install --no-user --prefix=/install -r requirements.txt
+
+# 第三阶段：运行环境
+FROM python:3.12.1-alpine
+
+# 设置工作目录
+WORKDIR /app
+
+# 复制Python依赖
+COPY --from=requirements_installer /install /usr/local
+
+# 复制项目代码
+COPY ./LrcApi /app
 
 # 设置启动命令
 CMD ["python", "/app/app.py"]

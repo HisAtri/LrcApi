@@ -1,2 +1,4 @@
 .git
+.github
+tests/
 .deploy_tmp_path
