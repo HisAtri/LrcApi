@@ -169,7 +169,6 @@ def lrc_json():
 
 
 @app.route('/cover', methods=['GET'])
-@v1_bp.route('/cover', methods=['GET'])
 @cache.cached(timeout=86400, key_prefix=make_cache_key)
 def cover_api():
     req_args = {key: request.args.get(key) for key in request.args}
@@ -189,17 +188,27 @@ def cover_api():
     return redirect(target_url, 302)
 
 
-def validate_json_structure(data):
-    if not isinstance(data, dict):
-        return False
-    if "path" not in data:
-        return False
-    return True
+@v1_bp.route('/cover/<path:s_type>', methods=['GET'])
+@cache.cached(timeout=86400, key_prefix=make_cache_key)
+def cover_new(s_type):
+    __endpoints__ = ["music", "album", "artist"]
+    if s_type not in __endpoints__:
+        abort(404)
+    req_args = {key: request.args.get(key) for key in request.args}
+    target_url = f'http://api.lrc.cx/cover/{s_type}/' + '&'.join([f"{key}={req_args[key]}" for key in req_args])
+    return redirect(target_url, 302)
 
 
 @app.route('/tag', methods=['GET', 'POST', 'PUT'])
 @v1_bp.route('/tag', methods=['GET', 'POST', 'PUT'])
 def setTag():
+    def validate_json_structure(data):
+        if not isinstance(data, dict):
+            return False
+        if "path" not in data:
+            return False
+        return True
+
     match require_auth(request=request, permission='rw'):
         case -1:
             return render_template_string(webui.error()), 403
@@ -284,6 +293,31 @@ def serve_file(filename):
         return send_from_directory('src', filename)
     except FileNotFoundError:
         abort(404)
+
+
+@app.route('/file/<path:filename>')
+@v1_bp.route('/file/<path:filename>')
+def file_viewer(filename):
+    """
+    文件查看器
+    :param filename:
+    :return:
+    """
+    # 需要权限
+    match require_auth(request=request):
+        case -1:
+            return render_template_string(webui.error()), 403
+        case -2:
+            return render_template_string(webui.error()), 421
+    # 拓展名白名单
+    ALLOWED_EXTENSIONS = ('.mp3', '.flac', '.wav', '.ape', '.ogg', '.m4a', '.aac', '.wma', '.mp4', '.m4p', '.m4b',
+                          'txt', 'lrc', 'webp', 'jpg', 'jpeg', 'png', 'bmp', 'gif', 'webp', 'svg', 'ico', 'mp4', 'webm',
+                          'mkv', 'avi', 'mov', 'wmv', 'flv', 'f4v', 'f4p', 'f4a', 'f4b', 'm4v', 'm4r', 'm4p', 'm4b',)
+    if filename.lower().endswith(ALLOWED_EXTENSIONS):
+        try:
+            return send_from_directory(os.path.dirname(filename), os.path.basename(filename))
+        except FileNotFoundError:
+            abort(404)
 
 
 @app.route('/login')
