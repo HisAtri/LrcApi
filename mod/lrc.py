@@ -94,7 +94,8 @@ if __name__ == "__main__":
     [01:14.71]这简单的话语 需要巨大的勇气
     [01:19.73]没想过失去你 却是在骗自己
     [01:25.34]最后你深深藏在我的歌声里"""
+    print(standard(lrc))
+
     from devtools import Benchmark
     b = Benchmark(threads=1, rounds=10000)
-    print(b.run(parse_lrc, lrc))
-    print(parse_lrc(lrc))
+    print(b.run(standard, lrc))
