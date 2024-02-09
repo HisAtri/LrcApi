@@ -20,6 +20,8 @@ def standard_line(lrc_text: str):
 
 
 def standard(lrc_text: str):
+    if not isinstance(lrc_text, str):
+        return ''
     parse_string = ''
     # 使用[分割字符串，得到每一行歌词
     lines = lrc_text.split('[')

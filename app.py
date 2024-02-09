@@ -2,6 +2,8 @@ import os
 import shutil
 import hashlib
 import logging
+import sys
+
 import requests
 import concurrent.futures
 
@@ -156,6 +158,8 @@ def lrc_json():
     lyrics_list = search.allin(title, artist, album)
     if lyrics_list:
         for i in lyrics_list:
+            if not i:
+                continue
             i = lrc.standard(i)
             response.append({
                 "id": calculate_md5(i),
@@ -361,6 +365,10 @@ def main():
 
 
 if __name__ == '__main__':
+    # 对Python版本进行检查（要求Python 3.10+）
+    if sys.version_info < (3, 10):
+        raise RuntimeError("Python 3.10+ required, but you are using Python {}.{}.{}.".format(*sys.version_info[:3]))
+
     # 日志配置
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     logger = logging.getLogger('')
