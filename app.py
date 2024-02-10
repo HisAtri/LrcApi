@@ -15,6 +15,7 @@ from urllib.parse import unquote_plus
 
 from mod import search, lrc
 from mod import tag
+from mod import run_process
 from mod.auth import webui, cookie
 from mod.auth.authentication import require_auth
 from mod.args import GlobalArgs
@@ -373,6 +374,7 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     logger = logging.getLogger('')
     logger.info("正在启动服务器")
+    run_process.run()
     # 注册 Blueprint 到 Flask 应用
     app.register_blueprint(v1_bp)
     # 启动
