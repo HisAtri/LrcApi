@@ -1,5 +1,6 @@
 import base64
 import json
+
 import aiohttp
 import asyncio
 
@@ -49,9 +50,10 @@ async def kugou(title, artist, album):
                                         headers=headers,
                                         timeout=10) as response3:
                                     lyrics_data = await response3.json()
-                                    lyrics_encode = lyrics_data["content"]                      # 这里是Base64编码的数据
-                                    lrc_text = base64.b64decode(lyrics_encode).decode('utf-8')  # 这里解码
-                                    return lrc_text
+                                    if lyrics_data:
+                                        lyrics_encode = lyrics_data["content"]                      # 这里是Base64编码的数据
+                                        lrc_text = base64.b64decode(lyrics_encode).decode('utf-8')  # 这里解码
+                                        return lrc_text
     await asyncio.sleep(10)
     return None
 
