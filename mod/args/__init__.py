@@ -3,7 +3,6 @@ import json
 import logging
 import os
 
-
 logger = logging.getLogger(__name__)
 
 # 启动参数解析器
@@ -32,6 +31,7 @@ class ConfigFile:
     """
     读取json配置文件
     """
+
     def __init__(self):
         json_config = {
             "server": {
@@ -78,7 +78,7 @@ default = DefaultConfig()
 class GlobalArgs:
     def __init__(self):
         self.auth = first(env_args.auths, arg_auths, config_args.auth)
-        if type(self.auth) != dict:
+        if type(self.auth) is not dict:
             self.auth = {}
         self.port = first(env_args.port, kw_args.port, config_args.port, default.port)
         self.ip = first(config_args.ip, default.ip)

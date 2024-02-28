@@ -24,16 +24,16 @@ def require_auth(request, permission='r'):
         return -1
 
 
-def get_permission(key: str) -> str:
+def get_permission(name: str) -> str:
     """
-    获取对应的权限组
-    :param key:
+    通过名称获取对应的权限组
+    :param name:
     :return:
     """
-    if not key:
+    if not name:
         return ''
     auth_dict = args.auth
-    return auth_dict.get(key, '')
+    return auth_dict.get(name, '')
 
 
 def has_permission(supply: str, require: str) -> bool:
