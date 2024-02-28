@@ -32,7 +32,7 @@ def get_permission(name: str) -> str:
     """
     if not name:
         return ''
-    auth_dict = args.auth
+    auth_dict: dict = args.auth
     return auth_dict.get(name, '')
 
 

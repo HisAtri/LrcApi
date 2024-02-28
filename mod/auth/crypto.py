@@ -6,7 +6,7 @@ class Crypto:
         self.key = self.gen_key()
 
     @staticmethod
-    def gen_key():
+    def gen_key() -> str:
         """
         生成一个32位的AES密钥
         :return: 32位随机字符串作AES密钥
