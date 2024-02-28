@@ -1,19 +1,24 @@
-from . import cookie
+import flask
 
+from . import cookie
 from mod.args import GlobalArgs
 
 
 args = GlobalArgs()
 
 
-# 鉴权函数，在auth_token存在的情况下，对请求进行鉴权
-# permission=r 代表最小权限
-def require_auth(request, permission='r'):
-    user_cookie = request.cookies.get("api_auth_token", "")
-    cookie_key = cookie.cookie_key(user_cookie)
-    auth_header = request.headers.get('Authorization', False) or request.headers.get('Authentication', False)
-    cookie_permission = has_permission(get_permission(cookie_key), permission)
-    header_permission = has_permission(get_permission(auth_header), permission)
+def require_auth(request: flask.request, permission: str = 'r'):
+    """
+    鉴权
+    :param request:
+    :param permission: 默认为读权限
+    :return:
+    """
+    user_cookie: str = request.cookies.get("api_auth_token", "")
+    cookie_key: str = cookie.cookie_key(user_cookie)
+    auth_header: str = request.headers.get('Authorization', False) or request.headers.get('Authentication', False)
+    cookie_permission: bool = has_permission(get_permission(cookie_key), permission)
+    header_permission: bool = has_permission(get_permission(auth_header), permission)
 
     if permission == 'r' and not args.auth:
         return 1
