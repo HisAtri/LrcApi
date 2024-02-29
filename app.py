@@ -57,11 +57,11 @@ def calculate_md5(string):
     # 将字符串转换为字节流并进行 MD5 计算
     md5_hash.update(string.encode('utf-8'))
 
-    # 获取计算结果的十六进制表示，并去掉开头的 "0x"
-    md5_hex = md5_hash.hexdigest()
-    md5_hex = md5_hex.lstrip("0x")
+    # 获取计算结果的十六进制表示
+    md5_bytes = md5_hash.digest()
+    md5_str = md5_bytes.hex()
 
-    return md5_hex
+    return md5_str
 
 
 # 跟踪重定向
