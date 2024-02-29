@@ -1,19 +1,24 @@
-from . import cookie
+import flask
 
+from . import cookie
 from mod.args import GlobalArgs
 
 
 args = GlobalArgs()
 
 
-# 鉴权函数，在auth_token存在的情况下，对请求进行鉴权
-# permission=r 代表最小权限
-def require_auth(request, permission='r'):
-    user_cookie = request.cookies.get("api_auth_token", "")
-    cookie_key = cookie.cookie_key(user_cookie)
-    auth_header = request.headers.get('Authorization', False) or request.headers.get('Authentication', False)
-    cookie_permission = has_permission(get_permission(cookie_key), permission)
-    header_permission = has_permission(get_permission(auth_header), permission)
+def require_auth(request: flask.request, permission: str = 'r'):
+    """
+    鉴权
+    :param request:
+    :param permission: 默认为读权限
+    :return:
+    """
+    user_cookie: str = request.cookies.get("api_auth_token", "")
+    cookie_key: str = cookie.cookie_key(user_cookie)
+    auth_header: str = request.headers.get('Authorization', False) or request.headers.get('Authentication', False)
+    cookie_permission: bool = has_permission(get_permission(cookie_key), permission)
+    header_permission: bool = has_permission(get_permission(auth_header), permission)
 
     if permission == 'r' and not args.auth:
         return 1
@@ -24,16 +29,16 @@ def require_auth(request, permission='r'):
         return -1
 
 
-def get_permission(key: str) -> str:
+def get_permission(name: str) -> str:
     """
-    获取对应的权限组
-    :param key:
+    通过名称获取对应的权限组
+    :param name:
     :return:
     """
-    if not key:
+    if not name:
         return ''
-    auth_dict = args.auth
-    return auth_dict.get(key, '')
+    auth_dict: dict = args.auth
+    return auth_dict.get(name, '')
 
 
 def has_permission(supply: str, require: str) -> bool:
