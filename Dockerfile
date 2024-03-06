@@ -11,7 +11,7 @@ FROM gcc_installer as requirements_installer
 WORKDIR /app
 
 # 只复制 requirements.txt，充分利用 Docker 缓存层
-COPY ./LrcApi/requirements.txt /app/
+COPY ./requirements.txt /app/
 
 # 安装Python依赖
 RUN pip install --no-user --prefix=/install -r requirements.txt
@@ -26,7 +26,7 @@ WORKDIR /app
 COPY --from=requirements_installer /install /usr/local
 
 # 复制项目代码
-COPY ./LrcApi /app
+COPY ./ /app
 
 # 设置启动命令
 CMD ["python", "/app/app.py"]

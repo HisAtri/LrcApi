@@ -358,11 +358,15 @@ def login_api():
     return jsonify(success=False)
 
 
-def main():
-    # Waitress WSGI 服务器
-    serve(app, host=args.ip, port=args.port, threads=32, channel_timeout=30)
-    # Debug服务器
-    # app.run(host='0.0.0.0', port=args.port)
+def main(debug=False):
+    if not debug:
+        # Waitress WSGI 服务器
+        serve(app, host=args.ip, port=args.port, threads=32, channel_timeout=30)
+        # Debug服务器
+        # app.run(host='0.0.0.0', port=args.port)
+    else:
+        logger.info("程序将以Debug模式启动")
+        app.run(host='0.0.0.0', port=args.port, debug=True)
 
 
 if __name__ == '__main__':
@@ -378,4 +382,4 @@ if __name__ == '__main__':
     # 注册 Blueprint 到 Flask 应用
     app.register_blueprint(v1_bp)
     # 启动
-    main()
+    main(args.debug)
