@@ -2,7 +2,7 @@ import hashlib
 import re
 
 
-def calculate_md5(string: str, base="hex"):
+def calculate_md5(string: str, base="hexstr"):
     """
     计算字符串的 MD5 哈希值
 
@@ -19,7 +19,6 @@ def calculate_md5(string: str, base="hex"):
     if base == "hex":
         # 十六进制->str
         md5_hex = md5_hash.hexdigest()
-        md5_hex = md5_hex.lstrip("0x")
         return md5_hex
     elif base == "dec":
         # 十进制表示->int
@@ -29,8 +28,11 @@ def calculate_md5(string: str, base="hex"):
         # 二进制表示->bin
         md5_bin = format(int(md5_hash.hexdigest(), 16), '0128b')  # 将十六进制转换为二进制，补齐到128位
         return md5_bin
+    elif base == "hexstr":
+        md5_bytes = md5_hash.digest()
+        return md5_bytes.hex()
     else:
-        raise ValueError("Invalid base. Supported values are 'hex', 'dec', and 'bin'.")
+        raise ValueError("Invalid base. Supported values are 'hex', 'dec', 'hexstr', and 'bin'.")
 
 
 def merge_dictionaries(dict_a: dict, dict_b: dict) -> dict:
