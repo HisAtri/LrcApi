@@ -9,27 +9,18 @@ from mod.auth import webui
 from mod.auth.authentication import require_auth
 
 
-@app.route('/tag', methods=['GET', 'POST', 'PUT'])
-@v1_bp.route('/tag', methods=['GET', 'POST', 'PUT'])
+@app.route('/tag', methods=['POST', 'PUT'])
+@app.route('/confirm', methods=['POST', 'PUT'])
+@v1_bp.route('/tag', methods=['POST', 'PUT'])
 def setTag():
-    def validate_json_structure(data):
-        if not isinstance(data, dict):
-            return False
-        if "path" not in data:
-            return False
-        return True
-
     match require_auth(request=request, permission='rw'):
         case -1:
             return render_template_string(webui.error()), 403
         case -2:
             return render_template_string(webui.error()), 421
 
-    musicData = request.json
-    if not validate_json_structure(musicData):
-        return "Invalid JSON structure.", 422
-
-    audio_path = musicData.get("path")
+    music_data = request.json
+    audio_path = music_data.get("path")
     if not audio_path:
         return "Missing 'path' key in JSON.", 422
 
@@ -43,18 +34,17 @@ def setTag():
         "year": {"allow": (int, bool, type(None)), "caption": "Album year"},
         "lyrics": {"allow": (str, bool, type(None)), "caption": "Lyrics text"}
     }
-    if "title" in musicData and "tracktitle" not in musicData:
-        musicData["tracktitle"] = musicData["title"]
+    music_data["tracktitle"] = music_data.get("tracktitle") or music_data.get("title")
     tags_to_set = {}
-    for key, value in musicData.items():
+    for key, value in music_data.items():
         if key in supported_tags and isinstance(value, supported_tags[key]["allow"]):
             tags_to_set[key] = value
     try:
-        tag.tin(tags=tags_to_set, file=audio_path)
+        tag.write(tags=tags_to_set, file=audio_path)
     except TypeError as e:
-        return str(e), 524
+        return {"code": 524, "error": str(e)}, 524
     except FileNotFoundError as e:
-        return str(e), 404
+        return {"code": 404, "error": str(e)}, 404
     except Exception as e:
-        return str(e), 500
-    return "Succeed", 200
+        return {"code": 500, "error": str(e)}, 500
+    return {"code": 200, "log": f"Successfully edited file {audio_path}"}, 200

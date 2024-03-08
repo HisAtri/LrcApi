@@ -44,7 +44,7 @@ def lyrics():
             if file_content is not None:
                 return lrc.standard(file_content)
     try:
-        lrc_in = tag.tout(path).get("lyrics", "")
+        lrc_in = tag.read(path).get("lyrics", "")
         if type(lrc_in) is str and len(lrc_in) > 0:
             return lrc_in
     except:

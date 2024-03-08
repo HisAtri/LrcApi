@@ -33,7 +33,7 @@ def dump_b64(album_art: music_tag.file.MetadataItem):
     return img_base64
 
 
-def tin(tags: dict, file: any) -> None:
+def write(tags: dict, file: any) -> None:
     """
     :param tags: 字典，包含Tags数据，详见TAG_MAP
     :param file: string, file-like object, io.StringIO, etc.
@@ -56,7 +56,7 @@ def tin(tags: dict, file: any) -> None:
     music_file_obj.save()
 
 
-def tout(file: any) -> dict:
+def read(file: any) -> dict:
     file_path = file if isinstance(file, str) else (file.name if hasattr(file, 'name') else None)
     if not file_path or not os.path.exists(file_path):
         return {}
@@ -77,4 +77,4 @@ if __name__ == '__main__':
         'year': 2022,
         'lyrics': '歌词'
     }
-    print(tout(r'H:\sp\test.mp3'))
+    print(read(r'H:\sp\test.mp3'))

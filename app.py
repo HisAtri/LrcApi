@@ -3,7 +3,7 @@ import sys
 
 from waitress import serve
 
-from mod import run_process
+from mod import run_process, check_update
 from mod.args import GlobalArgs
 from api import *
 from api import __import__
@@ -25,13 +25,15 @@ def run_server(debug=False):
 if __name__ == '__main__':
     # 对Python版本进行检查（要求Python 3.10+）
     if sys.version_info < (3, 10):
-        raise RuntimeError("Python 3.10+ required, but you are using Python {}.{}.{}.".format(*sys.version_info[:3]))
-
+        raise RuntimeError(
+            "Python 3.10+ required, but you are using Python {}.{}.{}.".format(*sys.version_info[:3])
+        )
     # 日志配置
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     logger = logging.getLogger('')
     logger.info("正在启动服务器")
     run_process.run()
+    check_update.run(version="1.5.0")
     # 注册 Blueprint 到 Flask 应用
     app.register_blueprint(v1_bp)
     # 启动

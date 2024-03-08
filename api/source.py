@@ -45,6 +45,10 @@ def serve_file(filename):
     """
     FORBIDDEN_EXTENSIONS = ('.exe', '.bat', '.dll', '.sh', '.so', '.php', '.sql', '.db', '.mdb', '.gz', '.tar', '.bak',
                             '.tmp', '.key', '.pem', '.crt', '.csr', '.log')
+    _paths = filename.split('/')
+    for _path in _paths:
+        if _path.startswith('.'):
+            abort(404)
     if filename.lower().endswith(FORBIDDEN_EXTENSIONS):
         abort(404)
     try:
