@@ -169,4 +169,5 @@ log.txt
 app.build/
 app.dist/
 config/
+release/
 ann.md

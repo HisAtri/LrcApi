@@ -3,7 +3,7 @@ import sys
 
 from waitress import serve
 
-from mod import run_process, check_update
+from mod import check_update
 from mod.args import GlobalArgs
 from api import *
 from api import __import__
@@ -32,8 +32,7 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     logger = logging.getLogger('')
     logger.info("正在启动服务器")
-    run_process.run()
-    check_update.run(version="1.5.1")
+    check_update.run(version="1.5.2")
     # 注册 Blueprint 到 Flask 应用
     app.register_blueprint(v1_bp)
     # 启动

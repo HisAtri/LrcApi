@@ -1,3 +1,5 @@
+import sys
+
 from . import *
 
 import os
@@ -6,6 +8,20 @@ from flask import request, abort, redirect, send_from_directory, render_template
 
 from mod.auth import webui
 from mod.auth.authentication import require_auth
+
+
+def get_base_path():
+    """
+    获取程序运行路径
+    如果是打包后的exe文件，则返回打包资源路径
+    """
+    if getattr(sys, 'frozen', False):
+        return sys._MEIPASS
+    else:
+        return os.getcwd()
+
+
+path = os.path.join(get_base_path(), 'src')     # 静态资源路径
 
 
 @app.route('/')
@@ -23,7 +39,7 @@ def favicon():
     favicon位置，返回图片
     :return:
     """
-    return send_from_directory('src', 'img/Logo_Design.svg')
+    return send_from_directory(path, 'img/Logo_Design.svg')
 
 
 @app.route('/src')
@@ -32,7 +48,7 @@ def return_index():
     显示主页
     :return: index page
     """
-    return send_from_directory('src', 'index.html')
+    return send_from_directory(path, 'index.html')
 
 
 @app.route('/src/<path:filename>')
@@ -52,7 +68,7 @@ def serve_file(filename):
     if filename.lower().endswith(FORBIDDEN_EXTENSIONS):
         abort(404)
     try:
-        return send_from_directory('src', filename)
+        return send_from_directory(path, filename)
     except FileNotFoundError:
         abort(404)
 
