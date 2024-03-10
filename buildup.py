@@ -7,18 +7,17 @@ import os
 sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 
 PLATFORM = platform.system()
-ARCHITECTURE = platform.architecture()[0]
+ARCHITECTURE = platform.machine()
 APP_NAME = "lrcapi"
 APP_VERSION = "1.5.2"
 PACK_NAME = f"{APP_NAME}-{APP_VERSION}-{PLATFORM}-{ARCHITECTURE}{'.exe' if PLATFORM == 'Windows' else ''}"
 
-
+# 针对Alpine，安装objdump/gcc环境等
+subprocess.run("apk add --no-cache gcc musl-dev jpeg-dev zlib-dev libjpeg", shell=True)
+subprocess.run("apk add binutils", shell=True)
 # 安装Pyinstaller及主程序依赖
 subprocess.run("pip install -r requirements.txt", shell=True)
 subprocess.run("pip install pyinstaller", shell=True)
-
-# 针对Alpine，安装objdump
-subprocess.run("apk add binutils", shell=True)
 
 # 打包
 def generate_add_data_options(root_dir):
