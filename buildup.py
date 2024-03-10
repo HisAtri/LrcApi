@@ -17,6 +17,8 @@ PACK_NAME = f"{APP_NAME}-{APP_VERSION}-{PLATFORM}-{ARCHITECTURE}{'.exe' if PLATF
 subprocess.run("pip install -r requirements.txt", shell=True)
 subprocess.run("pip install pyinstaller", shell=True)
 
+# 针对Alpine，安装objdump
+subprocess.run("apk add binutils", shell=True)
 
 # 打包
 def generate_add_data_options(root_dir):
@@ -25,7 +27,8 @@ def generate_add_data_options(root_dir):
         if files:
             # 将目录路径转换为 PyInstaller 可接受的格式
             formatted_path = root.replace("\\", "/")
-            options.append(f'--add-data "{formatted_path}/*;{formatted_path}/"')
+            separator = ";" if PLATFORM == "Windows" else ":"
+            options.append(f'--add-data "{formatted_path}/*{separator}{formatted_path}/"')
     return " ".join(options)
 
 
