@@ -7,3 +7,4 @@ mutagen~=1.46.0
 aiohttp~=3.9.1
 Pillow~=10.1.0
 pyaes~=1.6.1
+Werkzeug~=3.0.1

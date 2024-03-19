@@ -107,5 +107,3 @@ def lrc_json():
     _response = jsonify(response)
     _response.headers['Content-Type'] = 'application/json; charset=utf-8'
     return jsonify(response)
-
-

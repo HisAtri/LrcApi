@@ -1,7 +1,5 @@
 from . import *
 
-import logging
-
 from flask import request, redirect, jsonify, render_template_string, make_response
 
 from mod.auth import webui, cookie
@@ -9,7 +7,6 @@ from mod.auth.authentication import require_auth
 from mod.args import GlobalArgs
 
 args = GlobalArgs()
-logger = logging.getLogger(__name__)
 
 
 @app.route('/login')
