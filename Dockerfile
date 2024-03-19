@@ -1,8 +1,8 @@
 # 第一阶段：安装GCC
 FROM python:3.12.1-alpine as gcc_installer
 
-# 安装GCC
-RUN apk add --no-cache gcc musl-dev
+# 安装GCC及其他依赖
+RUN apk add --no-cache gcc musl-dev jpeg-dev zlib-dev libjpeg
 
 # 第二阶段：安装Python依赖
 FROM gcc_installer as requirements_installer

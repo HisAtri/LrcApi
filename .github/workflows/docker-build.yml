@@ -44,5 +44,5 @@ jobs:
             APP_NAME=lyricsapi
             APP_VERSION=${{ env.APP_VERSION }}
           tags: |
-            ${{ secrets.DOCKERHUB_USER }}/lyricsapi:latest
             ${{ secrets.DOCKERHUB_USER }}/lyricsapi:${{ env.APP_VERSION }}
+            ${{ contains(env.APP_VERSION, 'beta') && secrets.DOCKERHUB_USER }}/lyricsapi:latest
