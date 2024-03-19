@@ -25,8 +25,20 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Generate App Version
-        run: echo APP_VERSION=`git describe --tags --always` >> $GITHUB_ENV
+      - name: Get latest tag
+        id: latesttag
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const repo = context.repo;
+            const tags = await github.rest.repos.listTags(repo);
+            if (tags.data.length > 0) {
+              return tags.data[0].name;
+            } else {
+              return '0.0.0';
+            }
+      - name: Set APP_VERSION
+        run: echo APP_VERSION=${{ steps.latesttag.outputs.result }} >> $GITHUB_ENV
 
       - name: Handle beta version
         run: |
@@ -47,8 +59,7 @@ jobs:
             linux/arm64/v8
             linux/arm/v7
             linux/arm/v6
-
-          build-tags:
+          build-args:
             APP_NAME=lrcapi
             APP_VERSION=${{ env.APP_VERSION }}
           tags: |
