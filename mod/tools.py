@@ -64,7 +64,7 @@ def merge_dictionaries(dict_a: dict, dict_b: dict) -> dict:
     return merged_dict
 
 
-def standard_lrc(lrc_text: str):
+def standard_lrc(lrc_text: str) -> str:
     if not lrc_text or type(lrc_text) is not str:
         return lrc_text
     elif '[' in lrc_text and ']' in lrc_text:

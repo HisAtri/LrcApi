@@ -10,7 +10,7 @@ A Flask API For [StreamMusic](https://github.com/gitbobobo/StreamMusic)
 
 <p align="center">
     <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/Python-3.10|3.11|3.12-blue.svg" alt=""></a>
-    <a href="https://hub.docker.com/r/hisatri/lyricapi"><img src="https://img.shields.io/badge/Docker-Quick%20Start-0077ED.svg" alt=""></a>
+    <a href="https://hub.docker.com/r/hisatri/lrcapi"><img src="https://img.shields.io/badge/Docker-Quick%20Start-0077ED.svg" alt=""></a>
     <br>
     <img src="https://img.shields.io/github/license/HisAtri/LrcApi?color=%23f280bf" alt="">
     <img src="https://img.shields.io/github/commit-activity/m/HisAtri/LrcApi?color=%23bf4215" alt="">
@@ -73,7 +73,7 @@ docker run -d \
     -p 28883:28883 \
     -v /home/user/music:/music \
     -e API_AUTH=自定义一个鉴权key \
-    hisatri/lyricapi:latest
+    hisatri/lrcapi:latest
 ```
 
 或者，请指定一个Tag（推荐）
@@ -83,7 +83,7 @@ docker run -d \
     -p 28883:28883 \
     -v /home/user/music:/music \
     -e API_AUTH=自定义一个鉴权key \
-    hisatri/lyricapi:1.5.0
+    hisatri/lrcapi:1.5.2
 ```
 
 如果你正在使用Navidrome Docker，请将 `/home/user/music:/music` 中的 `/home/user/music` 修改为你在Navidrome中映射的主机路径；
