@@ -7,6 +7,7 @@ from flask import request, render_template_string
 from mod import tag
 from mod.auth import webui
 from mod.auth.authentication import require_auth
+from mod.dev.debugger import debugger
 
 
 @app.route('/tag', methods=['POST', 'PUT'])
@@ -23,10 +24,10 @@ def setTag():
     audio_path = music_data.get("path")
     if not audio_path:
         return "Missing 'path' key in JSON.", 422
-
+    debugger.log("info", f"Editing file {audio_path}")
     if not os.path.exists(audio_path):
+        debugger.log("error", f"File not found: {audio_path}")
         return "File not found.", 404
-
     supported_tags = {
         "tracktitle": {"allow": (str, bool, type(None)), "caption": "Track Title"},
         "artist": {"allow": (str, bool, type(None)), "caption": "Artists"},

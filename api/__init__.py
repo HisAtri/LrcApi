@@ -1,10 +1,12 @@
 import shutil
+import logging
 
 from flask import Flask, Blueprint, request
 from flask_caching import Cache
 
 
 app = Flask(__name__)
+logger = logging.getLogger(__name__)
 
 v1_bp = Blueprint('v1', __name__, url_prefix='/api/v1')
 # Blueprint直接复制app配置项
@@ -30,4 +32,4 @@ def make_cache_key(*args, **kwargs):
     return path + args
 
 
-__all__ = ['app', 'v1_bp', 'cache', 'make_cache_key']
+__all__ = ['app', 'v1_bp', 'cache', 'make_cache_key', 'logger']

@@ -5,6 +5,7 @@ from waitress import serve
 
 from mod import check_update
 from mod.args import GlobalArgs
+from mod.dev.debugger import debugger
 from api import *
 from api import __import__
 
@@ -15,10 +16,12 @@ def run_server(debug=False):
     if not debug:
         # Waitress WSGI 服务器
         serve(app, host=args.ip, port=args.port, threads=32, channel_timeout=30)
-        # Debug服务器
-        # app.run(host='0.0.0.0', port=args.port)
     else:
-        logger.info("程序将以Debug模式启动")
+        debugger.debug = True
+        debugger.log("info", "Debug模式已开启")
+        debugger.log("info", f"Version: {args.version}")
+        if args.auth:
+            debugger.log("info", f"Auth: {args.auth}")
         app.run(host='0.0.0.0', port=args.port, debug=True)
 
 
@@ -32,7 +35,7 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     logger = logging.getLogger('')
     logger.info("正在启动服务器")
-    check_update.run(version="1.5.2")
+    check_update.run(version=args.version)
     # 注册 Blueprint 到 Flask 应用
     app.register_blueprint(v1_bp)
     # 启动
