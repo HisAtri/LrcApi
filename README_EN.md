@@ -10,7 +10,7 @@ A Flask API For [StreamMusic](https://github.com/gitbobobo/StreamMusic)
 
 <p align="center">
     <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/Python-3.10|3.11|3.12-blue.svg" alt=""></a>
-    <a href="https://hub.docker.com/r/hisatri/lyricapi"><img src="https://img.shields.io/badge/Docker-Quick%20Start-0077ED.svg" alt=""></a>
+    <a href="https://hub.docker.com/r/hisatri/lrcapi"><img src="https://img.shields.io/badge/Docker-Quick%20Start-0077ED.svg" alt=""></a>
     <br>
     <img src="https://img.shields.io/github/license/HisAtri/LrcApi?color=%23f280bf" alt="">
     <img src="https://img.shields.io/github/commit-activity/m/HisAtri/LrcApi?color=%23bf4215" alt="">
@@ -67,13 +67,13 @@ Start the service: `python3 app.py --port 8080 --auth 自定义一个鉴权key`
 ### Deploy via Docker
 
 ```bash
-docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lyricapi:latest
+docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lrcapi:latest
 ```
 
 Alternatively, you can specify a Tag (recommended)
 
 ```bash
-docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lyricapi:alpine-py1.3.4
+docker run -d -p 28883:28883 -v /home/user/music:/music hisatri/lrcapi:alpine-py1.5.2
 ```
 
 If you are using Navidrome Docker, please modify `/home/user/music:/music` by replacing `/home/user/music` with the host path you have mapped in Navidrome;

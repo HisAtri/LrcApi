@@ -12,11 +12,11 @@ TAG_MAP = {
     'album': '专辑',
     'year': '年份',
     'lyrics': '歌词',
-    'artwork': '封面'
+    'artwork': '封面图片Base64'
 }
 
 
-def dump_b64(album_art: music_tag.file.MetadataItem):
+def dump_b64(album_art: music_tag.file.MetadataItem) -> str:
     """
     以图片加载MetadataItem对象并进行base64编码
     :param album_art:
@@ -30,7 +30,7 @@ def dump_b64(album_art: music_tag.file.MetadataItem):
     img.save(img_byte_arr, format=img_format)
     # 将字节流编码为base64字符串
     img_base64 = base64.b64encode(img_byte_arr.getvalue())
-    return img_base64
+    return img_base64.decode()
 
 
 def write(tags: dict, file: any) -> None:
@@ -47,10 +47,15 @@ def write(tags: dict, file: any) -> None:
 
     music_file_obj = music_tag.load_file(file)
     for tag_name, tag_value in tags.items():
-        if tag_name in TAG_MAP and tag_value:
+        if tag_name == "artwork" and tag_value:
+            artwork_raw: bytes = base64.b64decode(tag_value)
+            artwork = music_tag.file.Artwork(artwork_raw)
+            music_file_obj[tag_name] = artwork
+        elif tag_name in TAG_MAP and tag_value:
             music_file_obj[tag_name] = tag_value
+        elif tag_value is False:
+            del music_file_obj[tag_name]
         else:
-            # 具体是跳过还是del待定
             continue
 
     music_file_obj.save()
