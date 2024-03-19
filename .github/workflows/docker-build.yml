@@ -28,6 +28,14 @@ jobs:
       - name: Generate App Version
         run: echo APP_VERSION=`git describe --tags --always` >> $GITHUB_ENV
 
+      - name: Handle beta version
+        run: |
+          if [[ "${{ env.APP_VERSION }}" == *"beta"* ]]; then
+            echo APP_TAG=dev >> $GITHUB_ENV
+          else
+            echo APP_TAG=latest >> $GITHUB_ENV
+          fi
+
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2
@@ -41,8 +49,8 @@ jobs:
             linux/arm/v6
 
           build-tags:
-            APP_NAME=lyricsapi
+            APP_NAME=lrcapi
             APP_VERSION=${{ env.APP_VERSION }}
           tags: |
-            ${{ secrets.DOCKERHUB_USER }}/lyricsapi:${{ env.APP_VERSION }}
-            ${{ contains(env.APP_VERSION, 'beta') && secrets.DOCKERHUB_USER }}/lyricsapi:latest
+            ${{ secrets.DOCKERHUB_USER }}/lrcapi:${{ env.APP_VERSION }}
+            ${{ secrets.DOCKERHUB_USER }}/lrcapi:${{ env.APP_TAG }}
