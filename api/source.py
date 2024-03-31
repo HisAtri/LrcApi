@@ -1,5 +1,3 @@
-import sys
-
 from . import *
 
 import os
@@ -8,20 +6,6 @@ from flask import request, abort, redirect, send_from_directory, render_template
 
 from mod.auth import webui
 from mod.auth.authentication import require_auth
-
-
-def get_base_path():
-    """
-    获取程序运行路径
-    如果是打包后的exe文件，则返回打包资源路径
-    """
-    if getattr(sys, 'frozen', False):
-        return sys._MEIPASS
-    else:
-        return os.getcwd()
-
-
-path = os.path.join(get_base_path(), 'src')     # 静态资源路径
 
 
 @app.route('/')
@@ -39,7 +23,7 @@ def favicon():
     favicon位置，返回图片
     :return:
     """
-    return send_from_directory(path, 'img/Logo_Design.svg')
+    return send_from_directory(src_path, 'img/Logo_Design.svg')
 
 
 @app.route('/src')
@@ -48,7 +32,7 @@ def return_index():
     显示主页
     :return: index page
     """
-    return send_from_directory(path, 'index.html')
+    return send_from_directory(src_path, 'index.html')
 
 
 @app.route('/src/<path:filename>')
@@ -60,7 +44,7 @@ def serve_file(filename):
     :return:
     """
     FORBIDDEN_EXTENSIONS = ('.exe', '.bat', '.dll', '.sh', '.so', '.php', '.sql', '.db', '.mdb', '.gz', '.tar', '.bak',
-                            '.tmp', '.key', '.pem', '.crt', '.csr', '.log')
+                            '.tmp', '.key', '.pem', '.crt', '.csr', '.log', '.html', '.htm', '.xml', '.json', '.yml',)
     _paths = filename.split('/')
     for _path in _paths:
         if _path.startswith('.'):
@@ -68,7 +52,7 @@ def serve_file(filename):
     if filename.lower().endswith(FORBIDDEN_EXTENSIONS):
         abort(404)
     try:
-        return send_from_directory(path, filename)
+        return send_from_directory(src_path, filename)
     except FileNotFoundError:
         abort(404)
 

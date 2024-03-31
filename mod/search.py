@@ -16,7 +16,8 @@ async def kugou(title, artist, album):
     async with aiohttp.ClientSession() as session:
         # 第一层Json，要求获得Hash值
         async with session.get(
-                f'http://mobilecdn.kugou.com/api/v3/search/song?format=json&keyword={title} {artist} {album}&page=1&pagesize=2&showtype=1',
+                f'http://mobilecdn.kugou.com/api/v3/search/song'
+                f'?format=json&keyword={title} {artist} {album}&page=1&pagesize=2&showtype=1',
                 headers=headers,
                 timeout=10) as response:
             if response.status == 200:
@@ -38,7 +39,8 @@ async def kugou(title, artist, album):
                         ratio_max = max(ratio, ratio_max)
                         if ratio >= ratio_max:
                             async with session.get(
-                                    f"https://krcs.kugou.com/search?ver=1&man=yes&client=mobi&keyword=&duration=&hash={song_hash}&album_audio_id=",
+                                    f"https://krcs.kugou.com/search"
+                                    f"?ver=1&man=yes&client=mobi&keyword=&duration=&hash={song_hash}&album_audio_id=",
                                     headers=headers,
                                     timeout=10) as response2:
                                 lyrics_info = await response2.json()
@@ -46,7 +48,8 @@ async def kugou(title, artist, album):
                                 lyrics_key = lyrics_info["candidates"][0]["accesskey"]
                                 # 第三层Json，要求获得并解码Base64
                                 async with session.get(
-                                        f"http://lyrics.kugou.com/download?ver=1&client=pc&id={lyrics_id}&accesskey={lyrics_key}&fmt=lrc&charset=utf8",
+                                        f"http://lyrics.kugou.com/download"
+                                        f"?ver=1&client=pc&id={lyrics_id}&accesskey={lyrics_key}&fmt=lrc&charset=utf8",
                                         headers=headers,
                                         timeout=10) as response3:
                                     lyrics_data = await response3.json()
@@ -60,7 +63,8 @@ async def kugou(title, artist, album):
 
 async def api_2(title, artist, album):
     headers = {
-        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 LrcAPI/1.1',
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) '
+                      'Chrome/92.0.4515.131 LrcAPI/1.1',
     }
     url = f"http://api.lrc.cx/lyrics?title={title}&artist={artist}&album={album}&path=None&limit=1&api=lrcapi"
 
