@@ -83,7 +83,7 @@ async def a_search(title='', artist='', album=''):
                                     "title": song_name,
                                     "album": album_name,
                                     "artists": singer_name,
-                                    "lrc": lrc_text,
+                                    "lyrics": lrc_text,
                                     "cover": await get_cover(session, song_hash, album_id),
                                     "hash": tools.calculate_md5(
                                         f"title:{song_name};artists:{singer_name};album:{album_name}")
@@ -97,7 +97,7 @@ async def a_search(title='', artist='', album=''):
             else:
                 return None
         sort_li = sorted(result_list, key=lambda x: x['ratio'], reverse=True)
-        return sort_li
+        return [i.get('data') for i in sort_li]
 
 
 def search(title='', artist='', album=''):

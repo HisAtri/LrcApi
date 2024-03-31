@@ -7,6 +7,7 @@ from flask import request, abort, jsonify, render_template_string
 from urllib.parse import unquote_plus
 
 from mod import search, lrc
+from mod import searchx
 from mod import tools
 from mod import tag
 from mod.auth import webui
@@ -54,11 +55,10 @@ def lyrics():
         title = unquote_plus(request.args.get('title'))
         artist = unquote_plus(request.args.get('artist', ''))
         album = unquote_plus(request.args.get('album', ''))
-        executor = concurrent.futures.ThreadPoolExecutor()
-        # 提交任务到线程池，并设置超时时间
-        future = executor.submit(search.main, title, artist, album)
-        lyrics_text = future.result(timeout=30)
-        return lrc.standard(lyrics_text)
+        result: list = searchx.search_all(title=title, artist=artist, album=album, timeout=30)
+        if not result[0].get('lyrics'):
+            return "Lyrics not found.", 404
+        return result[0].get('lyrics')
     except:
         return "Lyrics not found.", 404
 
@@ -92,18 +92,13 @@ def lrc_json():
                     "lyrics": file_content
                 })
 
-    lyrics_list = search.allin(title, artist, album)
+    lyrics_list = searchx.search_all(title, artist, album)
     if lyrics_list:
         for i in lyrics_list:
             if not i:
                 continue
-            i = lrc.standard(i)
-            response.append({
-                "id": tools.calculate_md5(i),
-                "title": title,
-                "artist": artist,
-                "lyrics": i
-            })
+            i['lyrics'] = lrc.standard(i['lyrics'])
+            response.append(i)
     _response = jsonify(response)
     _response.headers['Content-Type'] = 'application/json; charset=utf-8'
     return jsonify(response)
