@@ -7,7 +7,7 @@ from . import *
 import os
 import requests
 from urllib.parse import urlparse
-from flask import request, render_template_string
+from flask import request, render_template_string, send_from_directory
 from werkzeug.utils import secure_filename
 
 from mod.tools import calculate_md5
@@ -65,7 +65,7 @@ def file_api_download():
         return {"error": str(e), "code": 500}, 500
 
 
-@app.route('/file/upload', methods=['POST'])
+@v1_bp.route('/file/upload', methods=['POST'])
 def upload_file():
     match require_auth(request=request, permission="rwd"):
         case -1:
@@ -150,3 +150,10 @@ def list_file():
             "files": data["FILES"][row * (page - 1):row * page]
         }
     }
+
+
+"""
+@app.route('/file', methods=['GET'])
+def file():
+    return send_from_directory(src_path, 'file.html')
+"""

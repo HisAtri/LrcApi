@@ -75,7 +75,3 @@ __all__ = ['file', 'util',
            'AudioFile',
            'load_file',
            ]
-
-##
-## EOF
-##

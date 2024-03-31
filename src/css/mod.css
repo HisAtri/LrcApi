@@ -27,6 +27,15 @@ hr {
     box-shadow: 0 0 10px rgba(255, 160, 0, 0.8);
 }
 
+.no-select {
+    user-select: none;
+}
+
+.filebox {
+    min-height: 70vh;
+    margin-top: 20px;
+}
+
 .footer {
     position: fixed;
     left: 0;

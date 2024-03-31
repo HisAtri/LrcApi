@@ -1,4 +1,4 @@
-from . import cover, login, lyrics, source, tag, time
+from . import cover, login, lyrics, source, tag, time, file
 
 """
 引入所有子模块

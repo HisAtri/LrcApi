@@ -1,5 +1,7 @@
 import shutil
 import logging
+import sys
+import os
 
 from flask import Flask, Blueprint, request
 from flask_caching import Cache
@@ -31,5 +33,17 @@ def make_cache_key(*args, **kwargs):
     args = str(hash(frozenset(request.args.items())))
     return path + args
 
+def get_base_path():
+    """
+    获取程序运行路径
+    如果是打包后的exe文件，则返回打包资源路径
+    """
+    if getattr(sys, 'frozen', False):
+        return sys._MEIPASS
+    else:
+        return os.getcwd()
 
-__all__ = ['app', 'v1_bp', 'cache', 'make_cache_key', 'logger']
+
+src_path = os.path.join(get_base_path(), 'src')     # 静态资源路径
+
+__all__ = ['app', 'v1_bp', 'cache', 'make_cache_key', 'logger', 'src_path']
