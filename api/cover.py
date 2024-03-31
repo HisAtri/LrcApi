@@ -24,18 +24,13 @@ def cover_api():
     req_args = {key: request.args.get(key) for key in request.args}
     # 构建目标URL
     target_url = 'http://api.lrc.cx/cover?' + '&'.join([f"{key}={req_args[key]}" for key in req_args])
-    """
-    # 跟踪重定向并获取最终URL
-    final_url = follow_redirects(target_url)
-    # 获取最终URL的内容或响应
-    response = requests.get(final_url)
-    if response.status_code == 200:
-        content_type = response.headers.get('Content-Type', 'application/octet-stream')
-        return Response(response.content, content_type=content_type)
-    else:
+    result = requests.get(target_url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/"})
+    if result.status_code == 200:
+        return result.content, 200, {"Content-Type": result.headers['Content-Type']}
+    elif result.status_code == 404:
         abort(404)
-    """
-    return redirect(target_url, 302)
+    else:
+        abort(500)
 
 
 @v1_bp.route('/cover/<path:s_type>', methods=['GET'])
