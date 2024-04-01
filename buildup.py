@@ -4,12 +4,14 @@ import sys
 import codecs
 import os
 
+from mod.args import GlobalArgs
+
 sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 
 PLATFORM = platform.system()
 ARCHITECTURE = platform.machine()
 APP_NAME = "lrcapi"
-APP_VERSION = "1.5.3"
+APP_VERSION = GlobalArgs().version
 PACK_NAME = f"{APP_NAME}-{APP_VERSION}-{PLATFORM}-{ARCHITECTURE}{'.exe' if PLATFORM == 'Windows' else ''}"
 
 # 安装Pyinstaller及主程序依赖
