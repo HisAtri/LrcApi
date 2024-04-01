@@ -10,7 +10,7 @@ root_dir = os.path.dirname(os.path.abspath(__file__))
 container_root_dir = '/app'
 
 # 在容器内使用buildup.py脚本自动化完成依赖安装、打包等操作
-command_in_docker = "python /app/buildup.py"
+command_in_docker = "\"cd /app && python buildup.py\""
 
 for platform in platforms:
     # 使用docker run命令在不同平台的容器中执行打包命令
