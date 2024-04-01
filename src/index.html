@@ -42,7 +42,7 @@
                 <p class="has-line-data" data-line-start="2" data-line-end="3">A Flask API For <a
                     target="_blank" href="https://github.com/gitbobobo/StreamMusic">StreamMusic</a></p>
                 <a target="_blank" href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/Python-3.10|3.11|3.12-blue.svg" alt=""></a>
-                <a target="_blank" href="https://hub.docker.com/r/hisatri/lyricapi"><img src="https://img.shields.io/badge/Docker-Quick%20Start-0077ED.svg" alt=""></a>
+                <a target="_blank" href="https://hub.docker.com/r/hisatri/lrcapi"><img src="https://img.shields.io/badge/Docker-Quick%20Start-0077ED.svg" alt=""></a>
                 <br>
                 <a target="_blank" href="https://www.gnu.org/licenses/gpl-3.0.html"><img src="https://img.shields.io/github/license/HisAtri/LrcApi?color=%23f280bf" alt=""></a>
                 <img src="https://img.shields.io/github/commit-activity/m/HisAtri/LrcApi?color=%23bf4215" alt="">
@@ -103,10 +103,10 @@
             <p class="has-line-data" data-line-start="45" data-line-end="46">
                 启动服务：<code>python3 app.py --port 8080 --auth 自定义一个鉴权key</code></p>
             <h3 class="code-line" data-line-start=47 data-line-end=48><a id="Docker_47"></a>Docker部署方式</h3>
-            <pre><code data-line-start="50" data-line-end="52" class="language-bash">docker run <span class="hljs-operator">-d</span> -p <span class="hljs-number">28883</span>:<span class="hljs-number">28883</span> -v /home/user/music:/music hisatri/lyricapi:latest
+            <pre><code data-line-start="50" data-line-end="52" class="language-bash">docker run <span class="hljs-operator">-d</span> -p <span class="hljs-number">28883</span>:<span class="hljs-number">28883</span> -v /home/user/music:/music hisatri/lrcapi:latest
             </code></pre>
             <p class="has-line-data" data-line-start="53" data-line-end="54">或者，请指定一个Tag（推荐）</p>
-            <pre><code data-line-start="56" data-line-end="58" class="language-bash">docker run <span class="hljs-operator">-d</span> -p <span class="hljs-number">28883</span>:<span class="hljs-number">28883</span> -v /home/user/music:/music hisatri/lyricapi:alpine-py1.<span class="hljs-number">3.4</span>
+            <pre><code data-line-start="56" data-line-end="58" class="language-bash">docker run <span class="hljs-operator">-d</span> -p <span class="hljs-number">28883</span>:<span class="hljs-number">28883</span> -v /home/user/music:/music hisatri/lrcapi:alpine-py1.<span class="hljs-number">3.4</span>
             </code></pre>
             <p class="has-line-data" data-line-start="59" data-line-end="60">如果你正在使用Navidrome Docker，请将
                 <code>/home/user/music:/music</code> 中的 <code>/home/user/music</code> 修改为你在Navidrome中映射的主机路径；</p>
