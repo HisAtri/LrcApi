@@ -14,6 +14,9 @@ from mod.tools import calculate_md5
 
 
 class Wget:
+    """
+    上下文方法下载文件
+    """
     def __init__(self, url: str, headers: dict = None, save_file: str = None, chunk_size: int = 1024 * 1024):
         self.url = url
         self.headers = headers or {'User-Agent': 'Python/lrc-api'}

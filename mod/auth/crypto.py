@@ -9,7 +9,7 @@ class Crypto:
     def gen_key() -> str:
         """
         生成一个32位的AES密钥
-        :return: 32位随机字符串作AES密钥
+        :return: 32位随机字符串(英文大小写+数字)作AES密钥
         """
         import random
         import string
@@ -22,7 +22,7 @@ class Crypto:
         :param data: json string
         :return: encrypted data
         """
-        aes = pyaes.AESModeOfOperationCTR(self.key.encode())
+        aes = pyaes.AESModeOfOperationCTR(self.key.encode(encoding='utf-8'))
         return aes.encrypt(data).hex()
 
     def decrypt(self, data: str) -> str:
@@ -31,8 +31,8 @@ class Crypto:
         :param data: encrypted data
         :return: json string
         """
-        aes = pyaes.AESModeOfOperationCTR(self.key.encode())
-        return aes.decrypt(bytes.fromhex(data)).decode()
+        aes = pyaes.AESModeOfOperationCTR(self.key.encode(encoding='utf-8'))
+        return aes.decrypt(bytes.fromhex(data)).decode(encoding='utf-8')
 
     def change_key(self):
         self.key = self.gen_key()
