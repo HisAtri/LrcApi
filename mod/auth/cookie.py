@@ -6,11 +6,11 @@ import json
 from .crypto import crypto
 
 
-def generate_cookie_string(length=64):
+def generate_cookie_string(length=64) -> str:
     """
     生成指定长度的随机字符串作为Cookie
     """
-    characters = string.ascii_letters + string.digits
+    characters: str = string.ascii_letters + string.digits
     return ''.join(random.choice(characters) for _ in range(length))
 
 
@@ -19,8 +19,8 @@ def set_cookie(key: str) -> str:
     生成Cookie并设置有效期为一天(86400 seconds)
     key: 秘钥字符串
     """
-    now = time.time()
-    plain_text = json.dumps({'key': key, 'expire': now + 86400})
+    now: float = time.time()
+    plain_text: str = json.dumps({'key': key, 'expire': now + 86400})
     return crypto.encrypt(plain_text)
 
 

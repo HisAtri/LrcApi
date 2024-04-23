@@ -22,7 +22,6 @@ def require_auth(request: flask.request, permission: str = 'r'):
 
     if permission == 'r' and not args.auth:
         return 1
-
     if cookie_permission or header_permission:
         return 1
     else:

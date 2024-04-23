@@ -1,5 +1,6 @@
 import time
 import threading
+import logging
 
 
 class Benchmark:
@@ -41,3 +42,16 @@ class Benchmark:
         all_time = end - start
         avg_time = all_time / (self.threads*self.rounds)
         return all_time, avg_time
+
+
+def todo(text='Unimplemented features', error=True):
+    """
+    用于替代 pass
+    防止意外忽略未实现功能
+    """
+    class UnfinishedWork(Exception):
+        pass
+    if error:
+        raise UnfinishedWork(text)
+    else:
+        logging.error(f'Unimplemented features: {text}')
