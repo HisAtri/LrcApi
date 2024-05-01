@@ -13,6 +13,13 @@ logger = logging.getLogger(__name__)
 v1_bp = Blueprint('v1', __name__, url_prefix='/api/v1')
 # Blueprint直接复制app配置项
 v1_bp.config = app.config.copy()
+
+# 添加Access-Control-Allow-Origin项以让H5客户端可以使用API
+@v1_bp.after_request
+def add_custom_headers(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    return response
+
 # 缓存逻辑
 cache_dir = './flask_cache'
 try:
