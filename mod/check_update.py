@@ -5,6 +5,36 @@ import threading
 logger = logging.getLogger(__name__)
 
 
+class Version:
+    def __init__(self,
+                 version: tuple[int, ...],
+                 cycle: str,
+                 build_number: int,
+                 ):
+        self.version = version
+        self.cycle = cycle
+        self.build_number = build_number
+        self.latest = None
+
+    def get_latest(self):
+        api = "https://data.jsdelivr.com/v1/package/gh/hisatri/lrcapi"
+        data = requests.get(api).json()
+        self.version = data['versions'][0]
+        return self.version
+
+    def version_upper(self) -> bool:
+        latest: str = self.version or self.get_latest()
+        latest_version: tuple[int, ...] = tuple(map(int, latest.split('.')))
+        for i in range(len(latest_version)):
+            if latest_version[i] > self.version[i]:
+                return True
+            elif latest_version[i] < self.version[i]:
+                return False
+
+    def __str__(self):
+        return f"{self.cycle}-{'.'.join(str(i) for i in self.version)}"
+
+
 def get_version():
     api = "https://data.jsdelivr.com/v1/package/gh/hisatri/lrcapi"
     data = requests.get(api).json()
@@ -28,7 +58,7 @@ def version_upper(latest: str, app_version: str) -> bool:
 
 
 def check_update(version):
-    logger.info("正在检查更新")
+    logger.info(f"正在检查更新，当前版本")
     try:
         latest_version = get_version()
         if version_upper(latest_version, version):

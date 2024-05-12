@@ -10,6 +10,11 @@ sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 
 PLATFORM = platform.system()
 ARCHITECTURE = platform.machine()
+# 针对i386架构，由于AMD64架构的宿主机下，i386容器不会通过QEMU全虚拟化，因此会错误地获取到amd64架构
+# 此修正仅适用于宿主机为AMD64架构的情况
+print(platform.architecture()[0])
+if (ARCHITECTURE == "x86_64") & (platform.architecture()[0] == "32bit"):
+    ARCHITECTURE = "i386"
 APP_NAME = "lrcapi"
 APP_VERSION = GlobalArgs().version
 PACK_NAME = f"{APP_NAME}-{APP_VERSION}-{PLATFORM}-{ARCHITECTURE}{'.exe' if PLATFORM == 'Windows' else ''}"

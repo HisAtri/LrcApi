@@ -2,7 +2,7 @@ import os
 import subprocess
 
 
-platforms = ['linux/amd64', 'linux/arm64/v8', 'linux/arm/v7', 'linux/386', 'windows/amd64']
+platforms = ['linux/amd64', 'linux/arm64/v8', 'linux/arm/v7', 'linux/386']
 base_image = 'python:3.11'
 
 # 将此脚本所在的根目录（项目目录）挂载到容器的 /app 目录下
