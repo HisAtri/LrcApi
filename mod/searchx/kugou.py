@@ -5,13 +5,17 @@ import base64
 import random
 import string
 import time
+import logging
 
 from mod import textcompare
 from mod import tools
 
+from wowotou.devtools import no_error
+
 headers = {'User-Agent': '{"percent": 21.4, "useragent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                          'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36", "system": "Chrome '
                          '116.0 Win10", "browser": "chrome", "version": 116.0, "os": "win10"}', }
+logger = logging.getLogger(__name__)
 
 
 async def get_cover(session, m_hash, m_id):
@@ -69,6 +73,8 @@ async def a_search(title='', artist='', album=''):
                                     f"https://krcs.kugou.com/search?ver=1&man=yes&client=mobi&keyword=&duration=&hash={song_hash}&album_audio_id=",
                                     headers=headers) as response2:
                                 lyrics_info = await response2.json()
+                                if not lyrics_info["candidates"]:
+                                    continue
                                 lyrics_id = lyrics_info["candidates"][0]["id"]
                                 lyrics_key = lyrics_info["candidates"][0]["accesskey"]
                             # 第三层Json，要求获得并解码Base64
@@ -100,6 +106,8 @@ async def a_search(title='', artist='', album=''):
         return [i.get('data') for i in sort_li]
 
 
+@no_error(throw=logger.info,
+          exceptions=(aiohttp.ClientError, asyncio.TimeoutError, KeyError, IndexError, AttributeError))
 def search(title='', artist='', album=''):
     return asyncio.run(a_search(title=title, artist=artist, album=album))
 

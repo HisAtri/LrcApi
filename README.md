@@ -6,7 +6,9 @@
 
 A Flask API For [StreamMusic](https://github.com/gitbobobo/StreamMusic)
 
-![LrcApi](https://socialify.git.ci/HisAtri/LrcApi/image?description=1&font=Source%20Code%20Pro&forks=1&language=1&name=1&owner=1&pattern=Circuit%20Board&stargazers=1&theme=Light)
+> 欢迎更多的音乐服务接入本API，也欢迎各位前端开发者提出新的API适配需求。
+
+> [JetBrains](https://www.jetbrains.com/) 为本项目提供免费的开源许可证。
 
 <p align="center">
     <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/Python-3.10|3.11|3.12-blue.svg" alt=""></a>

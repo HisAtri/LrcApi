@@ -9,7 +9,7 @@ from flask import request, abort
 
 
 @app.before_request
-def check():
+def security_check():
     """
     检查请求是否合法
     :return:
@@ -19,6 +19,13 @@ def check():
     if waf(path):
         logger.warning(f"检测到恶意请求: {path}")
         abort(403)
+
+
+@app.after_request
+def add_custom_headers(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
+    return response
 
 
 def waf(req: str):
