@@ -6,7 +6,7 @@ import concurrent.futures
 from flask import request, abort, jsonify, render_template_string
 from urllib.parse import unquote_plus
 
-from mod import search, lrc
+from mod import lrc
 from mod import searchx
 from mod import tools
 from mod import tag
