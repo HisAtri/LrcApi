@@ -18,7 +18,7 @@ def follow_redirects(url, max_redirects=10):
             url = response.headers['Location']
         else:
             abort(404)  # 或者根据需求选择其他状态码
-    abort(404)  # 达到最大重定向次数仍未获得 200 状态码，放弃
+    abort(404)          # 达到最大重定向次数仍未获得 200 状态码，放弃
 
 
 def local_cover_search(title: str, artist: str, album: str):
