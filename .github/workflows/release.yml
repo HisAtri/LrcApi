@@ -35,11 +35,10 @@ jobs:
       - name: Archive release files
         run: |
           mkdir -p dist
-          cp -r dist/* dist/
           zip -r release.zip dist
 
       - name: Upload release artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: release
           path: release.zip
