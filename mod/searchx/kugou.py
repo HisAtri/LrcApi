@@ -12,7 +12,7 @@ from functools import lru_cache
 from mod import textcompare
 from mod import tools
 
-from wowotou.devtools import no_error
+from mygo.devtools import no_error
 
 headers = {'User-Agent': '{"percent": 21.4, "useragent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
                          'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36", "system": "Chrome '

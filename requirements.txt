@@ -8,4 +8,4 @@ aiohttp~=3.9.1
 Pillow~=10.1.0
 pyaes~=1.6.1
 Werkzeug~=3.0.1
-wowotou~=1.0.1
+mygo~=1.0.0
