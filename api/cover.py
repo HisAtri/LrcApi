@@ -4,6 +4,7 @@ import requests
 
 from flask import request, abort, redirect
 from urllib.parse import unquote_plus
+from mygo.devtools import no_error
 
 from mod import searchx
 
@@ -33,6 +34,7 @@ def local_cover_search(title: str, artist: str, album: str):
 
 @app.route('/cover', methods=['GET'])
 @cache.cached(timeout=86400, key_prefix=make_cache_key)
+@no_error(exceptions=AttributeError)
 def cover_api():
     title = unquote_plus(request.args.get('title'))
     artist = unquote_plus(request.args.get('artist', ''))
@@ -53,6 +55,7 @@ def cover_api():
 
 @v1_bp.route('/cover/<path:s_type>', methods=['GET'])
 @cache.cached(timeout=86400, key_prefix=make_cache_key)
+@no_error(exceptions=AttributeError)
 def cover_new(s_type):
     __endpoints__ = ["music", "album", "artist"]
     if s_type not in __endpoints__:
