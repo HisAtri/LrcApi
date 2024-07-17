@@ -15,8 +15,11 @@ from mod.dev.debugger import debugger
 def setTag():
     match require_auth(request=request, permission='rw'):
         case -1:
+            logger.error("Unauthorized access: 未经授权的用户请求修改标签")
             return render_template_string(webui.error()), 403
         case -2:
+            logger.error("Unauthorized access: 您没有为API设置鉴权功能，为了安全起见，有关本地文件修改的功能无法使用。"
+                         "具体请查看<https://docs.lrc.cx/docs/deploy/auth>以启用API鉴权功能。")
             return render_template_string(webui.error()), 421
 
     music_data = request.json
