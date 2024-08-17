@@ -29,7 +29,7 @@ def first(*args):
 
 class DefaultConfig:
     def __init__(self):
-        self.ip = '0.0.0.0'
+        self.ip = '*'
         self.port = 28883
 
 
@@ -41,7 +41,7 @@ class ConfigFile:
     def __init__(self):
         json_config = {
             "server": {
-                "ip": "0.0.0.0",
+                "ip": "*",
                 "port": 28883
             },
             "auth": {}
@@ -60,7 +60,7 @@ class ConfigFile:
         self.auth: dict = json_config.get("auth", {})
         self.server = json_config.get("server", {})
         self.port = self.server.get("port", 0)
-        self.ip = self.server.get("ip", "0.0.0.0")
+        self.ip = self.server.get("ip", "*")
 
 
 # 环境变量定义值
