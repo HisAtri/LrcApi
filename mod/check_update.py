@@ -58,7 +58,7 @@ def version_upper(latest: str, app_version: str) -> bool:
 
 
 def check_update(version):
-    logger.info(f"正在检查更新，当前版本")
+    logger.info(f"正在检查更新，当前版本为 {version}")
     try:
         latest_version = get_version()
         if version_upper(latest_version, version):

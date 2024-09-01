@@ -12,7 +12,7 @@ from mod.dev.debugger import debugger
 
 @app.route('/tag', methods=['POST', 'PUT'])
 @app.route('/confirm', methods=['POST', 'PUT'])
-def setTag():
+def set_tag():
     match require_auth(request=request, permission='rw'):
         case -1:
             logger.error("Unauthorized access: 未经授权的用户请求修改标签")
@@ -51,28 +51,3 @@ def setTag():
     except Exception as e:
         return {"code": 500, "error": str(e)}, 500
     return {"code": 200, "log": f"Successfully edited file {audio_path}"}, 200
-
-
-@v1_bp.route('/tag/<path:location>', methods=['POST', 'PUT'])
-def setTagLocal(location: str):
-    if location not in ('local', 'writein'):
-        return {"code": 404, "error": "Unknown endpoint"}, 404
-
-    match require_auth(request=request, permission='rw'):
-        case -1:
-            return render_template_string(webui.error()), 403
-        case -2:
-            return render_template_string(webui.error()), 421
-
-    music_data = request.json
-    if not os.path.exists(file_path := music_data.get("path")):
-        return {"code": 404, "error": "File not found"}, 404
-
-    def remove_extension(filename: str) -> str:
-        last_dot_index = filename.rfind('.')
-        if last_dot_index != -1:
-            return filename[:last_dot_index]
-        else:
-            return filename
-
-    r_file_name: str = remove_extension(os.path.basename(file_path))

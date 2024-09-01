@@ -3,7 +3,6 @@ import flask
 from . import cookie
 from mod.args import GlobalArgs
 
-
 args = GlobalArgs()
 
 
