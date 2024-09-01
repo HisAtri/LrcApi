@@ -22,7 +22,7 @@ def run_server(debug=False):
         debugger.log("info", f"Version: {args.version}")
         if args.auth:
             debugger.log("info", f"Auth: {args.auth}")
-        app.run(host='0.0.0.0', port=args.port, debug=True)
+        app.run(host='*', port=args.port, debug=True)
 
 
 if __name__ == '__main__':
