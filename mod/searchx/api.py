@@ -10,7 +10,7 @@ headers = {
 def search(title='', artist='', album='') -> list:
     try:
         url = f"http://cn.lrc.cx:880/jsonapi?title={title}&artist={artist}&album={album}&path=None&limit=1&api=lrcapi"
-        response = requests.get(url, headers=headers, timeout=30)
+        response = requests.get(url, headers=headers, timeout=15)
         return response.json()
     except Exception as e:
         print(f"LrcAPI Server - Request failed: {e}")
