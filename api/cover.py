@@ -50,7 +50,7 @@ def cover_api():
     elif result.status_code == 404:
         abort(404)
     else:
-        abort(500, '后端存在错误，暂时无法查询')
+        abort(500, '服务存在错误，暂时无法查询')
 
 
 @v1_bp.route('/cover/<path:s_type>', methods=['GET'])

@@ -68,7 +68,9 @@ def standard_lrc(lrc_text: str) -> str:
     if not lrc_text or type(lrc_text) is not str:
         return lrc_text
     elif '[' in lrc_text and ']' in lrc_text:
-        lrc_text = lrc_text.replace("\r\n", "\n")
+        # 去除零宽字符
+        lrc_text = re.sub(r'[\ufeff\u200b]', '',
+                          lrc_text.replace("\r\n", "\n"))
         pattern = re.compile(r'\[([^]]+)]')
         # 使用findall方法找到所有匹配的字符串
         matches = pattern.findall(lrc_text)
@@ -81,4 +83,5 @@ def standard_lrc(lrc_text: str) -> str:
         # 进行匹配和替换
         return re.sub(pattern, lambda match: "[" + match.group(1) + "0]", lrc_text)
     else:
-        return lrc_text.replace("\r\n", "\n")
+        return re.sub(r'[\ufeff\u200b]', '',
+                          lrc_text.replace("\r\n", "\n"))
