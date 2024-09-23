@@ -91,7 +91,7 @@ class GlobalArgs:
         self.debug = kw_args.debug
         self.version = "1.5.4"
 
-    def valid(self, key):
+    def valid(self, key) -> bool:
         """
         返回该key是否有效
         :param key:
@@ -99,7 +99,7 @@ class GlobalArgs:
         """
         return key in self.auth.keys()
 
-    def permission(self, key):
+    def permission(self, key) -> str:
         """
         返回该key的权限组字符串
         :param key:
