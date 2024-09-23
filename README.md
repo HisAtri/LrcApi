@@ -88,6 +88,22 @@ docker run -d \
     hisatri/lrcapi:1.5.2
 ```
 
+一个Docker-compose配置如下
+
+```yaml
+services:
+  lrcapi:
+    image: hisatri/lrcapi:latest
+    container_name: lrcapi
+    ports:
+      - "28883:28883"
+    volumes:
+      - /home/user/music:/music
+    environment:
+      - API_AUTH=自定义一个鉴权key
+    restart: always
+```
+
 如果你正在使用Navidrome Docker，请将 `/home/user/music:/music` 中的 `/home/user/music` 修改为你在Navidrome中映射的主机路径；
 
 换句话说，`-v` 参数与Navidrome保持一致即可。
@@ -102,7 +118,7 @@ docker run -d \
 
 支持使用Nginx或Apache进行反向代理与SSL。
 
-## Tag修改接口
+## 音乐元数据修改接口
 
 ### 接口详情
 
