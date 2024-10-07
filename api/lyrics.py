@@ -1,7 +1,6 @@
 from . import *
 
 import os
-import concurrent.futures
 
 from flask import request, abort, jsonify, render_template_string
 from urllib.parse import unquote_plus
