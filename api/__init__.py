@@ -29,10 +29,13 @@ cache = Cache(app, config={
 
 
 # 缓存键，解决缓存未忽略参数的情况
-def make_cache_key(*args, **kwargs):
-    path = request.path
-    args = str(hash(frozenset(request.args.items())))
-    return path + args
+def make_cache_key(*args, **kwargs) -> str:
+    path:str = request.path
+    args:str = str(hash(frozenset(request.args.items())))
+    auth_key:str = str(request.headers.get('Authorization', '')
+                       or request.headers.get('Authentication', ''))
+    cookie:str = str(request.cookies.get('api_auth_token', ''))
+    return path + args + auth_key + cookie
 
 
 def get_base_path():
