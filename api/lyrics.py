@@ -13,7 +13,7 @@ from mod.auth import webui
 from mod.auth.authentication import require_auth
 
 
-def read_file_with_encoding(file_path, encodings):
+def read_file_with_encoding(file_path:str, encodings:list[str]):
     for encoding in encodings:
         try:
             with open(file_path, 'r', encoding=encoding) as f:
@@ -40,7 +40,7 @@ def lyrics():
     if path:
         lrc_path = os.path.splitext(path)[0] + '.lrc'
         if os.path.isfile(lrc_path):
-            file_content = read_file_with_encoding(lrc_path, ['utf-8', 'gbk'])
+            file_content: str|None = read_file_with_encoding(lrc_path, ['utf-8', 'gbk'])
             if file_content is not None:
                 return lrc.standard(file_content)
     try:
@@ -51,7 +51,7 @@ def lyrics():
         pass
     try:
         # 通过request参数获取音乐Tag
-        title = unquote_plus(request.args.get('title'))
+        title = unquote_plus(request.args.get('title', ''))
         artist = unquote_plus(request.args.get('artist', ''))
         album = unquote_plus(request.args.get('album', ''))
         result: list = searchx.search_all(title=title, artist=artist, album=album, timeout=30)
