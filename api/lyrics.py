@@ -37,7 +37,7 @@ def lyrics():
         abort(404, "请携带参数访问")
     path = unquote_plus(request.args.get('path', ''))
     # 根据文件路径查找同名的 .lrc 文件
-    if path:
+    if path and os.path.isfile(path):
         lrc_path = os.path.splitext(path)[0] + '.lrc'
         if os.path.isfile(lrc_path):
             file_content = read_file_with_encoding(lrc_path, ['utf-8', 'gbk'])
@@ -54,9 +54,18 @@ def lyrics():
         title = unquote_plus(request.args.get('title'))
         artist = unquote_plus(request.args.get('artist', ''))
         album = unquote_plus(request.args.get('album', ''))
-        result: list = searchx.search_all(title=title, artist=artist, album=album, timeout=30)
+        result: list = searchx.search_all(
+            title=title, artist=artist, album=album, timeout=30)
         if not result[0].get('lyrics'):
             return "Lyrics not found.", 404
+
+        # 如果音乐文件存在, 则保存对应的歌词到本地
+        if path and os.path.isfile(path):
+            lrc_path = os.path.splitext(path)[0] + '.lrc'
+            if os.path.isfile(lrc_path):
+                with open(lrc_path, "w") as file:
+                    file.write(result[0].get('lyrics'))
+
         return result[0].get('lyrics')
     except:
         return "Lyrics not found.", 404
@@ -78,7 +87,7 @@ def lrc_json():
     artist = unquote_plus(request.args.get('artist', ''))
     album = unquote_plus(request.args.get('album', ''))
     response = []
-    if path:
+    if path and os.path.isfile(path):
         lrc_path = os.path.splitext(path)[0] + '.lrc'
         if os.path.isfile(lrc_path):
             file_content = read_file_with_encoding(lrc_path, ['utf-8', 'gbk'])
@@ -98,6 +107,48 @@ def lrc_json():
                 continue
             i['lyrics'] = lrc.standard(i['lyrics'])
             response.append(i)
+
+    # 如果查询到歌词, 将第一个歌词写入到本地.
+    if len(response) > 0 and path and os.path.isfile(path):
+        lrc_path = os.path.splitext(path)[0] + '.lrc'
+        if os.path.isfile(lrc_path):
+            with open(lrc_path, "w") as file:
+                file.write(response[0].get('lyrics'))
+
     _response = jsonify(response)
     _response.headers['Content-Type'] = 'application/json; charset=utf-8'
     return jsonify(response)
+
+
+@app.route('/lyrics/confirm', methods=['POST'])
+def lyric_confirm():
+    match require_auth(request=request, permission="wr"):
+        case -1:
+            return render_template_string(webui.error()), 403
+        case -2:
+            return render_template_string(webui.error()), 421
+
+    data = request.json
+    required_fields = ["path", "lyrics"]
+    for field in required_fields:
+        if field not in data:
+            return jsonify({"error": f"缺少必要字段: {field}"}), 400
+
+    path = data.get('path')
+    lyrics = data.get('lyrics')
+
+    if lyrics is None or lyrics.strip() == '':
+        abort(400, "歌词内容为空")
+
+    path = unquote_plus(path)
+
+    if not os.path.isfile(path):
+        abort(400, "不存在该音乐文件")
+
+    lrc_path = os.path.splitext(path)[0] + '.lrc'
+
+    with open(lrc_path, "w") as file:
+        file.write(lyrics)
+        logger.info(f"确认歌词成功: {path} ")
+
+    return jsonify({"message": "歌词写入成功", "status": 0}), 200
