@@ -32,12 +32,14 @@ def local_cover_search(title: str, artist: str, album: str):
             if res.status_code == 200:
                 return res.content, 200, {"Content-Type": res.headers['Content-Type']}
 
-
 @app.route('/cover', methods=['GET'])
 @cache.cached(timeout=86400, key_prefix=make_cache_key)
 @no_error(exceptions=AttributeError)
 def cover_api():
-    title = unquote_plus(request.args.get('title'))
+    title = request.args.get('title')
+    if not title:
+        abort(400, '歌曲名称不能为空')
+    title = unquote_plus(title)
     artist = unquote_plus(request.args.get('artist', ''))
     album = unquote_plus(request.args.get('album', ''))
     req_args = {key: request.args.get(key) for key in request.args}
