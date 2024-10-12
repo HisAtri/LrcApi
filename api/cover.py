@@ -36,10 +36,7 @@ def local_cover_search(title: str, artist: str, album: str):
 @cache.cached(timeout=86400, key_prefix=make_cache_key)
 @no_error(exceptions=AttributeError)
 def cover_api():
-    title = request.args.get('title')
-    if not title:
-        abort(400, '歌曲名称不能为空')
-    title = unquote_plus(title)
+    title = unquote_plus(request.args.get('title', ''))
     artist = unquote_plus(request.args.get('artist', ''))
     album = unquote_plus(request.args.get('album', ''))
     req_args = {key: request.args.get(key) for key in request.args}
