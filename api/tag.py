@@ -45,9 +45,12 @@ def set_tag():
     try:
         tag.write(tags=tags_to_set, file=audio_path)
     except TypeError as e:
+        logger.error(f"TypeError at endpoint /confirm: {str(e)}")
         return {"code": 524, "error": str(e)}, 524
     except FileNotFoundError as e:
+        logger.error(f"Error at endpoint /confirm: {audio_path} file not found.")
         return {"code": 404, "error": str(e)}, 404
     except Exception as e:
+        logger.error(f"Unknown Error at endpoint /confirm: {str(e)}")
         return {"code": 500, "error": str(e)}, 500
     return {"code": 200, "log": f"Successfully edited file {audio_path}"}, 200
