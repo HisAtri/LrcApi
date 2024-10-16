@@ -3,7 +3,7 @@ import subprocess
 
 
 platforms = ['linux/amd64', 'linux/arm64/v8', 'linux/arm/v7', 'linux/386']
-base_image = 'python:3.11'
+base_image = 'python:3.12'
 
 # 将此脚本所在的根目录（项目目录）挂载到容器的 /app 目录下
 root_dir = os.path.dirname(os.path.abspath(__file__))
