@@ -3,25 +3,31 @@ import re
 
 def standard_line(lrc_text: str):
     # 定义匹配时间标签的正则表达式
-    pattern = re.compile(r'\[(\d+:\d+[\.:]\d{2})\]')
+    pattern = re.compile(r'\[(\d+[.:]\d+[.:]\d+)]')
     # 使用正则表达式查找所有匹配的时间标签
     matches = pattern.findall(lrc_text)
     # 遍历匹配的时间标签，替换毫秒位
     for match in matches:
         old_time_label = match
-        minutes, seconds, millisecond = map(int, re.split('[:.]', old_time_label))
-        minute_str = ('00'+str(minutes))[-2:] if minutes < 100 else str(minutes)
-        second_str = ('00'+str(seconds))[-2:]
-        millisecond_str = (str(millisecond)+'000')[:3]
+        minutes, seconds, millisecond = map(str, re.split('[:.]', old_time_label))
+        minute_str = ('00'+minutes)[-2:] if int(minutes) < 100 else str(minutes)
+        second_str = ('00'+seconds)[-2:]
+        millisecond_str = (millisecond+'000')[:3]
         new_time_label = f"{minute_str}:{second_str}.{millisecond_str}"
         lrc_text = lrc_text.replace(old_time_label, new_time_label)
 
     return lrc_text
 
 
-def standard(lrc_text: str):
+def standard(lrc_text: str) -> str:
     if not isinstance(lrc_text, str):
         return ''
+    # 替换零宽字符和换行符
+    lrc_text = (
+        lrc_text.replace("\r\n", "\n")
+        .replace("\ufeff", "")
+        .replace("\u200b", "")
+    )
     parse_string = ''
     # 使用[分割字符串，得到每一行歌词
     lines = lrc_text.split('[')
@@ -35,10 +41,10 @@ def standard(lrc_text: str):
     return parse_string
 
 
-def is_valid(lrc_text: str):
+def is_valid(lrc_text: str) -> bool:
     if type(lrc_text) is not str:
         return False
-    pattern = re.compile(r'\[(\d+:\d+\.\d{2})]')
+    pattern = re.compile(r'\[(\d+:\d+\.\d{3})]')
     matches = pattern.findall(lrc_text)
     if matches:
         return True
