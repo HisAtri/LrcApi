@@ -31,8 +31,11 @@ class Crypto:
         :param data: encrypted data
         :return: json string
         """
-        aes = pyaes.AESModeOfOperationCTR(self.key.encode(encoding='utf-8'))
-        return aes.decrypt(bytes.fromhex(data)).decode(encoding='utf-8')
+        try:
+            aes = pyaes.AESModeOfOperationCTR(self.key.encode(encoding='utf-8'))
+            return aes.decrypt(bytes.fromhex(data)).decode(encoding='utf-8')
+        except:
+            return ""
 
     def change_key(self):
         self.key = self.gen_key()

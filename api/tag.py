@@ -1,3 +1,4 @@
+import json
 import os
 
 from . import *
@@ -22,7 +23,11 @@ def set_tag():
                          "具体请查看<https://docs.lrc.cx/docs/deploy/auth>以启用API鉴权功能。")
             return render_template_string(webui.error()), 421
 
-    music_data = request.json
+    try:
+        # v1.3.2 版本的音流, 传入的 content_type 为空, 会报: UnsupportedMediaType: 415 Unsupported Media Type
+        music_data = request.json
+    except:
+        music_data = json.loads(request.data)
     audio_path = music_data.get("path")
     if not audio_path:
         return "Missing 'path' key in JSON.", 422
