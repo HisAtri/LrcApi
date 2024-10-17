@@ -13,7 +13,7 @@ from mod.auth import webui
 from mod.auth.authentication import require_auth
 
 
-def read_file_with_encoding(file_path:str, encodings:list[str]):
+def read_file_with_encoding(file_path: str, encodings: list[str]):
     for encoding in encodings:
         try:
             with open(file_path, 'r', encoding=encoding) as f:
@@ -40,7 +40,7 @@ def lyrics():
     if path:
         lrc_path = os.path.splitext(path)[0] + '.lrc'
         if os.path.isfile(lrc_path):
-            file_content: str|None = read_file_with_encoding(lrc_path, ['utf-8', 'gbk'])
+            file_content: str | None = read_file_with_encoding(lrc_path, ['utf-8', 'gbk'])
             if file_content is not None:
                 return lrc.standard(file_content)
     try:
@@ -96,8 +96,9 @@ def lrc_json():
         for i in lyrics_list:
             if not i:
                 continue
-            i['lyrics'] = lrc.standard(i['lyrics'])
-            response.append(i)
+            if lyric := i.get('lyrics'):
+                i['lyrics'] = lrc.standard(lyric)
+                response.append(i)
     _response = jsonify(response)
     _response.headers['Content-Type'] = 'application/json; charset=utf-8'
     return jsonify(response)
