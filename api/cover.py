@@ -8,9 +8,11 @@ from mygo.devtools import no_error
 
 from mod import searchx
 
-headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/"}
+headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/"}
 
 # 跟踪重定向
+
+
 def follow_redirects(url, max_redirects=10):
     for _ in range(max_redirects):
         response = requests.head(url, allow_redirects=False)
@@ -27,8 +29,7 @@ def local_cover_search(title: str, artist: str, album: str):
     result: list = searchx.search_all(title=title, artist=artist, album=album, timeout=30)
     for item in result:
         if cover_url := item.get('cover'):
-            res = requests.get(cover_url,
-                               headers=headers)
+            res = requests.get(cover_url, headers=headers)
             if res.status_code == 200:
                 return res.content, 200, {"Content-Type": res.headers['Content-Type']}
 
