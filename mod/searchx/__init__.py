@@ -1,10 +1,10 @@
 from concurrent import futures
 
-from mod.searchx import api, kugou
+from mod.searchx import api, kugou, netease
 
 
 def search_all(title, artist, album, timeout=15):
-    funcs = [api, kugou]
+    funcs = [api, kugou, netease]
     results = []
 
     def request(task):
