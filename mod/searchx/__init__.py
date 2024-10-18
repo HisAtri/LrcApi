@@ -3,7 +3,7 @@ from concurrent import futures
 from mod.searchx import api, kugou, netease
 
 
-def search_all(title, artist, album, timeout=30):
+def search_all(title, artist, album, timeout=15):
     funcs = [api, kugou, netease]
     results = []
 
@@ -18,16 +18,23 @@ def search_all(title, artist, album, timeout=30):
             _futures.append(executor.submit(request, func))
 
         # 等待所有任务完成，或回收超时任务，处理TimeoutError
-        for future in futures.as_completed(_futures, timeout=timeout):
-            future.result()
+        try:
+            for future in futures.as_completed(_futures, timeout=timeout):
+                future.result()
+        except futures.TimeoutError:
+            # 记录超时任务
+            pass
+
         # 回收超时任务
         for future in _futures:
-            if future.done() and future.exception():
-                future.result()
+            if future.done():
+                if future.exception():
+                    # 处理异常任务
+                    pass
             else:
                 future.cancel()
-    return results
 
+    return results
 
 if __name__ == "__main__":
     print(search_all("大地", "Beyond", ""))
