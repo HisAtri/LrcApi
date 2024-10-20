@@ -3,6 +3,12 @@ import sqlite3
 
 
 class SQLite:
+    _instance = None
+    def __new__(cls, *args, **kwargs):
+        if not cls._instance:
+            cls._instance = super(SQLite, cls).__new__(cls, *args, **kwargs)
+        return cls._instance
+
     def __init__(self, file: str):
         self.file: str = os.path.join(os.getcwd(), file)
 
@@ -84,3 +90,5 @@ class SQLite:
             cursor = conn.cursor()
             cursor.execute(sql)
             conn.commit()
+
+sqlite = SQLite('db.sqlite3')
