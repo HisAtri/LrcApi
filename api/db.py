@@ -101,7 +101,7 @@ def kv_del(table_name: str, para: dict) -> tuple[bool, any, int]:
     except Exception as e:
         return False, str(e), 500
 
-@v1_bp.route("/db/<path:table_name>", methods=["POST", "PUT"])
+@v1_bp.route("/db/<path:table_name>", methods=["POST", "PUT", "GET", "DELETE"])
 @require_auth_decorator(permission='rw')
 def db_set(table_name):
     """
@@ -116,53 +116,21 @@ def db_set(table_name):
         return {"code": 422, "message": "Missing type."}, 422
     match type:
         case "kv":
-            status, message, code = kv_set(table_name, para)
-            return {"code": code, "message": message}, code
-        case _:
-            return {"code": 422, "message": "Invalid type."}, 422
-
-@v1_bp.route("/db/<path:table_name>", methods=["GET"])
-@require_auth_decorator(permission='rw')
-def db_get(table_name):
-    """
-    读取k-v数据
-    """
-    para: dict = request.json
-    if not para:
-        return {"code": 422, "message": "Missing JSON."}, 422
-
-    type = para.get("type")
-    if not type:
-        return {"code": 422, "message": "Missing type."}, 422
-    match type:
-        case "kv":
-            status, message, code = kv_get(table_name, para)
-            if status:
-                return message, 200
-            else:
+            if request.method == "POST" or request.method == "PUT":
+                status, message, code = kv_set(table_name, para)
                 return {"code": code, "message": message}, code
+            elif request.method == "GET":
+                status, message, code = kv_get(table_name, para)
+                if status:
+                    return message, 200
+                else:
+                    return {"code": code, "message": message}, code
+            elif request.method == "DELETE":
+                status, message, code = kv_del(table_name, para)
+                if status:
+                    return message, 200
+                else:
+                    return {"code": code, "message": message}, code
         case _:
             return {"code": 422, "message": "Invalid type."}, 422
 
-@v1_bp.route("/db/<path:table_name>", methods=["DELETE"])
-@require_auth_decorator(permission='rw')
-def db_del(table_name):
-    """
-    删除k-v数据
-    """
-    para: dict = request.json
-    if not para:
-        return {"code": 422, "message": "Missing JSON."}, 422
-
-    type = para.get("type")
-    if not type:
-        return {"code": 422, "message": "Missing type."}, 422
-    match type:
-        case "kv":
-            status, message, code = kv_del(table_name, para)
-            if status:
-                return message, 200
-            else:
-                return {"code": code, "message": message}, code
-        case _:
-            return {"code": 422, "message": "Invalid type."}, 422
