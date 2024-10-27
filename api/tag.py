@@ -9,8 +9,8 @@ from mod.auth import require_auth_decorator
 from mod.dev.debugger import debugger
 
 
-@app.route('/tag', methods=['POST', 'PUT'])
-@app.route('/confirm', methods=['POST', 'PUT'])
+@app.route('/tag', methods=['POST', 'PUT'], endpoint='set_tag_endpoint')
+@app.route('/confirm', methods=['POST', 'PUT'], endpoint='set_tag_endpoint')
 @require_auth_decorator(permission='rw')
 def set_tag():
     music_data = request.json

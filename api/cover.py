@@ -34,7 +34,7 @@ def local_cover_search(title: str, artist: str, album: str):
             if res.status_code == 200:
                 return res.content, 200, {"Content-Type": res.headers['Content-Type']}
 
-@app.route('/cover', methods=['GET'])
+@app.route('/cover', methods=['GET'], endpoint='cover_endpoint')
 @require_auth_decorator(permission='rw')
 @cache.cached(timeout=86400, key_prefix=make_cache_key)
 @no_error(exceptions=AttributeError)
@@ -56,7 +56,7 @@ def cover_api():
         abort(500, '服务存在错误，暂时无法查询')
 
 
-@v1_bp.route('/cover/<path:s_type>', methods=['GET'])
+@v1_bp.route('/cover/<path:s_type>', methods=['GET'], endpoint='cover_new_endpoint')
 @require_auth_decorator(permission='r')
 @cache.cached(timeout=86400, key_prefix=make_cache_key)
 @no_error(exceptions=AttributeError)

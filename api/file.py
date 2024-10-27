@@ -41,7 +41,7 @@ class Wget:
             self.file.write(chunk)
 
 
-@v1_bp.route("/file/download", methods=["POST"])
+@v1_bp.route("/file/download", methods=["POST"], endpoint='file_api_download_endpoint')
 @require_auth_decorator(permission='rwd')
 def file_api_download():
     data = request.json
@@ -63,7 +63,7 @@ def file_api_download():
         return {"error": str(e), "code": 500}, 500
 
 
-@v1_bp.route('/file/upload', methods=['POST'])
+@v1_bp.route('/file/upload', methods=['POST'], endpoint='upload_file_endpoint')
 @require_auth_decorator(permission='rwd')
 def upload_file():
     if 'file' not in request.files:
@@ -95,7 +95,7 @@ def upload_file():
     return {"code": 200}, 200
 
 
-@v1_bp.route('/file/list', methods=['GET'])
+@v1_bp.route('/file/list', methods=['GET'], endpoint='list_file_endpoint')
 @require_auth_decorator(permission='rwd')
 def list_file():
     path = request.args.get('path', os.getcwd())

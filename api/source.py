@@ -56,8 +56,8 @@ def serve_file(filename):
         abort(404)
 
 
-@app.route('/file/<path:filename>')
-@v1_bp.route('/file/<path:filename>')
+@app.route('/file/<path:filename>', endpoint='file_viewer_endpoint')
+@v1_bp.route('/file/<path:filename>', endpoint='file_viewer_endpoint')
 @require_auth_decorator(permission='r')
 def file_viewer(filename):
     """

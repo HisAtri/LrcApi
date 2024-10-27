@@ -24,8 +24,8 @@ def read_file_with_encoding(file_path: str, encodings: list[str]):
     return None
 
 
-@app.route('/lyrics', methods=['GET'])
-@v1_bp.route('/lyrics/single', methods=['GET'])
+@app.route('/lyrics', methods=['GET'], endpoint='lyrics_endpoint')
+@v1_bp.route('/lyrics/single', methods=['GET'], endpoint='lyrics_endpoint')
 @require_auth_decorator(permission='r')
 @cache.cached(timeout=86400, key_prefix=make_cache_key)
 def lyrics():
@@ -59,8 +59,8 @@ def lyrics():
         return "Lyrics not found.", 404
 
 
-@app.route('/jsonapi', methods=['GET'])
-@v1_bp.route('/lyrics/advance', methods=['GET'])
+@app.route('/jsonapi', methods=['GET'], endpoint='jsonapi_endpoint')
+@v1_bp.route('/lyrics/advance', methods=['GET'], endpoint='jsonapi_endpoint')
 @require_auth_decorator(permission='r')
 @cache.cached(timeout=86400, key_prefix=make_cache_key)
 def lrc_json():

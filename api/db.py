@@ -101,7 +101,7 @@ def kv_del(table_name: str, para: dict) -> tuple[bool, any, int]:
     except Exception as e:
         return False, str(e), 500
 
-@v1_bp.route("/db/<path:table_name>", methods=["POST", "PUT", "GET", "DELETE"])
+@v1_bp.route("/db/<path:table_name>", methods=["POST", "PUT", "GET", "DELETE"], endpoint='db_set_endpoint')
 @require_auth_decorator(permission='rw')
 def db_set(table_name):
     """
