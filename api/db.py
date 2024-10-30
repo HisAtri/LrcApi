@@ -1,10 +1,12 @@
 from . import *
 
 import re
-from flask import request
+import sqlite3
+from datetime import datetime, timezone
+from flask import request, jsonify
 from mod.auth import require_auth_decorator
 
-from mod.db import SqliteDict
+from mod.db import SqliteDict, saved_path
 
 SQLITE_RESERVED_WORDS = {
     "ABORT", "ACTION", "ADD", "AFTER", "ALL", "ALTER", "ANALYZE", "AND", "AS", "ASC", "ATTACH", "AUTOINCREMENT",
@@ -25,7 +27,7 @@ SQLITE_RESERVED_WORDS = {
 def valide_tablename(table_name: str) -> tuple[bool, str, int]:
     if not table_name:
         return False, "Missing table_name.", 422
-    invalid_chars = re.compile(r"[^a-zA-Z0-9_]")    # 表名仅允许包含字母、数字和下划线
+    invalid_chars = re.compile(r"[^a-zA-Z0-9_]")  # 表名仅允许包含字母、数字和下划线
     if invalid_chars.search(table_name):
         return False, "Invalid table_name: contains invalid characters.", 422
     if table_name.upper() in SQLITE_RESERVED_WORDS:
@@ -58,6 +60,7 @@ def kv_set(table_name: str, para: dict) -> tuple[bool, str, int]:
         return False, str(e), 500
     return True, table_name, 200
 
+
 def kv_get(table_name: str, para: dict) -> tuple[bool, any, int]:
     """
     读取k-v数据
@@ -77,6 +80,7 @@ def kv_get(table_name: str, para: dict) -> tuple[bool, any, int]:
         return False, "Key not found.", 404
     except Exception as e:
         return False, str(e), 500
+
 
 def kv_del(table_name: str, para: dict) -> tuple[bool, any, int]:
     """
@@ -100,6 +104,16 @@ def kv_del(table_name: str, para: dict) -> tuple[bool, any, int]:
         return False, "Key not found.", 404
     except Exception as e:
         return False, str(e), 500
+
+
+def custom_sql(sql: str) -> list[dict]:
+    with sqlite3.connect(saved_path) as conn:
+        conn.row_factory = sqlite3.Row
+        cursor = conn.cursor()
+        cursor.execute(sql)
+        rows: list = cursor.fetchall()
+        return [dict(row) for row in rows]
+
 
 @v1_bp.route("/db/<path:table_name>", methods=["POST", "PUT", "GET", "DELETE"], endpoint='db_set_endpoint')
 @require_auth_decorator(permission='rw')
@@ -134,3 +148,46 @@ def db_set(table_name):
         case _:
             return {"code": 422, "message": "Invalid type."}, 422
 
+
+@v1_bp.route("/db", methods=["POST"], endpoint='db_custom')
+def db_custom():
+    """
+    执行自定义的SQL
+    返回json结果
+    此操作敏感，因此必须有可信授权
+    用户必须保证使用者受到信任
+    """
+    para: dict = request.json
+    if not para or not (sql := para.get('sql')):
+        logger.warning("The request submitted by the client lacks necessary parameters")
+        return jsonify({
+            "status": "Error",
+            "code": 400,
+            "timezone": int(datetime.now(timezone.utc).timestamp()),
+            "message": "Missing 'sql' parameter"
+        }), 400
+
+    try:
+        result: list[dict] = custom_sql(sql=sql)
+        return jsonify({
+            "status": "Success",
+            "code": 200,
+            "timezone": int(datetime.now(timezone.utc).timestamp()),
+            "result": result
+        }), 200
+    except sqlite3.Error as e:
+        logger.error(f"SQLite error during custom SQL execution: {str(e)}")
+        return jsonify({
+            "status": "Error",
+            "code": 500,
+            "timezone": int(datetime.now(timezone.utc).timestamp()),
+            "message": f"SQLite error: {str(e)}"
+        }), 500
+    except Exception as e:
+        logger.error(f"Server error during custom SQL execution: {str(e)}")
+        return jsonify({
+            "status": "Error",
+            "code": 500,
+            "timezone": int(datetime.now(timezone.utc).timestamp()),
+            "message": f"Server error: {str(e)}"
+        }), 500
