@@ -172,4 +172,5 @@ app.build/
 app.dist/
 config/
 release/
+appdata/
 ann.md
