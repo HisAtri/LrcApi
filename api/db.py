@@ -35,30 +35,34 @@ def valide_tablename(table_name: str) -> tuple[bool, str, int]:
     # 限制表名长度为64字符
     if len(table_name) > 64:
         return False, "Invalid table_name: too long.", 422
+    return True, "OK", 200
 
 
-def kv_set(table_name: str, para: dict) -> tuple[bool, str, int]:
+def kv_set(table_name: str, para: dict) -> tuple[bool, str|dict, int]:
     """
     写入或更新k-v数据
     """
     check_status: tuple[bool, str, int] = valide_tablename(table_name)
     if not check_status[0]:
         return check_status
-    key = para.get("key")
-    if not key:
-        return False, "Missing key.", 422
-    elif type(key) is not str:
-        return False, "Invalid key: must be a string.", 422
-    value = para.get("value")
-    if not value:
-        return False, "Missing value.", 422
-    try:
-        with SqliteDict(tablename=table_name) as db:
-            db[key] = value
-            db.commit()
-    except Exception as e:
-        return False, str(e), 500
-    return True, table_name, 200
+    kv_list: dict[str, str] = para.get("data")
+    results: dict = {}
+    with SqliteDict(tablename=table_name) as db:
+        for key, value in kv_list.items():
+            try:
+                db[key] = value
+                db.commit()
+                results[key] = {
+                    "status": "Success",
+                    "timezone": int(datetime.now(timezone.utc).timestamp()),
+                }
+            except Exception as e:
+                results[key] = {
+                    "status": "Error",
+                    "Message": e,
+                    "timezone": int(datetime.now(timezone.utc).timestamp()),
+                }
+    return True, results, 200
 
 
 def kv_get(table_name: str, para: dict) -> tuple[bool, any, int]:
@@ -167,27 +171,34 @@ def db_custom():
             "message": "Missing 'sql' parameter"
         }), 400
 
-    try:
-        result: list[dict] = custom_sql(sql=sql)
-        return jsonify({
-            "status": "Success",
-            "code": 200,
-            "timezone": int(datetime.now(timezone.utc).timestamp()),
-            "result": result
-        }), 200
-    except sqlite3.Error as e:
-        logger.error(f"SQLite error during custom SQL execution: {str(e)}")
-        return jsonify({
-            "status": "Error",
-            "code": 500,
-            "timezone": int(datetime.now(timezone.utc).timestamp()),
-            "message": f"SQLite error: {str(e)}"
-        }), 500
-    except Exception as e:
-        logger.error(f"Server error during custom SQL execution: {str(e)}")
-        return jsonify({
-            "status": "Error",
-            "code": 500,
-            "timezone": int(datetime.now(timezone.utc).timestamp()),
-            "message": f"Server error: {str(e)}"
-        }), 500
+    results = []
+    for s in sql:
+        try:
+            result: list[dict] = custom_sql(sql=s)
+            results.append({
+                "sql": s,
+                "status": "Success",
+                "code": 200,
+                "timezone": int(datetime.now(timezone.utc).timestamp()),
+                "result": result
+            })
+        except sqlite3.Error as e:
+            logger.error(f"SQLite error during custom SQL execution: {str(e)}")
+            results.append({
+                "sql": s,
+                "status": "Error",
+                "code": 500,
+                "timezone": int(datetime.now(timezone.utc).timestamp()),
+                "message": f"SQLite error: {str(e)}"
+            })
+        except Exception as e:
+            logger.error(f"Server error during custom SQL execution: {str(e)}")
+            results.append({
+                "sql": s,
+                "status": "Error",
+                "code": 500,
+                "timezone": int(datetime.now(timezone.utc).timestamp()),
+                "message": f"Server error: {str(e)}"
+            })
+
+    return jsonify(results)

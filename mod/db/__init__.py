@@ -83,6 +83,7 @@ _RESPONSE_NO_MORE = '--no more--'
 _PUT_OK, _PUT_REFERENT_DESTROYED, _PUT_NOOP = 0, 1, 2
 
 saved_path: str = os.path.join(os.getcwd(), "appdata", "userdata.db")
+os.makedirs(os.path.join(os.getcwd(), "appdata"), exist_ok=True)
 
 
 def _put(queue_reference, item):
@@ -683,5 +684,3 @@ class SqliteMultithread(threading.Thread):
             self.select_one(_REQUEST_CLOSE)
             self.join()
 
-
-sqlite = SqliteDict('db.sqlite3')
