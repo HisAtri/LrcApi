@@ -59,7 +59,7 @@ def kv_set(table_name: str, para: dict) -> tuple[bool, str|dict, int]:
             except Exception as e:
                 results[key] = {
                     "status": "Error",
-                    "Message": e,
+                    "Message": str(e),
                     "timezone": int(datetime.now(timezone.utc).timestamp()),
                 }
     return True, results, 200
@@ -69,45 +69,56 @@ def kv_get(table_name: str, para: dict) -> tuple[bool, any, int]:
     """
     读取k-v数据
     """
+    results: dict = {}
     check_status: tuple[bool, str, int] = valide_tablename(table_name)
     if not check_status[0]:
         return check_status
-    key = para.get("key")
-    if not key:
+    keys = para.get("keys")
+    if not keys:
         return False, "Missing key.", 422
-    elif type(key) is not str:
-        return False, "Invalid key: must be a string.", 422
-    try:
-        with SqliteDict(tablename=table_name) as db:
-            return True, db[key], 200
-    except KeyError:
-        return False, "Key not found.", 404
-    except Exception as e:
-        return False, str(e), 500
+    elif type(keys) is not list:
+        return False, "Invalid key: must be a list.", 422
+    with SqliteDict(tablename=table_name) as db:
+        for key in keys:
+            results[key] = db.get(key, None)
+    return True, results, 200
 
 
 def kv_del(table_name: str, para: dict) -> tuple[bool, any, int]:
     """
     删除k-v数据
     """
+    results: dict = {}
     check_status: tuple[bool, str, int] = valide_tablename(table_name)
     if not check_status[0]:
         return check_status
-    key = para.get("key")
-    if not key:
-        return False, "Missing key.", 422
-    elif type(key) is not str:
-        return False, "Invalid key: must be a string.", 422
+    keys = para.get("key")
+    if not keys:
+        return False, "Missing keys.", 422
+    elif type(keys) is not list:
+        return False, "Invalid keys: must be a list.", 422
 
-    try:
-        with SqliteDict(tablename=table_name) as db:
-            del db[key]
-            db.commit()
-            return True, key, 200
-    except KeyError:
-        return False, "Key not found.", 404
-    except Exception as e:
-        return False, str(e), 500
+    with SqliteDict(tablename=table_name) as db:
+        for key in keys:
+            try:
+                del db[key]
+                db.commit()
+                results[key] = {
+                    "status": "Success",
+                    "timezone": int(datetime.now(timezone.utc).timestamp()),
+                }
+            except KeyError:
+                results[key] = {
+                    "status": "Error",
+                    "Message": "Key not found",
+                    "timezone": int(datetime.now(timezone.utc).timestamp()),
+                }
+            except Exception as e:
+                results[key] = {
+                    "status": "Error",
+                    "Message": str(e),
+                    "timezone": int(datetime.now(timezone.utc).timestamp()),
+                }
 
 
 def custom_sql(sql: str) -> list[dict]:
@@ -124,6 +135,7 @@ def custom_sql(sql: str) -> list[dict]:
 def db_set(table_name):
     """
     写入或更新k-v数据
+    Elastic API都能往GET请求体里塞东西，我为什么不行
     """
     para: dict = request.json
     if not para:
@@ -154,6 +166,7 @@ def db_set(table_name):
 
 
 @v1_bp.route("/db", methods=["POST"], endpoint='db_custom')
+@require_auth_decorator(permission='rw')
 def db_custom():
     """
     执行自定义的SQL
