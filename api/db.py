@@ -103,6 +103,8 @@ def kv_del(table_name: str, para: dict) -> tuple[bool, any, int]:
                     "timezone": int(datetime.now(timezone.utc).timestamp()),
                 }
 
+    return True, results, 200
+
 
 def custom_sql(sql: str) -> list[dict]:
     with sqlite3.connect(saved_path) as conn:
