@@ -75,7 +75,7 @@ def kv_del(table_name: str, para: dict) -> tuple[bool, any, int]:
     check_status: tuple[bool, str, int] = validate_table_name(table_name)
     if not check_status[0]:
         return check_status
-    keys = para.get("key")
+    keys = para.get("keys")
     if not keys:
         return False, "Missing keys.", 422
     elif type(keys) is not list:
