@@ -1,16 +1,17 @@
+from mygo.devtools import no_error
+
 from . import *
 
 import os
 
-from flask import request, abort, jsonify, render_template_string
+from flask import request, abort, jsonify
 from urllib.parse import unquote_plus
 
 from mod import lrc
 from mod import searchx
 from mod import tools
 from mod import tag
-from mod.auth import webui
-from mod.auth.authentication import require_auth
+from mod.auth import require_auth_decorator
 
 
 def read_file_with_encoding(file_path: str, encodings: list[str]):
@@ -23,15 +24,11 @@ def read_file_with_encoding(file_path: str, encodings: list[str]):
     return None
 
 
-@app.route('/lyrics', methods=['GET'])
-@v1_bp.route('/lyrics/single', methods=['GET'])
+@app.route('/lyrics', methods=['GET'], endpoint='lyrics_endpoint')
+@v1_bp.route('/lyrics/single', methods=['GET'], endpoint='lyrics_endpoint')
+@require_auth_decorator(permission='r')
 @cache.cached(timeout=86400, key_prefix=make_cache_key)
 def lyrics():
-    match require_auth(request=request):
-        case -1:
-            return render_template_string(webui.error()), 403
-        case -2:
-            return render_template_string(webui.error()), 421
     # 通过request参数获取文件路径
     if not bool(request.args):
         abort(404, "请携带参数访问")
@@ -62,15 +59,11 @@ def lyrics():
         return "Lyrics not found.", 404
 
 
-@app.route('/jsonapi', methods=['GET'])
-@v1_bp.route('/lyrics/advance', methods=['GET'])
+@app.route('/jsonapi', methods=['GET'], endpoint='jsonapi_endpoint')
+@v1_bp.route('/lyrics/advance', methods=['GET'], endpoint='jsonapi_endpoint')
+@require_auth_decorator(permission='r')
 @cache.cached(timeout=86400, key_prefix=make_cache_key)
 def lrc_json():
-    match require_auth(request=request):
-        case -1:
-            return render_template_string(webui.error()), 403
-        case -2:
-            return render_template_string(webui.error()), 421
     if not bool(request.args):
         abort(404, "请携带参数访问")
     path = unquote_plus(request.args.get('path', ''))

@@ -1,13 +1,12 @@
 import hashlib
 
-from mod.auth import webui
-from mod.auth.authentication import require_auth
+from mod.auth import require_auth_decorator
 from . import *
 
 import os
 import requests
 from urllib.parse import urlparse
-from flask import request, render_template_string, send_from_directory
+from flask import request
 from werkzeug.utils import secure_filename
 
 from mod.tools import calculate_md5
@@ -42,13 +41,9 @@ class Wget:
             self.file.write(chunk)
 
 
-@v1_bp.route("/file/download", methods=["POST"])
+@v1_bp.route("/file/download", methods=["POST"], endpoint='file_api_download_endpoint')
+@require_auth_decorator(permission='rwd')
 def file_api_download():
-    match require_auth(request=request, permission="rwd"):
-        case -1:
-            return render_template_string(webui.error()), 403
-        case -2:
-            return render_template_string(webui.error()), 421
     data = request.json
     if not data:
         return {"error": "invalid request body", "code": 400}, 400
@@ -68,13 +63,9 @@ def file_api_download():
         return {"error": str(e), "code": 500}, 500
 
 
-@v1_bp.route('/file/upload', methods=['POST'])
+@v1_bp.route('/file/upload', methods=['POST'], endpoint='upload_file_endpoint')
+@require_auth_decorator(permission='rwd')
 def upload_file():
-    match require_auth(request=request, permission="rwd"):
-        case -1:
-            return render_template_string(webui.error()), 403
-        case -2:
-            return render_template_string(webui.error()), 421
     if 'file' not in request.files:
         return {"error": "No file part in the request", "code": 400}, 400
 
@@ -104,13 +95,9 @@ def upload_file():
     return {"code": 200}, 200
 
 
-@v1_bp.route('/file/list', methods=['GET'])
+@v1_bp.route('/file/list', methods=['GET'], endpoint='list_file_endpoint')
+@require_auth_decorator(permission='rwd')
 def list_file():
-    match require_auth(request=request, permission="rwd"):
-        case -1:
-            return render_template_string(webui.error()), 403
-        case -2:
-            return render_template_string(webui.error()), 421
     path = request.args.get('path', os.getcwd())
     row = request.args.get('row', 500)
     page = request.args.get('page', 1)
