@@ -8,30 +8,13 @@ from mod.auth import require_auth_decorator
 
 from mod.db import SqliteDict, saved_path
 
-SQLITE_RESERVED_WORDS = {
-    "ABORT", "ACTION", "ADD", "AFTER", "ALL", "ALTER", "ANALYZE", "AND", "AS", "ASC", "ATTACH", "AUTOINCREMENT",
-    "BEFORE", "BEGIN", "BETWEEN", "BY", "CASCADE", "CASE", "CAST", "CHECK", "COLLATE", "COLUMN", "COMMIT",
-    "CONFLICT", "CONSTRAINT", "CREATE", "CROSS", "CURRENT_DATE", "CURRENT_TIME", "CURRENT_TIMESTAMP", "DATABASE",
-    "DEFAULT", "DEFERRABLE", "DEFERRED", "DELETE", "DESC", "DETACH", "DISTINCT", "DROP", "EACH", "ELSE", "END",
-    "ESCAPE", "EXCEPT", "EXCLUSIVE", "EXISTS", "EXPLAIN", "FAIL", "FOR", "FOREIGN", "FROM", "FULL", "GLOB",
-    "GROUP", "HAVING", "IF", "IGNORE", "IMMEDIATE", "IN", "INDEX", "INDEXED", "INITIALLY", "INNER", "INSERT",
-    "INSTEAD", "INTERSECT", "INTO", "IS", "ISNULL", "JOIN", "KEY", "LEFT", "LIKE", "LIMIT", "MATCH", "NATURAL",
-    "NO", "NOT", "NOTNULL", "NULL", "OF", "OFFSET", "ON", "OR", "ORDER", "OUTER", "PLAN", "PRAGMA", "PRIMARY",
-    "QUERY", "RAISE", "RECURSIVE", "REFERENCES", "REGEXP", "REINDEX", "RELEASE", "RENAME", "REPLACE", "RESTRICT",
-    "RIGHT", "ROLLBACK", "ROW", "SAVEPOINT", "SELECT", "SET", "TABLE", "TEMP", "TEMPORARY", "THEN", "TO", "TRANSACTION",
-    "TRIGGER", "UNION", "UNIQUE", "UPDATE", "USING", "VACUUM", "VALUES", "VIEW", "VIRTUAL", "WHEN", "WHERE", "WITH",
-    "WITHOUT"
-}
 
-
-def valide_tablename(table_name: str) -> tuple[bool, str, int]:
+def validate_table_name(table_name: str) -> tuple[bool, str, int]:
     if not table_name:
         return False, "Missing table_name.", 422
     invalid_chars = re.compile(r"[^a-zA-Z0-9_]")  # 表名仅允许包含字母、数字和下划线
     if invalid_chars.search(table_name):
         return False, "Invalid table_name: contains invalid characters.", 422
-    if table_name.upper() in SQLITE_RESERVED_WORDS:
-        return False, "Invalid table_name: is a reserved keyword.", 422
     # 限制表名长度为64字符
     if len(table_name) > 64:
         return False, "Invalid table_name: too long.", 422
@@ -42,7 +25,7 @@ def kv_set(table_name: str, para: dict) -> tuple[bool, str|dict, int]:
     """
     写入或更新k-v数据
     """
-    check_status: tuple[bool, str, int] = valide_tablename(table_name)
+    check_status: tuple[bool, str, int] = validate_table_name(table_name)
     if not check_status[0]:
         return check_status
     kv_list: dict[str, str] = para.get("data")
@@ -70,7 +53,7 @@ def kv_get(table_name: str, para: dict) -> tuple[bool, any, int]:
     读取k-v数据
     """
     results: dict = {}
-    check_status: tuple[bool, str, int] = valide_tablename(table_name)
+    check_status: tuple[bool, str, int] = validate_table_name(table_name)
     if not check_status[0]:
         return check_status
     keys = para.get("keys")
@@ -89,7 +72,7 @@ def kv_del(table_name: str, para: dict) -> tuple[bool, any, int]:
     删除k-v数据
     """
     results: dict = {}
-    check_status: tuple[bool, str, int] = valide_tablename(table_name)
+    check_status: tuple[bool, str, int] = validate_table_name(table_name)
     if not check_status[0]:
         return check_status
     keys = para.get("key")
