@@ -35,6 +35,7 @@ if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
     logger = logging.getLogger('')
     logger.info("正在启动服务器")
+    logger.info("您可通过爱发电支持我们，爱发电主页 https://afdian.com/a/ghacg")
     check_update.run(version=args.version)
     # 注册 Blueprint 到 Flask 应用
     app.register_blueprint(v1_bp)
