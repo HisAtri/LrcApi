@@ -1,4 +1,5 @@
 import os
+import json
 
 from . import *
 
@@ -13,8 +14,14 @@ from mod.dev.debugger import debugger
 @app.route('/confirm', methods=['POST', 'PUT'], endpoint='set_tag_endpoint')
 @require_auth_decorator(permission='rw')
 def set_tag():
-    music_data = request.json
-    audio_path = music_data.get("path")
+    try:
+        music_data_json: str = request.data.decode('utf-8')
+        music_data: dict = json.loads(music_data_json)
+    except json.JSONDecodeError:
+        return "Invalid JSON.", 422
+    except UnicodeError:
+        return "Invalid encoding.", 422
+    audio_path: str = music_data.get("path")
     if not audio_path:
         return "Missing 'path' key in JSON.", 422
     debugger.log("info", f"Editing file {audio_path}")
