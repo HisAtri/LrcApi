@@ -141,7 +141,7 @@ class Args():
     def __set_default(self, default_data: dict):
         self.__default = default_data
 
-    def _load(self):
+    def __call__(self):
         """
         JSON: config/config.json
         YAML: config/config.yaml
@@ -202,7 +202,7 @@ if __name__ == '__main__':
         "auth": {}
     }
     config = Args(default=default)
-    config._load()
+    config()
     print(~config.server)
     print(~config.server.port)
     print(~config.auth)
