@@ -34,7 +34,6 @@ jobs:
 
       - name: Archive release files
         run: |
-          mkdir -p dist
           zip -r release.zip dist
 
       - name: Upload release artifact
