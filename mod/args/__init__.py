@@ -1,5 +1,6 @@
 import argparse
 import json
+import yaml
 import logging
 import os
 
@@ -106,3 +107,103 @@ class GlobalArgs:
         :return:
         """
         return self.auth.get(key, '')
+
+DEFAULT_DATA = {
+            "server": {
+                "ip": "*",
+                "port": 28883
+            },
+            "auth": {}
+        }
+
+class Args():
+    def __init__(self, data=None, default=None):
+        self.__data: dict = data
+        self.__default: dict = default or {}
+
+    def __invert__(self):
+        return self.__data
+
+    def __get(self, key: str) -> 'Args':
+        # 如果不是字典，则返回Args包装的None
+        if not isinstance(self.__data, dict):
+            return Args()
+        else:
+            # 如果key不存在，则返回Args包装的None
+            if key not in self.__data.keys():
+                return Args()
+            # 如果key对应的值是字典，则返回Args包装的字典，默认值从__default中获取
+            if isinstance(self.__data[key], dict):
+                return Args(data=self.__data[key], default=self.__default.get(key, {}))
+            # 如果key对应的值不是字典，则返回Args包装的值
+            return Args(data=self.__data[key])
+
+    def __set_default(self, default_data: dict):
+        self.__default = default_data
+
+    def __call__(self):
+        """
+        JSON: config/config.json
+        YAML: config/config.yaml
+
+        default: YAML
+        """
+        for loader in (self.__load_json, self.__load_yaml):
+            data = loader()
+            if isinstance(data, dict):
+                self.__data = data
+                return
+            # 如果没有读取到有效数据，则使用默认数据
+            self.__data = self.__default
+            # 写入默认数据
+            directory = os.path.join(os.getcwd(), "config")
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+            file_path = os.path.join(directory, "config.yaml")
+            with open(file_path, "w+") as yaml_file:
+                yaml.dump(DEFAULT_DATA, yaml_file)
+
+    @staticmethod
+    def __load_json() -> dict|None:
+        file_path = os.path.join(os.getcwd(), "config", "config.json")
+        try:
+            with open(file_path, "r+") as json_file:
+                return json.load(json_file)
+        # 解析错误
+        except (json.JSONDecodeError, FileNotFoundError):
+            return None
+
+    @staticmethod
+    def __load_yaml() -> dict|None:
+        file_path = os.path.join(os.getcwd(), "config", "config.yaml")
+        try:
+            with open(file_path, "r+") as yaml_file:
+                return yaml.safe_load(yaml_file)
+        except (yaml.YAMLError, FileNotFoundError):
+            return None
+
+    def __getattribute__(self, item):
+        if item.startswith('_'):
+            return super().__getattribute__(item)
+        return self.__get(item)
+
+    def __str__(self):
+        return str({
+            "data": self.__data,
+            "default": self.__default
+        })
+
+if __name__ == '__main__':
+    default: dict = {
+        "server": {
+            "ip": "*",
+            "port": 28883
+        },
+        "auth": {}
+    }
+    config = Args(default=default)
+    config()
+    print(~config.server)
+    print(~config.server.port)
+    print(~config.auth)
+    print(~config.auth.admin)
