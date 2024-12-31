@@ -6,7 +6,7 @@ import os
 
 # 安装Pyinstaller及主程序依赖
 # 必须在import项目中的模块之前执行，否则会出现找不到模块的错误
-print("安装Pyinstaller及主程序依赖")
+print("Installing dependencies...")
 subprocess.run("pip install -r requirements.txt", shell=True)
 subprocess.run("pip install pyinstaller", shell=True)
 
