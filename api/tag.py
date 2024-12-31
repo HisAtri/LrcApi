@@ -1,29 +1,27 @@
 import os
+import json
 
 from . import *
 
-from flask import request, render_template_string, abort
+from flask import request
 
 from mod import tag
-from mod.auth import webui
-from mod.auth.authentication import require_auth
+from mod.auth import require_auth_decorator
 from mod.dev.debugger import debugger
 
 
-@app.route('/tag', methods=['POST', 'PUT'])
-@app.route('/confirm', methods=['POST', 'PUT'])
+@app.route('/tag', methods=['POST', 'PUT'], endpoint='set_tag_endpoint')
+@app.route('/confirm', methods=['POST', 'PUT'], endpoint='set_tag_endpoint')
+@require_auth_decorator(permission='rw')
 def set_tag():
-    match require_auth(request=request, permission='rw'):
-        case -1:
-            logger.error("Unauthorized access: 未经授权的用户请求修改标签")
-            return render_template_string(webui.error()), 403
-        case -2:
-            logger.error("Unauthorized access: 您没有为API设置鉴权功能，为了安全起见，有关本地文件修改的功能无法使用。"
-                         "具体请查看<https://docs.lrc.cx/docs/deploy/auth>以启用API鉴权功能。")
-            return render_template_string(webui.error()), 421
-
-    music_data = request.json
-    audio_path = music_data.get("path")
+    try:
+        music_data_json: str = request.data.decode('utf-8')
+        music_data: dict = json.loads(music_data_json)
+    except json.JSONDecodeError:
+        return "Invalid JSON.", 422
+    except UnicodeError:
+        return "Invalid encoding.", 422
+    audio_path: str = music_data.get("path")
     if not audio_path:
         return "Missing 'path' key in JSON.", 422
     debugger.log("info", f"Editing file {audio_path}")

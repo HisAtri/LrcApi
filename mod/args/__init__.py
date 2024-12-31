@@ -90,7 +90,7 @@ class GlobalArgs:
         self.port = first(env_args.port, kw_args.port, config_args.port, default.port)
         self.ip = first(config_args.ip, default.ip)
         self.debug = kw_args.debug
-        self.version = "1.5.4"
+        self.version = "1.5.7"
 
     def valid(self, key) -> bool:
         """

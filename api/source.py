@@ -2,10 +2,9 @@ from . import *
 
 import os
 
-from flask import request, abort, redirect, send_from_directory, render_template_string
+from flask import abort, redirect, send_from_directory
 
-from mod.auth import webui
-from mod.auth.authentication import require_auth
+from mod.auth import require_auth_decorator
 
 
 @app.route('/')
@@ -57,20 +56,15 @@ def serve_file(filename):
         abort(404)
 
 
-@app.route('/file/<path:filename>')
-@v1_bp.route('/file/<path:filename>')
+@app.route('/file/<path:filename>', endpoint='file_viewer_endpoint')
+@v1_bp.route('/file/<path:filename>', endpoint='file_viewer_endpoint')
+@require_auth_decorator(permission='r')
 def file_viewer(filename):
     """
     文件查看器
     :param filename:
     :return:
     """
-    # 需要权限
-    match require_auth(request=request):
-        case -1:
-            return render_template_string(webui.error()), 403
-        case -2:
-            return render_template_string(webui.error()), 421
     # 拓展名白名单
     ALLOWED_EXTENSIONS = ('.mp3', '.flac', '.wav', '.ape', '.ogg', '.m4a', '.aac', '.wma', '.mp4', '.m4p', '.m4b',
                           'txt', 'lrc', 'webp', 'jpg', 'jpeg', 'png', 'bmp', 'gif', 'webp', 'svg', 'ico', 'mp4', 'webm',

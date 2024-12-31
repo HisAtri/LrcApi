@@ -92,8 +92,8 @@ async def a_search(title='', artist='', album=''):
                                     "artists": singer_name,
                                     "lyrics": lrc_text,
                                     "cover": await get_cover(session, song_hash, album_id),
-                                    "hash": tools.calculate_md5(
-                                        f"title:{song_name};artists:{singer_name};album:{album_name}")
+                                    "id": tools.calculate_md5(
+                                        f"title:{song_name};artists:{singer_name};album:{album_name}", base='dec')
                                 }
                                 result_list.append({
                                     "data": music_json_data,
