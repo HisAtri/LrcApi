@@ -4,6 +4,12 @@ import sys
 import codecs
 import os
 
+# 安装Pyinstaller及主程序依赖
+# 必须在import项目中的模块之前执行，否则会出现找不到模块的错误
+print("Installing dependencies...")
+subprocess.run("pip install -r requirements.txt", shell=True)
+subprocess.run("pip install pyinstaller", shell=True)
+
 from mod.args import GlobalArgs
 
 sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
@@ -18,11 +24,6 @@ if (ARCHITECTURE == "x86_64") & (platform.architecture()[0] == "32bit"):
 APP_NAME = "lrcapi"
 APP_VERSION = GlobalArgs().version
 PACK_NAME = f"{APP_NAME}-{APP_VERSION}-{PLATFORM}-{ARCHITECTURE}{'.exe' if PLATFORM == 'Windows' else ''}"
-
-# 安装Pyinstaller及主程序依赖
-subprocess.run("pip install -r requirements.txt", shell=True)
-subprocess.run("pip install pyinstaller", shell=True)
-
 
 # 打包
 def generate_add_data_options(root_dir):
