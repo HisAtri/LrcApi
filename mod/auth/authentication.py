@@ -1,9 +1,7 @@
 import flask
 
 from . import cookie
-from mod.args import GlobalArgs
-
-args = GlobalArgs()
+from mod.args import args
 
 
 def require_auth(request: flask.request, permission: str = 'r'):
@@ -19,7 +17,7 @@ def require_auth(request: flask.request, permission: str = 'r'):
     cookie_permission: bool = has_permission(get_permission(cookie_key), permission)
     header_permission: bool = has_permission(get_permission(auth_header), permission)
 
-    if not args.auth:
+    if not args("auth"):
         if permission == 'r':
             return 1
         else:
@@ -38,7 +36,7 @@ def get_permission(name: str) -> str:
     """
     if not name:
         return ''
-    auth_dict: dict = args.auth
+    auth_dict: dict = args("auth")
     return auth_dict.get(name, '')
 
 

@@ -12,6 +12,8 @@ parser = argparse.ArgumentParser(description="启动LRCAPI服务器")
 parser.add_argument('--port', type=int, default=28883, help='应用的运行端口，默认28883')
 parser.add_argument('--auth', type=str, default='', help='用于验证Header.Authentication字段，建议纯ASCII字符')
 parser.add_argument("--debug", action="store_true", help="Enable debug mode")
+parser.add_argument('--ip', type=str, default='*', help='服务器监听IP，默认*')
+parser.add_argument('--token', type=str, default='', help='用于翻译歌词的API Token')
 kw_args, unknown_args = parser.parse_known_args()
 arg_auths: dict = {kw_args.auth: "rwd"} if kw_args.auth else None
 
@@ -70,6 +72,7 @@ class EnvVar:
         self.auth = os.environ.get('API_AUTH', None)
         self.port = os.environ.get('API_PORT', None)
         self.auths = None
+        self.token = os.environ.get('API_TOKEN', None)
         if self.auth:
             self.auths: dict = {
                 self.auth: "all"
@@ -120,48 +123,31 @@ class Args():
     def __init__(self, data=None, default=None):
         self.__data: dict = data
         self.__default: dict = default or {}
+        self.version = "1.5.7"
+        self.debug = kw_args.debug
 
     def __invert__(self):
-        return self.__data
-
-    def __get(self, key: str) -> 'Args':
-        # 如果不是字典，则返回Args包装的None
-        if not isinstance(self.__data, dict):
-            return Args()
-        else:
-            # 如果key不存在，则返回Args包装的None
-            if key not in self.__data.keys():
-                return Args()
-            # 如果key对应的值是字典，则返回Args包装的字典，默认值从__default中获取
-            if isinstance(self.__data[key], dict):
-                return Args(data=self.__data[key], default=self.__default.get(key, {}))
-            # 如果key对应的值不是字典，则返回Args包装的值
-            return Args(data=self.__data[key])
-
-    def __set_default(self, default_data: dict):
-        self.__default = default_data
-
-    def __call__(self):
         """
         JSON: config/config.json
         YAML: config/config.yaml
 
         default: YAML
         """
+        # 1. 首先用默认值初始化
+        self.__data = self.__default.copy()
+        
+        # 2. 加载配置文件，使用update而不是直接赋值
         for loader in (self.__load_json, self.__load_yaml):
             data = loader()
             if isinstance(data, dict):
-                self.__data = data
-                return
-            # 如果没有读取到有效数据，则使用默认数据
-            self.__data = self.__default
-            # 写入默认数据
-            directory = os.path.join(os.getcwd(), "config")
-            if not os.path.exists(directory):
-                os.makedirs(directory)
-            file_path = os.path.join(directory, "config.yaml")
-            with open(file_path, "w+") as yaml_file:
-                yaml.dump(DEFAULT_DATA, yaml_file)
+                self.__data.update(data)
+                break
+        
+        # 3. 加载环境变量
+        self.__load_env()
+        
+        # 4. 最后加载命令行参数（最高优先级）
+        self.__load_arg()
 
     @staticmethod
     def __load_json() -> dict|None:
@@ -181,17 +167,55 @@ class Args():
                 return yaml.safe_load(yaml_file)
         except (yaml.YAMLError, FileNotFoundError):
             return None
+        
+    def __load_env(self):
+        auth = os.environ.get('API_AUTH', None)
+        port = os.environ.get('API_PORT', None)
+        token = os.environ.get('API_TOKEN', None)
+        if auth:
+            self.__data["auth"] = {auth: "all"}
+        if port:
+            # 确保 server 是一个字典
+            if not isinstance(self.__data.get("server"), dict):
+                self.__data["server"] = {"ip": "*"}
+            self.__data["server"]["port"] = port
+        if token:
+            self.__data["token"] = token
 
-    def __getattribute__(self, item):
-        if item.startswith('_'):
-            return super().__getattribute__(item)
-        return self.__get(item)
+    def __load_arg(self):
+        auth = kw_args.auth
+        port = kw_args.port
+        ip = kw_args.ip
+        token = kw_args.token
+        logger.info(f"Auth: {auth}; Port: {port}; IP: {ip}")
+        if auth:
+            self.__data["auth"] = {auth: "all"}
+        if port:
+            if not isinstance(self.__data.get("server"), dict):
+                self.__data["server"] = {"ip": "*"}
+            self.__data["server"]["port"] = port
+        if ip:
+            if not isinstance(self.__data.get("server"), dict):
+                self.__data["server"] = {"ip": "*"}
+            self.__data["server"]["ip"] = ip
+        if token:
+            self.__data["token"] = token
+        #logger.info(f"Final config data: {self.__data}")
 
-    def __str__(self):
-        return str({
-            "data": self.__data,
-            "default": self.__default
-        })
+    def __call__(self, *args):
+        data = self.__data
+        default = self.__default
+        for key in args:
+            if key in data:
+                data = data[key]
+            elif key in default:
+                data = default[key]
+            else:
+                return None
+        return data
+    
+args = Args(default=DEFAULT_DATA)
+~args  # 初始化配置
 
 if __name__ == '__main__':
     default: dict = {
@@ -202,8 +226,5 @@ if __name__ == '__main__':
         "auth": {}
     }
     config = Args(default=default)
-    config()
-    print(~config.server)
-    print(~config.server.port)
-    print(~config.auth)
-    print(~config.auth.admin)
+    ~config
+    print(config("server", "port"))

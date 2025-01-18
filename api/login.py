@@ -4,9 +4,7 @@ from flask import request, redirect, jsonify, render_template_string, make_respo
 
 from mod.auth import webui, cookie
 from mod.auth.authentication import require_auth
-from mod.args import GlobalArgs
-
-args = GlobalArgs()
+from mod.args import args
 
 
 @app.route('/login')
@@ -16,7 +14,7 @@ def login_check():
     未登录时返回页面，已登录时重定向至主页
     :return:
     """
-    if require_auth(request=request) < 0 and args.auth:
+    if require_auth(request=request) < 0 and args("auth"):
         return render_template_string(webui.html_login())
 
     return redirect('/src')
@@ -33,7 +31,7 @@ def login_api():
     data = request.get_json()
     if 'password' in data:
         pwd = data['password']
-        if args.valid(pwd):
+        if pwd in args("auth"):
             logger.info("user login")
             response = make_response(jsonify(success=True))
             response.set_cookie('api_auth_token', cookie.set_cookie(pwd))

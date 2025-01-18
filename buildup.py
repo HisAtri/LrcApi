@@ -10,7 +10,7 @@ print("Installing dependencies...")
 subprocess.run("pip install -r requirements.txt", shell=True)
 subprocess.run("pip install pyinstaller", shell=True)
 
-from mod.args import GlobalArgs
+from mod.args import args
 
 sys.stdout = codecs.getwriter("utf-8")(sys.stdout.detach())
 
@@ -22,7 +22,7 @@ print(platform.architecture()[0])
 if (ARCHITECTURE == "x86_64") & (platform.architecture()[0] == "32bit"):
     ARCHITECTURE = "i386"
 APP_NAME = "lrcapi"
-APP_VERSION = GlobalArgs().version
+APP_VERSION = args.version
 PACK_NAME = f"{APP_NAME}-{APP_VERSION}-{PLATFORM}-{ARCHITECTURE}{'.exe' if PLATFORM == 'Windows' else ''}"
 
 # 打包
