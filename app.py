@@ -4,25 +4,22 @@ import sys
 from waitress import serve
 
 from mod import check_update
-from mod.args import GlobalArgs
+from mod.args import args
 from mod.dev.debugger import debugger
 from api import *
 from api import __import__
-
-args = GlobalArgs()
 
 
 def run_server(debug=False):
     if not debug:
         # Waitress WSGI 服务器
-        serve(app, host=args.ip, port=args.port, threads=32, channel_timeout=30)
+        serve(app, host=args("server", "ip"), port=args("server", "port"), threads=32, channel_timeout=30)
     else:
         debugger.debug = True
         debugger.log("info", "Debug模式已开启")
         debugger.log("info", f"Version: {args.version}")
-        if args.auth:
-            debugger.log("info", f"Auth: {args.auth}")
-        app.run(host='*', port=args.port, debug=True)
+        debugger.log("info", f"Auth: {args('auth')}")
+        app.run(host='0.0.0.0', port=args("server", "port"), debug=True)
 
 
 if __name__ == '__main__':
@@ -41,3 +38,4 @@ if __name__ == '__main__':
     app.register_blueprint(v1_bp)
     # 启动
     run_server(args.debug)
+

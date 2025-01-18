@@ -10,8 +10,10 @@ app = Flask(__name__)
 logger = logging.getLogger(__name__)
 
 v1_bp = Blueprint('v1', __name__, url_prefix='/api/v1')
-# Blueprint直接复制app配置项
 v1_bp.config = app.config.copy()
+
+navidrome_bp = Blueprint('navidrome', __name__, url_prefix='/api/navidrome')
+navidrome_bp.config = app.config.copy()
 
 
 # 缓存逻辑
