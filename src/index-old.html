@@ -1,0 +1,201 @@
+<!-- 如果你在歌词界面看到此信息，说明你设置了错误的API地址，默认地址为/jsonapi -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>LyricsAPI</title>
+    <link rel="stylesheet" href="/src/css/mod.css">
+    <link rel="stylesheet" href="//cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.6.2/css/bootstrap.css">
+    <link rel="stylesheet" href="//cdn.bootcdn.net/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-dark sticky-top bg-light p-2 shadow">
+        <div class="container-fluid">
+            <div class="col">
+                <div style="display: inline-block;">
+                    <a class="navbar-brand d-flex align-items-center text-dark mr-0 px-5" href="#">LrcAPI</a>
+                </div>
+            </div>
+            <div class="col">
+                <div style="display: inline-block;float: right;">
+                    <a class="nav-link text-dark" href="https://github.com/HisAtri/LrcApi"><i class="bi bi-github"></i> Github <i
+                            class="bi bi-box-arrow-up-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <div class="container border shadow-lg p-3 mb-5 bg-white rounded text-dark">
+        <br>
+        <div>
+            <img alt="LOGO" class="rounded mx-auto d-block"
+                src="https://cdn.jsdelivr.net/gh/HisAtri/LrcAPI@main/src/img/LrcAPI-Text-Extra.png" width="313"
+                height="400" />
+            <div class="mx-auto" style="text-align: center">
+                <br>
+                <p class="has-line-data" data-line-start="2" data-line-end="3">A Flask API For <a
+                    target="_blank" href="https://github.com/gitbobobo/StreamMusic">StreamMusic</a></p>
+                <a target="_blank" href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/Python-3.10|3.11|3.12-blue.svg" alt=""></a>
+                <a target="_blank" href="https://hub.docker.com/r/hisatri/lrcapi"><img src="https://img.shields.io/badge/Docker-Quick%20Start-0077ED.svg" alt=""></a>
+                <br>
+                <a target="_blank" href="https://www.gnu.org/licenses/gpl-3.0.html"><img src="https://img.shields.io/github/license/HisAtri/LrcApi?color=%23f280bf" alt=""></a>
+                <img src="https://img.shields.io/github/commit-activity/m/HisAtri/LrcApi?color=%23bf4215" alt="">
+                <img src="https://img.shields.io/github/stars/HisAtri/LrcApi?style=social" alt="">
+            </div>
+        </div>
+        <div>
+            <h2 class="code-line" data-line-start=4 data-line-end=5><a id="_4"></a>功能</h2>
+            <p class="has-line-data" data-line-start="6" data-line-end="7">支持酷狗/聚合API获取LRC歌词</p>
+            <p class="has-line-data" data-line-start="8" data-line-end="9">支持text/json API</p>
+            <p class="has-line-data" data-line-start="10" data-line-end="11">支持获取音乐/专辑/艺术家封面</p>
+            <p class="has-line-data" data-line-start="12" data-line-end="13">默认监听28883端口，API地址
+                <code>http://0.0.0.0:28883/lyrics</code> ；新版API地址 <code>http://0.0.0.0:28883/jsonapi</code> ；封面API地址
+                <code>http://0.0.0.0:28883/cover</code> 。</p>
+            <h3 class="code-line" data-line-start=14 data-line-end=15><a id="_14"></a>启动参数</h3>
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>参数</th>
+                        <th>类型</th>
+                        <th>默认值</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>--port</code></td>
+                        <td>int</td>
+                        <td>28883</td>
+                    </tr>
+                    <tr>
+                        <td><code>--auth</code></td>
+                        <td>str</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+            <p class="has-line-data" data-line-start="21" data-line-end="22">
+                <code>--auth</code>参数用于header鉴权，留空则跳过鉴权。验证header中的<code>Authorization</code>或<code>Authentication</code>字段。如果鉴权不符合，则返回403响应。
+            </p>
+            <p class="has-line-data" data-line-start="23" data-line-end="24">
+                也可以使用环境变量<code>API_AUTH</code>定义，其优先性低于<code>--auth</code>参数，但是更容易在Docker中部署。<code>-e API_AUTH=自定义一个鉴权key</code>
+            </p>
+            <h2 class="code-line" data-line-start=25 data-line-end=26><a id="_25"></a>食用方法</h2>
+            <h3 class="code-line" data-line-start=27 data-line-end=28><a id="API_27"></a>公开API</h3>
+            <p class="has-line-data" data-line-start="29" data-line-end="30">
+                如果无法私有部署，可以先尝试使用公开API。注意：公开API通过酷狗等接口获取歌词，可能响应较慢且并不完全准确。</p>
+            <p class="has-line-data" data-line-start="31" data-line-end="32">
+                歌词API地址：<code>https://lrc.xms.mx/lyrics</code></p>
+            <p class="has-line-data" data-line-start="33" data-line-end="34">封面API地址:
+                <code>https://lrc.xms.mx/cover</code></p>
+            <h3 class="code-line" data-line-start=35 data-line-end=36><a id="_35"></a>二进制文件</h3>
+            <p class="has-line-data" data-line-start="37" data-line-end="38">
+                上传至运行目录，<code>./lrcapi --port 8080 --auth 自定义一个鉴权key</code></p>
+            <h3 class="code-line" data-line-start=39 data-line-end=40><a id="Python_39"></a>Python源文件</h3>
+            <p class="has-line-data" data-line-start="41" data-line-end="42">拉取本项目；或者下载后上传至运行目录，解压tar.gz</p>
+            <p class="has-line-data" data-line-start="43" data-line-end="44">
+                安装依赖：<code>pip install -r requirements.txt</code></p>
+            <p class="has-line-data" data-line-start="45" data-line-end="46">
+                启动服务：<code>python3 app.py --port 8080 --auth 自定义一个鉴权key</code></p>
+            <h3 class="code-line" data-line-start=47 data-line-end=48><a id="Docker_47"></a>Docker部署方式</h3>
+            <pre><code data-line-start="50" data-line-end="52" class="language-bash">docker run <span class="hljs-operator">-d</span> -p <span class="hljs-number">28883</span>:<span class="hljs-number">28883</span> -v /home/user/music:/music hisatri/lrcapi:latest
+            </code></pre>
+            <p class="has-line-data" data-line-start="53" data-line-end="54">或者，请指定一个Tag（推荐）</p>
+            <pre><code data-line-start="56" data-line-end="58" class="language-bash">docker run <span class="hljs-operator">-d</span> -p <span class="hljs-number">28883</span>:<span class="hljs-number">28883</span> -v /home/user/music:/music hisatri/lrcapi:alpine-py1.<span class="hljs-number">3.4</span>
+            </code></pre>
+            <p class="has-line-data" data-line-start="59" data-line-end="60">如果你正在使用Navidrome Docker，请将
+                <code>/home/user/music:/music</code> 中的 <code>/home/user/music</code> 修改为你在Navidrome中映射的主机路径；</p>
+            <p class="has-line-data" data-line-start="61" data-line-end="62">换句话说，<code>-v</code> 参数与Navidrome保持一致即可。
+            </p>
+            <p class="has-line-data" data-line-start="63" data-line-end="64">
+                如果你正在使用Navidrome，请将你的音乐文件目录映射到Docker内目录；例如如果你音乐存储的目录是<code>/www/path/music</code>，请将启动命令中的映射修改为
+                <code>/www/path/music:/www/path/music</code></p>
+            <p class="has-line-data" data-line-start="65" data-line-end="66">然后访问
+                <code>http://0.0.0.0:28883/lyrics</code> 或新版API <code>http://0.0.0.0:28883/jsonapi</code></p>
+            <p class="has-line-data" data-line-start="67" data-line-end="68">图片API地址为
+                <code>http://0.0.0.0:28883/cover</code></p>
+            <p class="has-line-data" data-line-start="69" data-line-end="70">注意：图片返回目前采用反向代理策略，可能存在一定的上下行流量消耗和延迟。</p>
+            <p class="has-line-data" data-line-start="71" data-line-end="72">支持使用Nginx或Apache进行反向代理与SSL。</p>
+            <h2 class="code-line" data-line-start=73 data-line-end=74><a id="_73"></a>二次开发说明</h2>
+            <p class="has-line-data" data-line-start="75" data-line-end="76">
+                本程序基于GPL-3.0开源许可证，您可以自由使用、修改和分发本程序。在二次开发时，请遵守以下要求：</p>
+            <ol>
+                <li class="has-line-data" data-line-start="76" data-line-end="77">在您的衍生作品中保留原始版权和许可声明。</li>
+                <li class="has-line-data" data-line-start="77" data-line-end="78">如果您对本程序进行了修改，请清楚地说明您的修改。</li>
+                <li class="has-line-data" data-line-start="78" data-line-end="79">
+                    在进行分发时，您需要提供完整的源代码，并以GPL-3.0许可证分发您的衍生作品。</li>
+                <li class="has-line-data" data-line-start="79" data-line-end="80">
+                    任何以本程序为基础的商业用途都需要遵守GPL-3.0许可证，并保持免费开放访问。</li>
+                <li class="has-line-data" data-line-start="80" data-line-end="82">除源代码外，本项目的其他部分（包括Logo、服务或标语等）并非由 GPL
+                    3.0 协议开源。</li>
+            </ol>
+            <p class="has-line-data" data-line-start="82" data-line-end="83">请确保您详细了解GPL-3.0许可证的要求并遵守相关规定。</p>
+            <h1 class="code-line" data-line-start=84 data-line-end=85><a id="_84"></a>赞赏一下</h1>
+            <p class="has-line-data" data-line-start="82" data-line-end="83">微信</p>
+            <img alt="reward" class="rounded" src="/src/img/qrcode.png" width="512" height="512" />
+        </div>
+    </div>
+    <br><br><br>
+    <footer class="footer">
+        <div class="container">
+            &copy; 2023 LrcAPI | <a href="https://github.com/HisAtri/LrcApi">Github</a>
+            <br>
+            <a href="https://github.com/HisAtri/LrcApi/blob/main/LICENSE" class="Link--muted"
+                data-analytics-event="{&quot;category&quot;:&quot;Repository Overview&quot;,&quot;action&quot;:&quot;click&quot;,&quot;label&quot;:&quot;location:sidebar;file:license&quot;}">
+                <svg aria-hidden="true" height="16" viewBox="0 0 16 16" version="1.1" width="16"
+                    data-view-component="true">
+                    <path
+                        d="M8.75.75V2h.985c.304 0 .603.08.867.231l1.29.736c.038.022.08.033.124.033h2.234a.75.75 0 0 1 0 1.5h-.427l2.111 4.692a.75.75 0 0 1-.154.838l-.53-.53.529.531-.001.002-.002.002-.006.006-.006.005-.01.01-.045.04c-.21.176-.441.327-.686.45C14.556 10.78 13.88 11 13 11a4.498 4.498 0 0 1-2.023-.454 3.544 3.544 0 0 1-.686-.45l-.045-.04-.016-.015-.006-.006-.004-.004v-.001a.75.75 0 0 1-.154-.838L12.178 4.5h-.162c-.305 0-.604-.079-.868-.231l-1.29-.736a.245.245 0 0 0-.124-.033H8.75V13h2.5a.75.75 0 0 1 0 1.5h-6.5a.75.75 0 0 1 0-1.5h2.5V3.5h-.984a.245.245 0 0 0-.124.033l-1.289.737c-.265.15-.564.23-.869.23h-.162l2.112 4.692a.75.75 0 0 1-.154.838l-.53-.53.529.531-.001.002-.002.002-.006.006-.016.015-.045.04c-.21.176-.441.327-.686.45C4.556 10.78 3.88 11 3 11a4.498 4.498 0 0 1-2.023-.454 3.544 3.544 0 0 1-.686-.45l-.045-.04-.016-.015-.006-.006-.004-.004v-.001a.75.75 0 0 1-.154-.838L2.178 4.5H1.75a.75.75 0 0 1 0-1.5h2.234a.249.249 0 0 0 .125-.033l1.288-.737c.265-.15.564-.23.869-.23h.984V.75a.75.75 0 0 1 1.5 0Zm2.945 8.477c.285.135.718.273 1.305.273s1.02-.138 1.305-.273L13 6.327Zm-10 0c.285.135.718.273 1.305.273s1.02-.138 1.305-.273L3 6.327Z">
+                    </path>
+                </svg>
+                GNU-GPL v3.0 license
+            </a>
+            <br>
+            <a href="https://music.aqzscn.cn/">音流官网</a> | <a href="https://apps.apple.com/cn/app/%E9%9F%B3%E6%B5%81-%E8%BF%9E%E6%8E%A5%E4%BD%A0%E7%9A%84%E9%9F%B3%E4%B9%90/id6449966496">AppleStore</a>
+        </div>
+    </footer>
+    <script>
+        const headings = document.querySelectorAll('h1, h2, h3');
+        headings.forEach(function(heading) {
+            const hr = document.createElement('hr');
+            heading.insertAdjacentElement('afterend', hr);
+        });
+    </script>
+    <script>
+        var currentUrl = window.location.protocol + '//' + window.location.host;
+        document.body.innerHTML = document.body.innerHTML.replace(/http:\/\/0\.0\.0\.0:28883/g, currentUrl);
+
+        var codeElements = document.querySelectorAll('code');
+
+        codeElements.forEach(function(codeElement) {
+            codeElement.addEventListener("click", function () {
+                copyToClipboard(codeElement.textContent);
+                showTooltip("已复制到剪贴板");
+            });
+        });
+
+        function copyToClipboard(text) {
+            var textarea = document.createElement("textarea");
+            textarea.value = text;
+            textarea.style.position = "fixed";
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textarea);
+        }
+
+        function showTooltip(message) {
+            var tooltips = document.createElement("div");
+            tooltips.className = "tooltip-x";
+            tooltips.textContent = message;
+            document.body.appendChild(tooltips);
+
+            setTimeout(function () {
+                document.body.removeChild(tooltips);
+            }, 2000);
+        }
+    </script>
+</body>
+
+</html>
