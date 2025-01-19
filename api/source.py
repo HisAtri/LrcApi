@@ -16,6 +16,11 @@ def redirect_to_welcome():
     return redirect('/src')
 
 
+@app.route('/acknowledgments')
+def acknowledgments():
+    return send_from_directory(src_path, 'acknowledgments.html')
+
+
 @app.route('/favicon.ico')
 def favicon():
     """
