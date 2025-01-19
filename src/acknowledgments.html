@@ -5,6 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LrcAPI - 致谢名单</title>
     <link rel="stylesheet" href="/src/css/v50.css">
+    <style>
+        .barrage-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 100;
+            overflow: hidden;
+        }
+        
+        .barrage-item {
+            position: fixed;
+            white-space: nowrap;
+            font-family: "Microsoft YaHei", sans-serif;
+            font-weight: 500;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            opacity: 0.9;
+            transform: translateX(100vw);
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -17,40 +39,23 @@
                 <svg height="20" viewBox="0 0 16 16" width="20" class="github-icon">
                     <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
                 </svg>
-                在 GitHub 上查看
+                GitHub
             </a>
         </div>
     </header>
 
+    <div class="barrage-container" id="barrageContainer"></div>
+
     <main>
         <h1>致谢名单</h1>
-        <p class="subtitle">感谢所有支持 LrcAPI 项目发展的朋友们</p>
-        
         <div class="acknowledgment-content">
-            <p>LrcAPI 是一个完全免费的开源项目，它的发展离不开社区成员的支持。在此特别感谢以下支持者的慷慨赞助：</p>
-            
+            <p style="text-align: center">感谢所有支持 LrcAPI 项目发展的朋友们。LrcAPI 是一个完全免费的开源项目，它的发展离不开社区成员的支持。在此特别感谢以下支持者的慷慨赞助</p>
+            <p class="subtitle" style="text-align: center">*排名不分先后。如果我们遗漏了您的名字，请您随时通过赞助渠道联系我们，我们将及时更新。</p>
             <div class="supporters-list">
                 <div class="supporter-card">
-                    <h3>爱发电赞助者</h3>
-                    <ul class="supporters-grid">
-                        <li class="supporter-box">
-                            <div class="supporter-info">
-                                <span class="supporter-name">张三</span>
-                                <span class="support-amount">￥50</span>
-                            </div>
-                        </li>
-                        <li class="supporter-box">
-                            <div class="supporter-info">
-                                <span class="supporter-name">李四</span>
-                                <span class="support-amount">￥30</span>
-                            </div>
-                        </li>
-                        <li class="supporter-box">
-                            <div class="supporter-info">
-                                <span class="supporter-name">王五</span>
-                                <span class="support-amount">￥20</span>
-                            </div>
-                        </li>
+                    <h3>项目赞助者</h3>
+                    <ul class="supporters-grid" id="supportersGrid">
+                        <!-- js生成 -->
                     </ul>
                 </div>
             </div>
@@ -58,7 +63,158 @@
     </main>
 
     <footer>
-        <p class="license-text">本项目基于 <a href="https://github.com/HisAtri/LrcApi/blob/main/LICENSE" target="_blank" style="color: gray; text-decoration: none;">GNU General Public License v3.0</a> 开源协议发布 | <a href="/src">回到主页</a></p>
+        <p class="license-text">本项目基于 <a href="https://github.com/HisAtri/LrcApi/blob/main/LICENSE" target="_blank" style="color: gray; text-decoration: none;">GNU General Public License v3.0</a> 开源协议发布 | <a href="/">回到主页</a></p>
     </footer>
+
+    <script>
+        class BarrageSystem {
+            constructor() {
+                this.container = document.getElementById('barrageContainer');
+                this.viewportHeight = window.innerHeight;
+                // 在这里定义你的弹幕颜色
+                this.colors = [
+                    '#FF6B6B',
+                    '#4ECDC4',
+                    '#45B7D1',
+                    '#96CEB4',
+                    '#FFEEAD',
+                    '#D4A5A5',
+                    '#9B59B6'
+                ];
+                
+                // 弹幕区域范围
+                this.topMargin = 50;    // 顶部边距
+                this.bottomMargin = 100; // 底部边距
+                
+                // 监听窗口大小变化
+                window.addEventListener('resize', () => {
+                    this.viewportHeight = window.innerHeight;
+                });
+            }
+
+            getColorByText(text) {
+                return this.colors[Math.floor(Math.random() * this.colors.length)];
+            }
+
+            // 生成随机动画时长（12-20秒，用于调整弹幕滚动速度）
+            getRandomDuration() {
+                return 12000 + Math.random() * 8000;
+            }
+
+            // 生成随机垂直位置
+            getRandomVerticalPosition() {
+                const availableHeight = this.viewportHeight - this.topMargin - this.bottomMargin;
+                return this.topMargin + Math.random() * availableHeight;
+            }
+
+            // 生成随机字体大小（14-24px）
+            getRandomFontSize() {
+                return 14 + Math.random() * 10;
+            }
+
+            addMessage(text) {
+                const item = document.createElement('div');
+                item.className = 'barrage-item';
+                item.textContent = text;
+                
+                // 设置基本样式
+                const fontSize = this.getRandomFontSize();
+                const verticalPos = this.getRandomVerticalPosition();
+                item.style.cssText = `
+                    font-size: ${fontSize}px;
+                    color: ${this.getColorByText(text)};
+                    top: ${verticalPos}px;
+                `;
+
+                // 添加到容器
+                this.container.appendChild(item);
+
+                // 获取元素宽度（用于计算动画终点位置）
+                const itemWidth = item.offsetWidth;
+                const duration = this.getRandomDuration();
+
+                // 创建并应用动画
+                const animation = item.animate([
+                    { transform: 'translateX(100vw)' },
+                    { transform: `translateX(-${itemWidth}px)` }
+                ], {
+                    duration: duration,
+                    easing: 'linear'
+                });
+                // 动画结束后移除元素
+                animation.onfinish = () => item.remove();
+            }
+        }
+
+        // 初始化弹幕系统
+        const barrageSystem = new BarrageSystem();
+        // 消息数据，在这里添加需要显示的弹幕
+        const messages = [
+            "项目越来越好！",
+            "加油！继续努力！",
+            "很棒的项目！",
+            "支持开源！",
+            "希望项目能一直维护下去",
+            "太赞了！",
+            "非常实用的API",
+            "非常好的项目，爱来自LinuxDo",
+            "我是Mio，请你吃疯狂星期四",
+            "Good Job！",
+            "感谢开发LRCAPI",
+            "真好用",
+            "完美，好东西！",
+            "很棒！继续加油"
+        ];
+        // 定期发送弹幕，使用可变的时间间隔
+        function sendRandomMessage() {
+            const msg = messages[Math.floor(Math.random() * messages.length)];
+            barrageSystem.addMessage(msg);
+            // 在此处调整弹幕发送频率（当前为0.5-2秒）
+            setTimeout(sendRandomMessage, 500 + Math.random() * 1500);
+        }
+        sendRandomMessage();
+        // 定义支持者卡片组件
+        class SupporterCard extends HTMLElement {
+            constructor() {
+                super();
+            }
+
+            set supporter(data) {
+                this.innerHTML = `
+                    <div class="supporter-info">
+                        <span class="supporter-name">${data.name}</span>
+                        <span class="support-amount">￥${data.amount}</span>
+                    </div>
+                `;
+            }
+        }
+
+        customElements.define('supporter-card', SupporterCard);
+        // 支持者数据，在这里添加需要显示的支持者和赞助金额
+        const supporters = [
+            { name: 'XinLoong', amount: 10.00 },
+            { name: '木羽', amount: 5.00 },
+            { name: '依然不懂', amount: 5.00 },
+            { name: '扑克', amount: 20.00 },
+            { name: '未知', amount: 10.00 },
+            { name: 'yule', amount: 10.00 },
+            { name: 'Erikaze', amount: 90.00 },
+            { name: 'hikaru', amount: 10.00 },
+            { name: 'KawaKaze', amount: 6.66 },
+            { name: 'Mio', amount: 50.00 },
+            { name: '呜噜噜', amount: 50.00 }
+        ];
+        const supportersGrid = document.getElementById('supportersGrid');
+        supporters.forEach(supporter => {
+            const li = document.createElement('li');
+            li.className = 'supporter-box';
+            
+            const card = document.createElement('supporter-card');
+            card.supporter = supporter;
+            
+            li.appendChild(card);
+            supportersGrid.appendChild(li);
+        });
+    </script>
 </body>
 </html>
