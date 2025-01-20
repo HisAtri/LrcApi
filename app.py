@@ -38,4 +38,5 @@ if __name__ == '__main__':
     app.register_blueprint(v1_bp)
     # 启动
     run_server(args.debug)
-
+    exit()
+    

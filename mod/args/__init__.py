@@ -14,6 +14,10 @@ parser.add_argument('--auth', type=str, default='', help='用于验证Header.Aut
 parser.add_argument("--debug", action="store_true", help="Enable debug mode")
 parser.add_argument('--ip', type=str, default='*', help='服务器监听IP，默认*')
 parser.add_argument('--token', type=str, default='', help='用于翻译歌词的API Token')
+parser.add_argument('--ai-type', type=str, default='openai', help='AI类型，默认openai')
+parser.add_argument('--ai-model', type=str, default='gpt-4o-mini', help='AI模型，默认gpt-4o-mini')
+parser.add_argument('--ai-base-url', type=str, default='https://api.openai.com/v1', help='AI基础URL，默认https://api.openai.com/v1')
+parser.add_argument('--ai-api-key', type=str, default='', help='AI API Key，默认空')
 kw_args, unknown_args = parser.parse_known_args()
 arg_auths: dict = {kw_args.auth: "rwd"} if kw_args.auth else None
 
@@ -116,8 +120,14 @@ DEFAULT_DATA = {
                 "ip": "*",
                 "port": 28883
             },
-            "auth": {}
-        }
+            "auth": {},
+            "ai": {
+                "type": "openai",
+                "model": "gpt-4o-mini",
+                "base_url": "https://api.openai.com/v1",
+                "api_key": ""
+            }
+}
 
 class Args():
     def __init__(self, data=None, default=None):
@@ -171,22 +181,35 @@ class Args():
     def __load_env(self):
         auth = os.environ.get('API_AUTH', None)
         port = os.environ.get('API_PORT', None)
-        token = os.environ.get('API_TOKEN', None)
+        ai_type = os.environ.get('API_AI_TYPE', None)
+        ai_model = os.environ.get('API_AI_MODEL', None)
+        ai_base_url = os.environ.get('API_AI_BASE', None)
+        ai_api_key = os.environ.get('API_AI_KEY', None)
         if auth:
             self.__data["auth"] = {auth: "all"}
         if port:
-            # 确保 server 是一个字典
             if not isinstance(self.__data.get("server"), dict):
                 self.__data["server"] = {"ip": "*"}
             self.__data["server"]["port"] = port
-        if token:
-            self.__data["token"] = token
+        if not isinstance(self.__data.get("ai"), dict):
+            self.__data["ai"] = {}
+        if ai_type:
+            self.__data["ai"]["type"] = ai_type
+        if ai_model:
+            self.__data["ai"]["model"] = ai_model
+        if ai_base_url:
+            self.__data["ai"]["base_url"] = ai_base_url
+        if ai_api_key:
+            self.__data["ai"]["api_key"] = ai_api_key
 
     def __load_arg(self):
         auth = kw_args.auth
         port = kw_args.port
         ip = kw_args.ip
-        token = kw_args.token
+        ai_type = kw_args.ai_type
+        ai_model = kw_args.ai_model
+        ai_base_url = kw_args.ai_base_url
+        ai_api_key = kw_args.ai_api_key
         logger.info(f"Auth: {auth}; Port: {port}; IP: {ip}")
         if auth:
             self.__data["auth"] = {auth: "all"}
@@ -198,9 +221,16 @@ class Args():
             if not isinstance(self.__data.get("server"), dict):
                 self.__data["server"] = {"ip": "*"}
             self.__data["server"]["ip"] = ip
-        if token:
-            self.__data["token"] = token
-        #logger.info(f"Final config data: {self.__data}")
+        if not isinstance(self.__data.get("ai"), dict):
+            self.__data["ai"] = {}
+        if ai_type:
+            self.__data["ai"]["type"] = ai_type
+        if ai_model:
+            self.__data["ai"]["model"] = ai_model
+        if ai_base_url:
+            self.__data["ai"]["base_url"] = ai_base_url
+        if ai_api_key:
+            self.__data["ai"]["api_key"] = ai_api_key
 
     def __call__(self, *args):
         data = self.__data
