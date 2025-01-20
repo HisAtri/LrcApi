@@ -246,11 +246,11 @@ async def search_track(session, title, artist, album):
         music_json_data: dict = {
             "title": track['title'],
             "album": track['album'],
-            "artists": track['artist'],
+            "artist": track['artist'],
             "lyrics": lyrics,
             "cover": cover_url,
             "id": tools.calculate_md5(
-                f"title:{track['title']};artists:{track['artist']};album:{track['album']}", base='dec')
+                f"title:{track['title']};artists:{track['artist']};album:{track['album']}", base='decstr')
         }
 
         result_list.append(music_json_data)
