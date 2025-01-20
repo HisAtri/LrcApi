@@ -24,6 +24,10 @@ def calculate_md5(string: str, base="hexstr"):
         # 十进制表示->int
         md5_dec = int(md5_hash.hexdigest(), 16)  # 将十六进制转换为十进制
         return md5_dec
+    elif base == "decstr":
+        # 十进制表示->int
+        md5_dec = int(md5_hash.hexdigest(), 16)  # 将十六进制转换为十进制
+        return str(md5_dec)
     elif base == "bin":
         # 二进制表示->bin
         md5_bin = format(int(md5_hash.hexdigest(), 16), '0128b')  # 将十六进制转换为二进制，补齐到128位
