@@ -1,0 +1,307 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 50%, #eef0ff 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.logo-container img {
+    height: 40px;
+}
+
+.github-button {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    color: #24292e;
+    text-decoration: none;
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    background-color: #fafbfc;
+    transition: 0.2s ease;
+}
+
+.github-button:hover {
+    background-color: #f3f4f6;
+}
+
+main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+    text-align: center;
+    flex: 1;
+}
+
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #24292e;
+}
+
+.subtitle {
+    color: #586069;
+    margin-bottom: 3rem;
+}
+
+.cards-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 4px 6px rgba(108, 99, 255, 0.1);
+    transition: transform 0.2s ease;
+    backdrop-filter: blur(10px);
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.card-icon {
+    margin-bottom: 1.5rem;
+}
+
+.card-icon svg {
+    width: 48px;
+    height: 48px;
+    fill: #6c63ff;
+}
+
+.card h3 {
+    margin-bottom: 1rem;
+    color: #24292e;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+    margin: 1.5rem 0;
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.prefix {
+    padding: 0.5rem;
+    background: #f6f8fa;
+    color: #586069;
+    border-right: 1px solid #e1e4e8;
+}
+
+input {
+    flex: 1;
+    padding: 0.5rem;
+    border: none;
+    outline: none;
+}
+
+.analyze-button {
+    width: 100%;
+    padding: 0.75rem;
+    background: #6c63ff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.analyze-button:hover {
+    background: #5b54d6;
+}
+
+.upload-zone {
+    margin-top: 1.5rem;
+    padding: 2rem;
+    border: 2px dashed #e1e4e8;
+    border-radius: 6px;
+    background: #f6f8fa;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.upload-zone:hover {
+    border-color: #6c63ff;
+    background: #f8f9ff;
+}
+
+.support-button {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    background: #6c63ff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s ease;
+    text-decoration: none;
+    margin-top: 1.5rem;
+    text-align: center;
+}
+
+.support-button:hover {
+    background: #5b54d6;
+}
+
+.partner-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.partner-link {
+    display: block;
+    padding: 0.75rem;
+    background: rgba(255, 255, 255, 0.8);
+    color: #24292e;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: 0.2s ease;
+    border: 1px solid #e1e4e8;
+    backdrop-filter: blur(5px);
+}
+
+.partner-link:hover {
+    background: #f0f1f4;
+    border-color: #6c63ff;
+    color: #6c63ff;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.project-name {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+.github-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 6px;
+}
+
+.github-icon {
+    margin-right: 4px;
+}
+
+footer {
+    margin-top: auto;
+    padding: 20px 0;
+    text-align: center;
+    border-top: 1px solid rgba(108, 99, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(10px);
+}
+
+.license-text {
+    color: #666;
+    font-size: 14px;
+}
+
+.license-text a {
+    color: gray;
+    text-decoration: none;
+}
+
+.license-text a:visited {
+    color: gray;
+}
+
+.license-text a:hover {
+    color: gray;
+    text-decoration: underline;
+}
+
+/* 赞助者列表样式 */
+.supporters-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    list-style: none;
+    padding: 0;
+    margin: 2rem 0;
+}
+
+.supporter-box {
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.supporter-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.supporter-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.supporter-name {
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.support-amount {
+    font-weight: bold;
+    color: #2ecc71;
+    font-size: 1.2rem;
+}
+
+.supporter-card h3 {
+    text-align: left;
+    margin-bottom: 1rem;
+    color: #333;
+    font-size: 1.5rem;
+}
+
+/* 调整主要内容区域的样式 */
+.acknowledgment-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    text-align: left;
+}
+
+.acknowledgment-content > p {
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+    color: #666;
+}
