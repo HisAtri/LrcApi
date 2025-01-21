@@ -17,6 +17,7 @@ def redirect_to_welcome():
 
 
 @app.route('/acknowledgments')
+@app.route('/acknowledgments.html')
 def acknowledgments():
     return send_from_directory(src_path, 'acknowledgments.html')
 

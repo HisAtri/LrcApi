@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LrcAPI - 致谢名单</title>
+    <title>致谢名单</title>
     <link rel="stylesheet" href="/src/css/v50.css">
     <style>
         .barrage-container {
@@ -17,6 +17,19 @@
             overflow: hidden;
         }
         
+        .financial-status {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
         .barrage-item {
             position: fixed;
             white-space: nowrap;
@@ -27,22 +40,16 @@
             transform: translateX(100vw);
         }
     </style>
+    <script src="/src/js/site-config.js"></script>
+    <script src="/src/js/common-elements.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.title = `${siteConfig.site.name} - 致谢名单`;
+        });
+    </script>
 </head>
 <body>
-    <header>
-        <div class="logo-container">
-            <img src="/src/img/LrcAPI-Text-Extra.png" alt="LrcAPI Logo" class="logo">
-            <span class="project-name">LrcAPI</span>
-        </div>
-        <div class="github-link">
-            <a href="https://github.com/hisatri/LrcAPI" class="github-button">
-                <svg height="20" viewBox="0 0 16 16" width="20" class="github-icon">
-                    <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
-                </svg>
-                GitHub
-            </a>
-        </div>
-    </header>
+    <header></header>
 
     <div class="barrage-container" id="barrageContainer"></div>
 
@@ -51,6 +58,14 @@
         <div class="acknowledgment-content">
             <p style="text-align: center">感谢所有支持 LrcAPI 项目发展的朋友们。LrcAPI 是一个完全免费的开源项目，它的发展离不开社区成员的支持。在此特别感谢以下支持者的慷慨赞助</p>
             <p class="subtitle" style="text-align: center">*排名不分先后。如果我们遗漏了您的名字，请您随时通过赞助渠道联系我们，我们将及时更新。</p>
+            <div id="financialStatus" class="financial-status" style="text-align: center; margin-bottom: 30px;">
+                <p style="color: #666; margin-bottom: 10px;">项目运营状况</p>
+                <h1 id="financialAmount" style="font-weight: bold; display: inline-block; margin: 10px 0;"></h1>
+                <p style="color: #666; font-size: 0.9em;">
+                    <span style="color: #2ecc71;">正值</span>代表项目有结余 | 
+                    <span style="color: #e74c3c;">负值</span>代表项目需要赞助
+                </p>
+            </div>
             <div class="supporters-list">
                 <div class="supporter-card">
                     <h3>项目赞助者</h3>
@@ -62,9 +77,7 @@
         </div>
     </main>
 
-    <footer>
-        <p class="license-text">本项目基于 <a href="https://github.com/HisAtri/LrcApi/blob/main/LICENSE" target="_blank" style="color: gray; text-decoration: none;">GNU General Public License v3.0</a> 开源协议发布 | <a href="/">回到主页</a></p>
-    </footer>
+    <footer></footer>
 
     <script>
         class BarrageSystem {
@@ -146,33 +159,6 @@
             }
         }
 
-        // 初始化弹幕系统
-        const barrageSystem = new BarrageSystem();
-        // 消息数据，在这里添加需要显示的弹幕
-        const messages = [
-            "项目越来越好！",
-            "加油！继续努力！",
-            "很棒的项目！",
-            "支持开源！",
-            "希望项目能一直维护下去",
-            "太赞了！",
-            "非常实用的API",
-            "非常好的项目，爱来自LinuxDo",
-            "我是Mio，请你吃疯狂星期四",
-            "Good Job！",
-            "感谢开发LRCAPI",
-            "真好用",
-            "完美，好东西！",
-            "很棒！继续加油"
-        ];
-        // 定期发送弹幕，使用可变的时间间隔
-        function sendRandomMessage() {
-            const msg = messages[Math.floor(Math.random() * messages.length)];
-            barrageSystem.addMessage(msg);
-            // 在此处调整弹幕发送频率（当前为0.5-2秒）
-            setTimeout(sendRandomMessage, 500 + Math.random() * 1500);
-        }
-        sendRandomMessage();
         // 定义支持者卡片组件
         class SupporterCard extends HTMLElement {
             constructor() {
@@ -190,30 +176,98 @@
         }
 
         customElements.define('supporter-card', SupporterCard);
-        // 支持者数据，在这里添加需要显示的支持者和赞助金额
-        const supporters = [
-            { name: 'XinLoong', amount: 10.00 },
-            { name: '木羽', amount: 5.00 },
-            { name: '依然不懂', amount: 5.00 },
-            { name: '扑克', amount: 20.00 },
-            { name: '未知', amount: 10.00 },
-            { name: 'yule', amount: 10.00 },
-            { name: 'Erikaze', amount: 90.00 },
-            { name: 'hikaru', amount: 10.00 },
-            { name: 'KawaKaze', amount: 6.66 },
-            { name: 'Mio', amount: 50.00 },
-            { name: '呜噜噜', amount: 50.00 }
-        ];
-        const supportersGrid = document.getElementById('supportersGrid');
-        supporters.forEach(supporter => {
-            const li = document.createElement('li');
-            li.className = 'supporter-box';
-            
-            const card = document.createElement('supporter-card');
-            card.supporter = supporter;
-            
-            li.appendChild(card);
-            supportersGrid.appendChild(li);
+
+        // 模块控制器
+        class ModuleController {
+            constructor(config) {
+                this.config = config;
+                this.init();
+            }
+
+            init() {
+                // 初始化财务状况显示
+                if (this.config.financial.enabled) {
+                    this.initFinancial();
+                } else {
+                    document.getElementById('financialStatus').style.display = 'none';
+                }
+
+                // 初始化弹幕系统
+                if (this.config.barrage.enabled) {
+                    this.initBarrage();
+                } else {
+                    document.getElementById('barrageContainer').style.display = 'none';
+                }
+
+                // 初始化支持者列表
+                if (this.config.supporters.enabled) {
+                    this.initSupporters();
+                } else {
+                    document.querySelector('.supporters-list').style.display = 'none';
+                }
+            }
+
+            initFinancial() {
+                const financial = this.config.financial;
+                const element = document.getElementById('financialAmount');
+                const startValue = 0;
+                const endValue = financial.amount;
+                const duration = financial.duration;
+                const currency = financial.currency;
+                
+                // 设置颜色
+                element.style.color = endValue >= 0 ? '#2ecc71' : '#e74c3c';
+                
+                // 使用 CSS cubic-bezier 实现动画效果
+                const startTime = performance.now();
+                
+                function update(currentTime) {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+                    
+                    // 使用缓动函数使动画更自然
+                    const easeProgress = progress < 0.5 
+                        ? 4 * progress * progress * progress 
+                        : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+                    
+                    const currentValue = startValue + (endValue - startValue) * easeProgress;
+                    element.textContent = `${currency}${currentValue.toFixed(2)}`;
+                    
+                    if (progress < 1) {
+                        requestAnimationFrame(update);
+                    }
+                }
+                
+                requestAnimationFrame(update);
+            }
+
+            initBarrage() {
+                const barrageSystem = new BarrageSystem();
+                const sendRandomMessage = () => {
+                    const messages = this.config.barrage.messages;
+                    const msg = messages[Math.floor(Math.random() * messages.length)];
+                    barrageSystem.addMessage(msg);
+                    setTimeout(sendRandomMessage, 500 + Math.random() * 1500);
+                };
+                sendRandomMessage();
+            }
+
+            initSupporters() {
+                const supportersGrid = document.getElementById('supportersGrid');
+                this.config.supporters.data.forEach(supporter => {
+                    const li = document.createElement('li');
+                    li.className = 'supporter-box';
+                    const card = document.createElement('supporter-card');
+                    card.supporter = supporter;
+                    li.appendChild(card);
+                    supportersGrid.appendChild(li);
+                });
+            }
+        }
+
+        // 初始化模块控制器
+        document.addEventListener('DOMContentLoaded', () => {
+            new ModuleController(siteConfig.acknowledgments);
         });
     </script>
 </body>
