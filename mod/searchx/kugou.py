@@ -89,11 +89,11 @@ async def a_search(title='', artist='', album=''):
                                 music_json_data: dict = {
                                     "title": song_name,
                                     "album": album_name,
-                                    "artists": singer_name,
+                                    "artist": singer_name,
                                     "lyrics": lrc_text,
                                     "cover": await get_cover(session, song_hash, album_id),
                                     "id": tools.calculate_md5(
-                                        f"title:{song_name};artists:{singer_name};album:{album_name}", base='dec')
+                                        f"title:{song_name};artists:{singer_name};album:{album_name}", base='decstr')
                                 }
                                 result_list.append({
                                     "data": music_json_data,

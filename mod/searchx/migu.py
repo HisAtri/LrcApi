@@ -25,11 +25,11 @@ class MiGuMusicClient:
             results.append({
                 "title": song['songName'],
                 "album": song['albumName'],
-                "artists": song['singerName'],
+                "artist": song['singerName'],
                 "lrc": lyrics,
                 "cover": song['cover'],
                 "id": tools.calculate_md5(
-                    f"title:{song['songName']};artists:{song['singerName']};album:{song['albumName']}", base='dec')
+                    f"title:{song['songName']};artists:{song['singerName']};album:{song['albumName']}", base='decstr')
             })
         return results
 

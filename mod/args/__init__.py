@@ -133,7 +133,7 @@ class Args():
     def __init__(self, data=None, default=None):
         self.__data: dict = data
         self.__default: dict = default or {}
-        self.version = "1.5.7"
+        self.version = "1.6.0"
         self.debug = kw_args.debug
 
     def __invert__(self):
