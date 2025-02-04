@@ -22,9 +22,6 @@ RUN pip install --upgrade pip
 # 安装依赖到指定目录
 RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y \
-    && . $HOME/.cargo/env
-
 # 最终阶段
 FROM python:3.12.1-slim
 
