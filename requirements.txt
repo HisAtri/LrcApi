@@ -11,4 +11,3 @@ Werkzeug~=3.0.1
 mygo~=1.0.0
 PyYAML~=6.0.2
 openai~=1.59.8
-maturin==1.8.1
