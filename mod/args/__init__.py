@@ -13,7 +13,7 @@ parser.add_argument('--port', type=int, default=28883, help='应用的运行端�
 parser.add_argument('--auth', type=str, default='', help='用于验证Header.Authentication字段，建议纯ASCII字符')
 parser.add_argument("--debug", action="store_true", help="Enable debug mode")
 parser.add_argument('--ip', type=str, default='*', help='服务器监听IP，默认*')
-parser.add_argument('--token', type=str, default='', help='用于翻译歌词的API Token')
+parser.add_argument('--token', type=str, default='', help='锂API接口的Token')
 parser.add_argument('--ai-type', type=str, default='openai', help='AI类型，默认openai')
 parser.add_argument('--ai-model', type=str, default='gpt-4o-mini', help='AI模型，默认gpt-4o-mini')
 parser.add_argument('--ai-base-url', type=str, default='https://api.openai.com/v1', help='AI基础URL，默认https://api.openai.com/v1')
@@ -181,6 +181,7 @@ class Args():
     def __load_env(self):
         auth = os.environ.get('API_AUTH', None)
         port = os.environ.get('API_PORT', None)
+        api_token = os.environ.get('API_TOKEN', None)
         ai_type = os.environ.get('API_AI_TYPE', None)
         ai_model = os.environ.get('API_AI_MODEL', None)
         ai_base_url = os.environ.get('API_AI_BASE', None)
@@ -191,6 +192,8 @@ class Args():
             if not isinstance(self.__data.get("server"), dict):
                 self.__data["server"] = {"ip": "*"}
             self.__data["server"]["port"] = port
+        if api_token:
+            self.__data["token"] = api_token
         if not isinstance(self.__data.get("ai"), dict):
             self.__data["ai"] = {}
         if ai_type:
@@ -206,6 +209,7 @@ class Args():
         auth = kw_args.auth
         port = kw_args.port
         ip = kw_args.ip
+        token = kw_args.token
         ai_type = kw_args.ai_type
         ai_model = kw_args.ai_model
         ai_base_url = kw_args.ai_base_url
@@ -221,6 +225,8 @@ class Args():
             if not isinstance(self.__data.get("server"), dict):
                 self.__data["server"] = {"ip": "*"}
             self.__data["server"]["ip"] = ip
+        if token:
+            self.__data["token"] = token
         if not isinstance(self.__data.get("ai"), dict):
             self.__data["ai"] = {}
         if ai_type:
@@ -253,7 +259,8 @@ if __name__ == '__main__':
             "ip": "*",
             "port": 28883
         },
-        "auth": {}
+        "auth": {},
+        "token": ""
     }
     config = Args(default=default)
     ~config
