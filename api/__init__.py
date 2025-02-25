@@ -3,8 +3,9 @@ import logging
 import sys
 import os
 
-from flask import Flask, Blueprint, request
+from flask import Flask, Blueprint, request, g
 from flask_caching import Cache
+import time
 
 app = Flask(__name__)
 logger = logging.getLogger(__name__)
@@ -40,15 +41,49 @@ def make_cache_key(*args, **kwargs) -> str:
     return path + args + auth_key + cookie
 
 
+@app.before_request
+def before_request():
+    """
+    请求前处理
+    记录请求开始时间，用于计算请求处理时长
+    """
+    g.start_time = time.time()
+    logger.info(f"收到请求: {request.method} {request.path}")
+
+
+@app.after_request
+def after_request(response):
+    """
+    请求后处理
+    1. 添加通用响应头
+    2. 记录请求处理时长
+    3. 记录响应状态
+    """
+    # 添加通用响应头
+    response.headers['Server'] = 'LrcApi'
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
+    
+    # 计算并记录请求处理时长
+    if hasattr(g, 'start_time'):
+        duration = time.time() - g.start_time
+        logger.info(f"请求处理完成: {request.method} {request.path} - 状态码: {response.status_code} - 耗时: {duration:.3f}s")
+    
+    return response
+
+
 def get_base_path():
     """
-    获取程序运行路径
-    如果是打包后的exe文件，则返回打包资源路径
+    获取主程序所在目录（基于入口脚本路径）
     """
     if getattr(sys, 'frozen', False):
         return sys._MEIPASS
+        
+    # 判断是否以模块方式运行
+    if __package__:
+        return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     else:
-        return os.getcwd()
+        return os.path.dirname(os.path.abspath(sys.argv[0]))
 
 
 src_path = os.path.join(get_base_path(), 'src')  # 静态资源路径
