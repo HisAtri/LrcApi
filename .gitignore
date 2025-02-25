@@ -174,3 +174,5 @@ config/
 release/
 appdata/
 ann.md
+test/
+/logs/
