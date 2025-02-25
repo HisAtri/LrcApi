@@ -1,5 +1,6 @@
 import os
 import json
+import logging
 
 from . import *
 
@@ -7,8 +8,8 @@ from flask import request
 
 from mod import tag
 from mod.auth import require_auth_decorator
-from mod.dev.debugger import debugger
 
+logger = logging.getLogger(__name__)
 
 @app.route('/tag', methods=['POST', 'PUT'], endpoint='set_tag_endpoint')
 @app.route('/confirm', methods=['POST', 'PUT'], endpoint='set_tag_endpoint')
@@ -24,9 +25,9 @@ def set_tag():
     audio_path: str = music_data.get("path")
     if not audio_path:
         return "Missing 'path' key in JSON.", 422
-    debugger.log("info", f"Editing file {audio_path}")
+    logger.debug(f"Editing file {audio_path}")
     if not os.path.exists(audio_path):
-        debugger.log("error", f"File not found: {audio_path}")
+        logger.error(f"File not found: {audio_path}")
         return "File not found.", 404
     supported_tags = {
         "tracktitle": {"allow": (str, bool, type(None)), "caption": "Track Title"},
