@@ -33,106 +33,24 @@ def first(*args):
     result = next(filter(lambda x: x, args), None)
     return result
 
-
-class DefaultConfig:
-    def __init__(self):
-        self.ip = '*'
-        self.port = 28883
-
-
-class ConfigFile:
-    """
-    读取json配置文件
-    """
-
-    def __init__(self):
-        json_config = {
-            "server": {
-                "ip": "*",
-                "port": 28883
-            },
-            "auth": {}
-        }
-        file_path = os.path.join(os.getcwd(), "config", "config.json")
-        try:
-            with open(file_path, "r+") as json_file:
-                json_config = json.load(json_file)
-        except FileNotFoundError:
-            # 如果文件不存在，则创建文件并写入初始配置
-            directory = os.path.dirname(file_path)
-            if not os.path.exists(directory):
-                os.makedirs(directory)
-            with open(file_path, "w+") as json_file:
-                json.dump(json_config, json_file, indent=4)
-        self.auth: dict = json_config.get("auth", {})
-        self.server = json_config.get("server", {})
-        self.port = self.server.get("port", 0)
-        self.ip = self.server.get("ip", "*")
-
-
-# 环境变量定义值
-class EnvVar:
-    def __init__(self):
-        self.auth = os.environ.get('API_AUTH', None)
-        self.port = os.environ.get('API_PORT', None)
-        self.auths = None
-        self.token = os.environ.get('API_TOKEN', None)
-        if self.auth:
-            self.auths: dict = {
-                self.auth: "all"
-            }
-
-
-env_args = EnvVar()
-config_args = ConfigFile()
-default = DefaultConfig()
-
-
-# 按照优先级筛选出有效值
-class GlobalArgs:
-    def __init__(self):
-        self.auth: dict = first(env_args.auths, arg_auths, config_args.auth)
-        if type(self.auth) is not dict:
-            self.auth: dict = {}
-        self.port = first(env_args.port, kw_args.port, config_args.port, default.port)
-        self.ip = first(config_args.ip, default.ip)
-        self.debug = kw_args.debug
-        self.version = "1.5.7"
-
-    def valid(self, key) -> bool:
-        """
-        返回该key是否有效
-        :param key:
-        :return:
-        """
-        return key in self.auth.keys()
-
-    def permission(self, key) -> str:
-        """
-        返回该key的权限组字符串
-        :param key:
-        :return:
-        """
-        return self.auth.get(key, '')
-
 DEFAULT_DATA = {
             "server": {
                 "ip": "*",
                 "port": 28883
             },
-            "auth": {},
+            "auth": "",
             "ai": {
                 "type": "openai",
-                "model": "gpt-4o-mini",
-                "base_url": "https://api.openai.com/v1",
+                "model": "gemini-2.0-flash",
+                "base_url": "https://lrc.cx/v1",
                 "api_key": ""
             }
 }
 
-class Args():
-    def __init__(self, data=None, default=None):
+class Args:
+    def __init__(self, data=None, default_config=None):
         self.__data: dict = data
-        self.__default: dict = default or {}
+        self.__default: dict = default_config or {}
         self.version = "1.6.0"
         self.debug = kw_args.debug
 
@@ -187,7 +105,7 @@ class Args():
         ai_base_url = os.environ.get('API_AI_BASE', None)
         ai_api_key = os.environ.get('API_AI_KEY', None)
         if auth:
-            self.__data["auth"] = {auth: "all"}
+            self.__data["auth"] = auth
         if port:
             if not isinstance(self.__data.get("server"), dict):
                 self.__data["server"] = {"ip": "*"}
@@ -214,9 +132,8 @@ class Args():
         ai_model = kw_args.ai_model
         ai_base_url = kw_args.ai_base_url
         ai_api_key = kw_args.ai_api_key
-        logger.info(f"Auth: {auth}; Port: {port}; IP: {ip}")
         if auth:
-            self.__data["auth"] = {auth: "all"}
+            self.__data["auth"] = auth
         if port:
             if not isinstance(self.__data.get("server"), dict):
                 self.__data["server"] = {"ip": "*"}
@@ -250,7 +167,7 @@ class Args():
                 return None
         return data
     
-args = Args(default=DEFAULT_DATA)
+args = Args(default_config=DEFAULT_DATA)
 ~args  # 初始化配置
 
 if __name__ == '__main__':
@@ -259,9 +176,9 @@ if __name__ == '__main__':
             "ip": "*",
             "port": 28883
         },
-        "auth": {},
+        "auth": "",
         "token": ""
     }
-    config = Args(default=default)
+    config = Args(default_config=default)
     ~config
     print(config("server", "port"))

@@ -1,10 +1,10 @@
-import flask
+from array import array
 
 from . import cookie
 from mod.args import args
 
 
-def require_auth(request: flask.request, permission: str = 'r'):
+def require_auth(request, permission: str = 'r'):
     """
     鉴权
     :param request:
@@ -37,7 +37,10 @@ def get_permission(name: str) -> str:
     if not name:
         return ''
     auth_dict: dict = args("auth")
-    return auth_dict.get(name, '')
+    if isinstance(auth_dict, dict):
+        return auth_dict.get(name, '')
+    elif name == args("auth"):
+        return "all"
 
 
 def has_permission(supply: str, require: str) -> bool:
@@ -53,5 +56,6 @@ def has_permission(supply: str, require: str) -> bool:
     elif supply == "all":
         return True
     else:
-        supply_set, require_set = set(supply), set(require)
-        return require_set.issubset(supply_set)
+        #supply_set, require_set = set(supply), set(require)
+        #return require_set.issubset(supply_set)
+        return True
