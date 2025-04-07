@@ -44,8 +44,8 @@ def cover_api():
     album = unquote_plus(request.args.get('album', ''))
     req_args = {key: request.args.get(key) for key in request.args}
     # 构建目标URL
-    target_url = 'http://api.lrc.cx/cover?' + '&'.join([f"{key}={req_args[key]}" for key in req_args])
-    result = requests.get(target_url, headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/"})
+    target_url = 'http://api.lrc.cx/cover'
+    result = requests.get(target_url, params=req_args, headers=headers)
     if result.status_code == 200:
         return result.content, 200, {"Content-Type": result.headers['Content-Type']}
     elif res := local_cover_search(title, artist, album):
@@ -64,6 +64,7 @@ def cover_new(s_type):
     __endpoints__ = ["music", "album", "artist"]
     if s_type not in __endpoints__:
         abort(404)
-    req_args = {key: request.args.get(key) for key in request.args}
-    target_url = f'http://api.lrc.cx/cover/{s_type}/' + '&'.join([f"{key}={req_args[key]}" for key in req_args])
+    target_url = f'http://api.lrc.cx/cover/{s_type}/'
+    if request.query_string:
+        target_url += '?' + request.query_string.decode()
     return redirect(target_url, 302)
