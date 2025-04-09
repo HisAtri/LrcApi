@@ -53,7 +53,8 @@ if __name__ == '__main__':
 
     logger.info("正在启动服务器")
     logger.info("您可通过爱发电支持我们，爱发电主页 https://afdian.com/a/ghacg")
-    logger.info("16核32G服务器，每月99元起：https://cloud.jdidc.cn/aff/WYZYENLI")
+    logger.info("高质量翻译服务由 https://lrc.cx 提供")
+    logger.info("年付99元-香港服务器：https://my.yecaoyun.com/aff.php?aff=3296")
     check_update.run(version=args.version)
     # 注册 Blueprint 到 Flask 应用
     app.register_blueprint(v1_bp)
