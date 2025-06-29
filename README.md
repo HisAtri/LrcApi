@@ -8,7 +8,9 @@ A Flask API For [StreamMusic](https://github.com/gitbobobo/StreamMusic)
 
 > 欢迎更多的音乐服务接入本API，也欢迎各位前端开发者提出新的API适配需求。
 
-> [JetBrains](https://www.jetbrains.com/) 为本项目提供免费的开源许可证。
+> 本项目 CDN 加速及安全防护由 Tencent EdgeOne 赞助。
+> [亚洲最佳CDN、边缘和安全解决方案 - Tencent EdgeOne](https://edgeone.ai/zh?from=github)
+> ![EdgeOne Logo](https://edgeone.ai/media/34fe3a45-492d-4ea4-ae5d-ea1087ca7b4b.png)
 
 <p align="center">
     <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/Python-3.10|3.11|3.12-blue.svg" alt=""></a>
