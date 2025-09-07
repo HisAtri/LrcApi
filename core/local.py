@@ -1,6 +1,7 @@
 import os
 
 from utils.value import LyricResponse, SearchParams
+from utils.data import hash_data
 
 
 def read_file(path: str) -> str:
@@ -77,9 +78,10 @@ def get_local_lyric(search_params: SearchParams) -> LyricResponse:
     for lrc_path in lrc_paths:
         if os.path.exists(lrc_path) and os.path.isfile(lrc_path) and (lyrics:=read_file(lrc_path)):
             return LyricResponse(
-                id=lrc_path,
-                title=lrc_path,
-                artist=lrc_path,
+                id=f"local:{hash_data(search_params.title, search_params.artist, search_params.album, lyrics)}",
+                title=search_params.title,
+                artist=search_params.artist,
+                album=search_params.album,
                 lyrics=lyrics
             )
     return None

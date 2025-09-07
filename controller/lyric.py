@@ -8,7 +8,8 @@ def get_lyric(params: SearchParams, fast: bool = False) -> List[LyricResponse]:
     获取歌词
     """
     result: List[LyricResponse] = []
-    result.append(get_local_lyric(params))
+    if local_lyric:=get_local_lyric(params):
+        result.append(local_lyric)
     if fast or params.fast:
         return result
     # TODO: 网络搜索部分接口

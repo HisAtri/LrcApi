@@ -8,6 +8,7 @@ class LyricResponse(BaseModel):
     id: str = Field(..., description="歌词ID")
     title: str = Field(..., description="歌曲标题")
     artist: str = Field(..., description="艺术家名称")
+    album: str = Field(..., description="专辑名称")
     lyrics: str = Field(..., description="歌词内容")
 
 class SearchParams(BaseModel):
