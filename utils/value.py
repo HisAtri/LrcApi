@@ -20,5 +20,3 @@ class SearchParams(BaseModel):
     duration: Optional[int] = Field(None, description="歌曲时长（秒）")
     offset: Optional[int] = Field(None, description="偏移量")
     limit: Optional[int] = Field(None, description="限制数量")
-    # 查询控制
-    fast: Optional[bool] = Field(False, description="在首次请求时设为True以跳过网络搜索，快速返回本地歌词")

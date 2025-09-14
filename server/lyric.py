@@ -8,14 +8,11 @@ from utils.response_codes import LyricsNotFoundError
 router = APIRouter()
 
 @router.get("/lyric")
-def get_lyric(params: SearchParams = Depends()) -> str:
+def lrc_text_api(params: SearchParams = Depends()) -> str:
     """
     查询并返回text/lrc歌词文本
     """
-    if result:=get_lyric(params, fast=True):
+    if result:=get_lyric(params, single=True):
         return result[0].lyrics
-    elif params.fast:
-        return LyricsNotFoundError()
-    elif result:=get_lyric(params, fast=False):
-        return result[0].lyrics
+    raise LyricsNotFoundError()
         
