@@ -16,6 +16,7 @@ headers = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0',
     'origin': 'https://music.163.com',
     'referer': 'https://music.163.com',
+    # 'X-Real-IP': '118.88.88.88'
 }
 
 logging.basicConfig(level=logging.INFO)
@@ -23,7 +24,8 @@ logger = logging.getLogger(__name__)
 
 
 # type: 1-songs, 10-albums, 100-artists, 1000-playlists
-COMMON_SEARCH_URL_WANGYI = 'https://music.163.com/api/search/get/web?csrf_token=hlpretag=&hlposttag=&s={}&type={}&offset={}&total=true&limit={}'
+# COMMON_SEARCH_URL_WANGYI = 'https://music.163.com/api/search/get/web?csrf_token=hlpretag=&hlposttag=&s={}&type={}&offset={}&total=true&limit={}'
+COMMON_SEARCH_URL_WANGYI = "https://music.163.com/api/cloudsearch/pc?s={}&type={}&offset={}&limit={}"
 ALBUM_SEARCH_URL_WANGYI = 'https://music.163.com/api/album/{}?ext=true'
 LYRIC_URL_WANGYI = 'https://music.163.com/api/song/lyric?id={}&lv=1&tv=1'
 ARTIST_SEARCH_URL = 'http://music.163.com/api/v1/artist/{}'
@@ -199,11 +201,11 @@ async def search_track(session, title, artist, album):
     candidate_songs = []
     for song_item in song_info:
         # 有些歌, 查询的 title 可能在别名里, 例如周杰伦的 八度空间-"分裂/离开", 有两个名字.
-        song_names: list = song_item['alias']
+        song_names: list = song_item['alia'] # song_item['alias']
         song_names.append(song_item['name'])
-        artists = song_item.get("artists", None)
+        artists = song_item.get("ar", None) # song_item.get("artists", None)
         singer_name = " ".join([x['name'] for x in artists]) if artists is not None else ""
-        album_ = song_item.get("album", None)
+        album_ = song_item.get("al", None) # song_item.get("album", None)
         album_name = album_['name'] if album is not None else ''
         # 取所有名字中最高的相似度
         title_conform_ratio = max([textcompare.association(title, name) for name in song_names])
