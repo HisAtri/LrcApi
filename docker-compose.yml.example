@@ -1,0 +1,19 @@
+services:
+  lrcapi:
+    image: lrcapi:1.6.0
+    build: ./app
+    container_name: lrcapi
+    ports:
+      - 28883:28883
+    volumes:
+      # add your music folder here, for example
+      # - /path/to/your/music:/music
+      - ./app:/app
+    environment:
+      # add your API key here, for example:
+      # - API_AUTH=your_api_key_here
+    working_dir: /app
+    command: ["python", "app.py"]
+    restart: unless-stopped
+    extra_hosts:
+      - host.docker.internal:host-gateway
