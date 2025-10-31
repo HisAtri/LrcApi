@@ -25,13 +25,13 @@ RUN pip install --no-cache-dir --prefix=/install -r requirements.txt
 # 最终阶段
 FROM python:3.12.1-slim
 
-WORKDIR /app
+# WORKDIR /app
 
 # 只复制必要的Python包
 COPY --from=builder /install /usr/local
 
 # 复制应用代码
-COPY . .
+# COPY . .
 
 # 清理不必要的文件（如果有的话）
 RUN rm -rf __pycache__ \
@@ -39,4 +39,4 @@ RUN rm -rf __pycache__ \
     && find . -type d -name __pycache__ -exec rm -r {} +
 
 # 设置启动命令
-CMD ["python", "/app/app.py"]
+# CMD ["python", "/app/app.py"]
