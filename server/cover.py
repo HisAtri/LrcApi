@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response
 from fastapi.responses import FileResponse, RedirectResponse
 
 from controller.cover import get_cover, get_local_cover
@@ -8,7 +8,7 @@ from utils.response_codes import CoverImageNotFoundError
 router = APIRouter()
 
 @router.get("/cover")
-def cover_api(params: SearchParams = Depends()) -> FileResponse | RedirectResponse:
+def cover_api(params: SearchParams = Depends()) -> Response:
     """
     查询并返回封面
     """
