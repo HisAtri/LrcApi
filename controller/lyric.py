@@ -1,14 +1,14 @@
 import logging
 from typing import List
 
-from core.api.netease import search as netease_search
+from core.api.netease import a_search as netease_search
 from core.local import get_local_lyric
 from utils.value import SearchParams, LyricResponse
 
 logger = logging.getLogger(__name__)
 
 
-def _search_online_lyrics(params: SearchParams) -> List[LyricResponse]:
+async def _search_online_lyrics(params: SearchParams) -> List[LyricResponse]:
     """
     调用外部接口获取歌词
     """
@@ -19,7 +19,7 @@ def _search_online_lyrics(params: SearchParams) -> List[LyricResponse]:
         return []
 
     try:
-        raw_results = netease_search(title=title, artist=artist, album=album) or []
+        raw_results = await netease_search(title=title, artist=artist, album=album) or []
     except Exception as exc:  # pragma: no cover - 仅日志
         logger.warning("Failed to fetch lyrics from netease: %s", exc)
         return []
@@ -41,17 +41,17 @@ def _search_online_lyrics(params: SearchParams) -> List[LyricResponse]:
     return online_results
 
 
-def get_lyric(params: SearchParams, single: bool = False) -> List[LyricResponse]:
+async def get_lyric(params: SearchParams, single: bool = False) -> List[LyricResponse]:
     """
     获取歌词
     """
     results: List[LyricResponse] = []
-    if local_lyric := get_local_lyric(params):
+    if local_lyric := await get_local_lyric(params):
         results.append(local_lyric)
         if single:
             return results
 
-    online_lyrics = _search_online_lyrics(params)
+    online_lyrics = await _search_online_lyrics(params)
     for lyric in online_lyrics:
         results.append(lyric)
         if single:

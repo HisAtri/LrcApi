@@ -1,3 +1,4 @@
+import asyncio
 import os
 
 from utils.value import LyricResponse, SearchParams
@@ -67,7 +68,7 @@ def lrc_files(path: str) -> list[str]:
     return list(possible_paths)
 
 
-def get_local_lyric(search_params: SearchParams) -> LyricResponse:
+async def get_local_lyric(search_params: SearchParams) -> LyricResponse:
     """
     获取本地歌词
 
@@ -76,20 +77,25 @@ def get_local_lyric(search_params: SearchParams) -> LyricResponse:
     :return: 歌词响应
     :rtype: LyricResponse
     """
-    _path: str = search_params.get("path", "")
+    _path: str = search_params.path or ""
     if not _path:
         return None
 
-    path = os.path.abspath(_path)
-    lrc_paths: list[str] = lrc_files(path)
-    for lrc_path in lrc_paths:
-        if os.path.exists(lrc_path) and os.path.isfile(lrc_path) and (lyrics:=read_file(lrc_path)):
-            return LyricResponse(
-                id=f"local:{hash_data(search_params.title, search_params.artist, search_params.album, lyrics)}",
-                title=search_params.title,
-                artist=search_params.artist,
-                album=search_params.album,
-                lyrics=lyrics
-            )
-    return None
+    def _load_local_lyric() -> LyricResponse:
+        path = os.path.abspath(_path)
+        lrc_paths: list[str] = lrc_files(path)
+        for lrc_path in lrc_paths:
+            if os.path.exists(lrc_path) and os.path.isfile(lrc_path):
+                lyrics = read_file(lrc_path)
+                if lyrics:
+                    return LyricResponse(
+                        id=f"local:{hash_data(search_params.title, search_params.artist, search_params.album, lyrics)}",
+                        title=search_params.title,
+                        artist=search_params.artist,
+                        album=search_params.album,
+                        lyrics=lyrics
+                    )
+        return None
+
+    return await asyncio.to_thread(_load_local_lyric)
     
