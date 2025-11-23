@@ -2,9 +2,8 @@ from typing import List
 
 from fastapi import APIRouter, Depends
 
-from utils.value import LyricResponse, SearchParams
-
 from controller.lyric import get_lyric
+from utils.value import LyricResponse, SearchParams
 from utils.response_codes import LyricsNotFoundError
 
 router = APIRouter()
