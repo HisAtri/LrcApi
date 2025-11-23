@@ -14,6 +14,7 @@ headers = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0',
     'origin': 'https://music.163.com',
     'referer': 'https://music.163.com',
+    'X-Real-IP': '118.88.88.88',
 }
 
 logging.basicConfig(level=logging.INFO)
@@ -21,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 
 # type: 1-songs, 10-albums, 100-artists, 1000-playlists
-COMMON_SEARCH_URL_WANGYI = 'https://music.163.com/api/search/get/web?csrf_token=hlpretag=&hlposttag=&s={}&type={}&offset={}&total=true&limit={}'
+COMMON_SEARCH_URL_WANGYI = 'https://music.163.com/api/cloudsearch/pc?s={}&type={}&offset={}&limit={}'
 ALBUM_SEARCH_URL_WANGYI = 'https://music.163.com/api/album/{}?ext=true'
 LYRIC_URL_WANGYI = 'https://music.163.com/api/song/lyric?id={}&lv=1&tv=1'
 ARTIST_SEARCH_URL = 'http://music.163.com/api/v1/artist/{}'
@@ -178,9 +179,10 @@ async def search_album(session, artist, album):
 
 async def search_track(session, title, artist, album):
     result_list = []
-    limit = 10
+    result_cap = 10
+    fetch_limit = 100
     search_str = ' '.join([item for item in [title, artist, album] if item])
-    url = COMMON_SEARCH_URL_WANGYI.format(search_str, 1, 0, 100)
+    url = COMMON_SEARCH_URL_WANGYI.format(urllib.parse.quote_plus(search_str), 1, 0, fetch_limit)
 
     response = await session.get(url, headers=headers)
 
@@ -195,12 +197,12 @@ async def search_track(session, title, artist, album):
     candidate_songs = []
     for song_item in song_info:
         # 有些歌, 查询的 title 可能在别名里, 例如周杰伦的 八度空间-"分裂/离开", 有两个名字.
-        song_names: list = song_item['alias']
+        song_names: list = list(song_item.get('alia') or [])
         song_names.append(song_item['name'])
-        artists = song_item.get("artists", None)
-        singer_name = " ".join([x['name'] for x in artists]) if artists is not None else ""
-        album_ = song_item.get("album", None)
-        album_name = album_['name'] if album is not None else ''
+        artists = song_item.get("ar") or []
+        singer_name = " ".join([x['name'] for x in artists]) if artists else ""
+        album_ = song_item.get("al")
+        album_name = album_['name'] if album_ is not None else ''
         # 取所有名字中最高的相似度
         title_conform_ratio = max([textcompare.association(title, name) for name in song_names])
 
@@ -211,9 +213,8 @@ async def search_track(session, title, artist, album):
 
         if ratio >= 0.2:
             song_id = song_item['id']
-            album_id = album_[
-                'id'] if album is not None else None
-            singer_id = [x['id'] for x in artists][0]
+            album_id = album_['id'] if album_ is not None else None
+            singer_id = artists[0]['id'] if artists else None
             candidate_songs.append(
                 {'ratio': ratio, "item": {
                     "artist": singer_name,
@@ -229,13 +230,13 @@ async def search_track(session, title, artist, album):
     if len(candidate_songs) < 1:
         return None
 
-    candidate_songs = candidate_songs[:min(len(candidate_songs), limit)]
+    candidate_songs = candidate_songs[:min(len(candidate_songs), result_cap)]
 
     for candidate in candidate_songs:
         track = candidate['item']
         ratio = candidate['ratio']
 
-        cover_url = await get_cover_url(session, track['album_id'])
+        cover_url = await get_cover_url(session, track['album_id']) if track['album_id'] else None
         lyrics = await get_lyrics(session, track['trace_id'])
 
         # 结构化JSON数据
