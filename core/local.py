@@ -14,9 +14,9 @@ def read_file(path: str) -> str:
     :rtype: str
     """
     encodings: list[str] = [
-        'utf-8-sig', 
-        'utf-8', 
-        'gbk', 
+        'utf-8-sig',
+        'utf-8',
+        'gbk',
         'gb2312', 
         'big5',
         'utf-16',
