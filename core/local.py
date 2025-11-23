@@ -30,7 +30,14 @@ def read_file(path: str) -> str:
         except (UnicodeDecodeError, UnicodeError):
             continue
 
-    raise UnicodeDecodeError(f"Failed to decode file {path} with any of the tried encodings: {", ".join(encodings)}")
+    tried_encodings = ", ".join(encodings)
+    raise UnicodeDecodeError(
+        "unknown",
+        b"",
+        0,
+        0,
+        f"Failed to decode file {path} with any of the tried encodings: {tried_encodings}",
+    )
 
 def lrc_files(path: str) -> list[str]:
     """
