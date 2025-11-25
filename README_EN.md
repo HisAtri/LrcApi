@@ -1,3 +1,19 @@
+## About this fork
+
+This fork is based on the upstream project **HisAtri/LrcApi**, but specifically incorporates code from:
+
+- The upstream development branch: **`fix/132`**
+- The patch addressing NetEase Cloud Music API changes discussed in Issue **#132**
+
+The official master branch (1.6.x) still contains the outdated NetEase `cloudsearch` implementation, which results in:
+
+- 500 Internal Server Error on `/jsonapi`
+- TypeErrors such as `string indices must be integers`
+
+This fork merges the updated NetEase API logic from the `fix/132` branch, enhances it further for Docker runtime stability, and packages it into a working Docker image (`1.6-fix1`).
+
+All original code belongs to the upstream author; this fork only applies compatibility fixes and remains licensed under **GPL-3.0**.
+
 <div align="center">
     <img alt="LOGO" src="https://cdn.jsdelivr.net/gh/HisAtri/LrcAPI@main/src/img/LrcAPI-Text-Extra.png" width="313" height="400" />
 </div>
@@ -36,7 +52,7 @@ Listens on port 28883 by default, API address `http://0.0.0.0:28883/lyrics`; new
 ### Startup Parameters
 
 | Parameter | Type | Default Value |
-|-----------|------|---------------|
+| --------- | ---- | ------------- |
 | `--port`  | int  | 28883         |
 | `--auth`  | str  |               |
 
@@ -167,6 +183,7 @@ print(response.text)
 ## Secondary Development Instructions
 
 This program is based on the GPL-3.0 open-source license, and you are free to use, modify, and distribute this program. When developing secondary versions, please comply with the following requirements:
+
 1. Retain the original copyright and license notices in your derivative works.
 2. If you have modified this program, clearly state your modifications.
 3. When distributing, you need to provide the complete source code and distribute your derivative works under the GPL-3.0 license.
