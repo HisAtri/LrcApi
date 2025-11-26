@@ -9,6 +9,12 @@ from pydantic import ValidationError
 
 from utils import music_tag
 from utils.value import MusicTag
+from utils.exceptions import (
+    MusicFileNotFoundError,
+    InsufficientFilePermissionError,
+    UnsupportedMetadataTypeError,
+    MusicTagError
+)
 
 logger = logging.getLogger(__name__)
 
@@ -54,9 +60,10 @@ def write(tags: Union[MusicTag, dict], file: Union[str, any]) -> None:
     :param tags: MusicTag对象或字典，包含Tags数据
     :param file: 文件路径字符串或file-like对象
     :return: None
-    :raises TypeError: tags类型不正确
-    :raises FileNotFoundError: 文件不存在
-    :raises ValidationError: 标签数据验证失败
+    :raises MusicTagError: tags类型不正确或数据验证失败
+    :raises MusicFileNotFoundError: 文件不存在
+    :raises InsufficientFilePermissionError: 文件写入权限不足
+    :raises UnsupportedMetadataTypeError: 不支持的音频文件格式
     """
     logger.info("开始写入音乐标签")
     
@@ -66,22 +73,33 @@ def write(tags: Union[MusicTag, dict], file: Union[str, any]) -> None:
             music_tag_obj = MusicTag.model_validate(tags)
         except ValidationError as e:
             logger.error(f"标签数据验证失败: {e}")
-            raise
+            raise MusicTagError(detail=f"Invalid tag data: {e}")
     elif isinstance(tags, MusicTag):
         music_tag_obj = tags
     else:
         err_msg = f'Tags should be MusicTag or dict, but {type(tags).__name__} found.'
         logger.error(err_msg)
-        raise TypeError(err_msg)
+        raise MusicTagError(detail=err_msg)
 
     file_path = _resolve_file_path(file)
     if not file_path or not os.path.exists(file_path):
         err_msg = f'File {file_path} does not exist or path is invalid.'
         logger.error(err_msg)
-        raise FileNotFoundError(err_msg)
+        raise MusicFileNotFoundError(detail=err_msg)
+    
+    # 检查文件写入权限
+    if not os.access(file_path, os.W_OK):
+        err_msg = f'No write permission for file: {file_path}'
+        logger.error(err_msg)
+        raise InsufficientFilePermissionError(detail=err_msg)
 
     logger.debug(f"准备写入文件: {file_path}")
-    music_file_obj = music_tag.load_file(file)
+    
+    try:
+        music_file_obj = music_tag.load_file(file)
+    except NotImplementedError as e:
+        logger.error(f"不支持的音频文件格式: {e}")
+        raise UnsupportedMetadataTypeError(detail=f"Unsupported audio format: {e}")
     
     tag_map = MusicTag.get_tag_map()
     
@@ -115,12 +133,20 @@ def read(file: Union[str, any]) -> MusicTag:
     读取音乐文件标签
     :param file: 文件路径字符串或file-like对象
     :return: MusicTag对象
+    :raises MusicFileNotFoundError: 文件不存在
+    :raises InsufficientFilePermissionError: 权限不足
+    :raises UnsupportedMetadataTypeError: 不支持的音频文件格式
     """
     file_path = _resolve_file_path(file)
     
     if not file_path or not os.path.exists(file_path):
         logger.warning(f"文件不存在或路径无效: {file_path}")
-        return MusicTag()
+        raise MusicFileNotFoundError(detail=f"File not found: {file_path}")
+    
+    if not os.access(file_path, os.R_OK):
+        err_msg = f'No read permission for file: {file_path}'
+        logger.error(err_msg)
+        raise InsufficientFilePermissionError(detail=err_msg)
         
     logger.debug(f"开始读取音乐文件标签: {file_path}")
     result = {}
@@ -142,6 +168,11 @@ def read(file: Union[str, any]) -> MusicTag:
         
         logger.debug("音乐标签读取完成")
         return MusicTag.model_validate(result)
+    except NotImplementedError as e:
+        logger.error(f"不支持的音频文件格式: {e}")
+        raise UnsupportedMetadataTypeError(detail=f"Unsupported audio format: {e}")
+    except (MusicFileNotFoundError, InsufficientFilePermissionError, UnsupportedMetadataTypeError):
+        raise
     except Exception as e:
         logger.error(f"读取标签时发生错误: {str(e)}")
-        raise
+        raise MusicTagError(detail=f"Failed to read tags: {str(e)}")

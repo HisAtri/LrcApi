@@ -1,9 +1,13 @@
 import logging
-import os
 
 from utils import tag
 from utils.value import MusicTag, MusicTagRequest
-from utils.exceptions import MusicFileNotFoundError, MusicTagError
+from utils.exceptions import (
+    MusicFileNotFoundError,
+    MusicTagError,
+    InsufficientFilePermissionError,
+    UnsupportedMetadataTypeError
+)
 
 logger = logging.getLogger(__name__)
 
@@ -47,12 +51,10 @@ def write_music_tag(request: MusicTagRequest) -> dict:
     :param request: MusicTagRequest 对象
     :return: 操作结果和更新后的标签
     :raises MusicFileNotFoundError: 文件不存在
+    :raises InsufficientFilePermissionError: 文件权限不足
+    :raises UnsupportedMetadataTypeError: 不支持的元数据类型
     :raises MusicTagError: 标签操作失败
     """
-    if not request.path or not os.path.exists(request.path):
-        logger.warning(f"文件不存在: {request.path}")
-        raise MusicFileNotFoundError(detail=f"File not found: {request.path}")
-    
     logger.info(f"写入音乐标签: {request.path}")
     
     try:
@@ -83,7 +85,7 @@ def write_music_tag(request: MusicTagRequest) -> dict:
             "message": "Tags updated successfully",
             "tags": music_tag_to_response(updated_tags)
         }
-    except MusicFileNotFoundError:
+    except (MusicFileNotFoundError, InsufficientFilePermissionError, UnsupportedMetadataTypeError, MusicTagError):
         raise
     except Exception as e:
         logger.error(f"写入音乐标签失败: {e}")
