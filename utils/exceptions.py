@@ -23,3 +23,7 @@ class InsufficientFilePermissionError(HTTPException):
 class UnsupportedMetadataTypeError(HTTPException):
     def __init__(self, detail: str = "Unsupported metadata type"):
         super().__init__(status_code=400, detail=detail)
+
+class UnauthorizedRequestError(HTTPException):
+    def __init__(self, detail: str = "Unauthorized request"):
+        super().__init__(status_code=401, detail=detail)

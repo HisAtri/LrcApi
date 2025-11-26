@@ -5,11 +5,12 @@ from fastapi import APIRouter, Depends
 from controller.lyric import get_lyric
 from utils.value import LyricResponse, SearchParams
 from utils.exceptions import LyricsNotFoundError
+from utils.authorization import require_auth
 
 router = APIRouter()
 
 @router.get("/lyric")
-async def lrc_text_api(params: SearchParams = Depends()) -> str:
+async def lrc_text_api(params: SearchParams = Depends(), auth: str = Depends(require_auth)) -> str:
     """
     查询并返回text/lrc歌词文本
     """
