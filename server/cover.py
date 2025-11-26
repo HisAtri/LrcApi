@@ -3,7 +3,7 @@ from fastapi.responses import FileResponse, RedirectResponse
 
 from controller.cover import get_cover, get_local_cover
 from utils.value import SearchParams
-from utils.response_codes import CoverImageNotFoundError
+from utils.exceptions import CoverImageNotFoundError
 
 router = APIRouter()
 
