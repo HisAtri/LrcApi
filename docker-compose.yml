@@ -1,0 +1,11 @@
+services:
+  lrcapi:
+    build: .
+    container_name: lrcapi
+    ports:
+      - "28883:28883"
+    volumes:
+      - /path/to/your/music:/music
+    environment:
+      - API_AUTH=your_auth_key_here 
+    restart: unless-stopped
