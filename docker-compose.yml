@@ -7,5 +7,6 @@ services:
     volumes:
       - /path/to/your/music:/music
     environment:
-      - API_AUTH=your_auth_key_here 
+      - API_AUTH=your_auth_key_here
+      - ROMAJI=true
     restart: unless-stopped
