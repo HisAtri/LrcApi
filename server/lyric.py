@@ -3,7 +3,7 @@ from typing import List
 from fastapi import APIRouter, Depends
 
 from controller.lyric import get_lyric
-from utils.value import LyricResponse, SearchParams
+from utils.data_types import LyricResponse, SearchParams
 from utils.exceptions import LyricsNotFoundError
 from utils.authorization import require_auth
 

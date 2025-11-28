@@ -3,7 +3,7 @@ from typing import List
 
 from core.api.netease import a_search as netease_search
 from core.local import get_local_lyric
-from utils.value import SearchParams, LyricResponse
+from utils.data_types import SearchParams, LyricResponse
 
 logger = logging.getLogger(__name__)
 

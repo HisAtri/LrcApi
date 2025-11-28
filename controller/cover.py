@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Optional
 
 from core.api.netease import a_search as netease_search
-from utils.value import SearchParams
+from utils.data_types import SearchParams
 
 logger = logging.getLogger(__name__)
 

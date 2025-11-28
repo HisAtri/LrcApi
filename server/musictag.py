@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from controller.tag import write_music_tag
-from utils.value import MusicTagRequest
+from utils.data_types import MusicTagRequest
 from utils.authorization import require_auth
 router = APIRouter()
 

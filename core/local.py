@@ -1,7 +1,7 @@
 import asyncio
 import os
 
-from utils.value import LyricResponse, SearchParams
+from utils.data_types import LyricResponse, SearchParams
 from utils.data import hash_data
 
 

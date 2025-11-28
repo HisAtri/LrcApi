@@ -8,7 +8,7 @@ from PIL import Image
 from pydantic import ValidationError
 
 from utils import music_tag
-from utils.value import MusicTag
+from utils.data_types import MusicTag
 from utils.exceptions import (
     MusicFileNotFoundError,
     InsufficientFilePermissionError,

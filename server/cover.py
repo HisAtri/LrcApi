@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Response
 from fastapi.responses import FileResponse, RedirectResponse
 
 from controller.cover import get_cover, get_local_cover
-from utils.value import SearchParams
+from utils.data_types import SearchParams
 from utils.exceptions import CoverImageNotFoundError
 from utils.authorization import require_auth
 

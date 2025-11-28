@@ -1,7 +1,7 @@
 import logging
 
 from utils import tag
-from utils.value import MusicTag, MusicTagRequest
+from utils.data_types import MusicTag, MusicTagRequest
 from utils.exceptions import (
     MusicFileNotFoundError,
     MusicTagError,
