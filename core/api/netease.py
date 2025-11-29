@@ -319,15 +319,14 @@ async def search_track(session, title, artist, album):
 
     candidate_songs = candidate_songs[:min(len(candidate_songs), result_cap)]
 
-    for candidate in candidate_songs:
+    # 并行获取所有歌曲的封面和歌词
+    async def fetch_track_details(candidate):
         track = candidate['item']
-        ratio = candidate['ratio']
-
-        cover_url = await get_cover_url(session, track['album_id']) if track['album_id'] else None
-        lyrics = await get_lyrics(session, track['trace_id'])
-
-        # 结构化JSON数据
-        music_json_data: dict = {
+        cover_task = get_cover_url(session, track['album_id']) if track['album_id'] else asyncio.sleep(0, result=None)
+        lyrics_task = get_lyrics(session, track['trace_id'])
+        cover_url, lyrics = await asyncio.gather(cover_task, lyrics_task)
+        
+        return {
             "title": track['title'],
             "album": track['album'],
             "artist": track['artist'],
@@ -337,8 +336,10 @@ async def search_track(session, title, artist, album):
                 title=track['title'], artist=track['artist'], album=track['album'], lyrics=lyrics)
         }
 
-        result_list.append(music_json_data)
-    return result_list
+    # 并行获取所有候选歌曲的详情
+    tasks = [fetch_track_details(c) for c in candidate_songs]
+    result_list = await asyncio.gather(*tasks)
+    return list(result_list)
 
 
 @lru_cache(maxsize=64)
