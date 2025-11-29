@@ -1,14 +1,13 @@
-import json
-import aiohttp
 import asyncio
+import json
 import logging
-
+import urllib
 from functools import lru_cache
 
-import urllib
-from utils.data import hash_data
-from utils import textcompare
+import aiohttp
 
+from utils import textcompare
+from utils.data import hash_data
 
 headers = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36 Edg/129.0.0.0',
@@ -24,7 +23,7 @@ logger = logging.getLogger(__name__)
 # type: 1-songs, 10-albums, 100-artists, 1000-playlists
 COMMON_SEARCH_URL_WANGYI = 'https://music.163.com/api/cloudsearch/pc?s={}&type={}&offset={}&limit={}'
 ALBUM_SEARCH_URL_WANGYI = 'https://music.163.com/api/album/{}?ext=true'
-LYRIC_URL_WANGYI = 'https://music.163.com/api/song/lyric?id={}&lv=1&tv=1'
+LYRIC_URL_WANGYI = 'https://music.163.com/api/song/lyric?id={}&lv=1&tv=1&rv=1'
 ARTIST_SEARCH_URL = 'http://music.163.com/api/v1/artist/{}'
 ALBUMS_SEARCH_URL = "http://music.163.com/api/artist/albums/{}?offset=0&total=true&limit=300"
 ALBUM_INFO_URL = "http://music.163.com/api/album/{}?ext=true"
@@ -123,13 +122,101 @@ async def get_cover_url(session: aiohttp.ClientSession, album_id: int):
     return None
 
 
-async def get_lyrics(session: aiohttp.ClientSession, track_id: int):
+def merge_lyrics_with_romaji(lrc: str, romaji_lrc: str) -> str:
+    """
+    合并原版歌词和罗马字歌词
+    使用 StreamMusic 支持的相同时间轴格式：
+    [00:01.00]日语歌词
+    [00:01.00]罗马字
+    
+    Args:
+        lrc: 原版歌词 (LRC格式)
+        romaji_lrc: 罗马字歌词 (LRC格式)
+    
+    Returns:
+        合并后的歌词
+    """
+    import re
+    
+    if not romaji_lrc:
+        return lrc
+    
+    # 解析歌词，提取时间戳和内容
+    timestamp_pattern = re.compile(r'^(\[\d+:\d+\.\d+\])')
+    
+    def parse_lrc(text: str) -> dict:
+        """解析 LRC 歌词为 {时间戳: 内容} 字典"""
+        result = {}
+        if not text:
+            return result
+        for line in text.strip().split('\n'):
+            match = timestamp_pattern.match(line)
+            if match:
+                timestamp = match.group(1)
+                content = line[len(timestamp):].strip()
+                if content:  # 只保留有内容的行
+                    result[timestamp] = content
+        return result
+    
+    # 解析原版和罗马字歌词
+    lrc_dict = parse_lrc(lrc)
+    romaji_dict = parse_lrc(romaji_lrc)
+    
+    # 如果没有匹配的罗马字，直接返回原歌词
+    if not romaji_dict:
+        return lrc
+    
+    # 构建合并后的歌词
+    result_lines = []
+    
+    # 先添加原歌词中的元数据行（不带时间戳的行）
+    for line in lrc.strip().split('\n'):
+        if not timestamp_pattern.match(line):
+            result_lines.append(line)
+    
+    # 按时间戳排序合并
+    all_timestamps = sorted(set(lrc_dict.keys()) | set(romaji_dict.keys()))
+    
+    for ts in all_timestamps:
+        original = lrc_dict.get(ts)
+        romaji = romaji_dict.get(ts)
+        
+        if original:
+            result_lines.append(f"{ts}{original}")
+        if romaji and romaji != original:  # 避免重复
+            result_lines.append(f"{ts}{romaji}")
+    
+    return '\n'.join(result_lines)
+
+
+async def get_lyrics(session: aiohttp.ClientSession, track_id: int) -> str:
+    """
+    获取歌词，根据配置决定是否合并罗马字歌词
+    """
+    from utils.config import get_config
+    
     url = LYRIC_URL_WANGYI.format(track_id)
     json_data_r = await session.get(url, headers=headers)
     json_data = json.loads(await json_data_r.text())
-    if json_data.get('lrc', False) and json_data.get('lrc').get('lyric', False):
-        return json_data['lrc']['lyric']
-    return None
+    
+    # 获取原版歌词
+    lrc = None
+    if json_data.get('lrc') and json_data['lrc'].get('lyric'):
+        lrc = json_data['lrc']['lyric']
+    
+    if not lrc:
+        return None
+    
+    # 如果启用了罗马字功能，尝试获取并合并
+    if get_config().romaji:
+        romaji_lrc = None
+        if json_data.get('romalrc') and json_data['romalrc'].get('lyric'):
+            romaji_lrc = json_data['romalrc']['lyric']
+        
+        if romaji_lrc:
+            return merge_lyrics_with_romaji(lrc, romaji_lrc)
+    
+    return lrc
 
 
 async def a_search(title='', artist='', album=''):

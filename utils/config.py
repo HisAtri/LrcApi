@@ -15,6 +15,7 @@ class Config:
     host: str
     port: int
     debug: bool
+    romaji: bool  # 是否为日语歌词自动合并罗马字注音
 
 
 def _get_env_bool(key: str, default: bool = False) -> bool:
@@ -34,6 +35,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--host", type=str, default=None, help="监听地址")
     parser.add_argument("--port", type=int, default=None, help="监听端口")
     parser.add_argument("--debug", action="store_true", help="启用调试模式")
+    parser.add_argument("--romaji", action="store_true", help="开关罗马字注音")
     return parser.parse_args()
 
 
@@ -57,12 +59,14 @@ def load_config() -> Config:
         port = int(os.environ.get("API_PORT", "28883"))
     
     debug = args.debug or _get_env_bool("DEBUG", False)
+    romaji = args.romaji or _get_env_bool("ROMAJI", False)
     
     return Config(
         auth=auth,
         host=host,
         port=port,
-        debug=debug
+        debug=debug,
+        romaji=romaji
     )
 
 

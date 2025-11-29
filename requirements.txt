@@ -1,4 +1,5 @@
 fastapi ~= 0.116.1
 uvicorn[standard] ~= 0.38.0
 aiohttp ~= 3.10.2
-Pillow~=10.1.0
+Pillow ~= 10.1.0
+mutagen ~= 1.47.0
