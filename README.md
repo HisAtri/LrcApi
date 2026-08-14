@@ -177,4 +177,4 @@ print(response.text)
 
 请确保您详细了解GPL-3.0许可证的要求并遵守相关规定。
 
-[![Star History Chart](https://api.star-history.com/svg?repos=HisAtri/LrcApi&type=Date)](https://star-history.com/#HisAtri/LrcApi&Date)
+[![Star History Chart](https://star-history.dera.page/svg?repos=HisAtri/LrcApi&type=Date)](https://star-history.dera.page/#HisAtri/LrcApi&Date)

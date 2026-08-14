@@ -181,4 +181,4 @@ WeChat
 
 <img alt="reward" class="rounded" src="https://cdn.jsdelivr.net/gh/HisAtri/LrcAPI@main/src/img/qrcode.png" width="512" height="512" />
 
-[![Star History Chart](https://api.star-history.com/svg?repos=HisAtri/LrcApi&type=Date)](https://star-history.com/#HisAtri/LrcApi&Date)
+[![Star History Chart](https://star-history.dera.page/svg?repos=HisAtri/LrcApi&type=Date)](https://star-history.dera.page/#HisAtri/LrcApi&Date)
